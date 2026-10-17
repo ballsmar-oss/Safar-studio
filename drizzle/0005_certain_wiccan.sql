@@ -1,0 +1,1 @@
+ALTER TABLE `integrationSettings` ADD `githubPagesUsername` varchar(160);
