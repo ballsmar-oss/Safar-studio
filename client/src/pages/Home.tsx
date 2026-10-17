@@ -128,6 +128,11 @@ export default function Home() {
             <div className="coral-underline" />
             <p>{text("hero.lead", copy.heroLead)}</p>
             <a className="reference-cta" href="#services">{copy.heroCta} <ArrowLeft size={17} /></a>
+            <div className="pick-hint" aria-hidden="true">
+              <svg className="ph-arrow" viewBox="0 0 80 60" fill="none"><path d="M6 8 C 36 0, 70 14, 60 46" stroke="#f47763" strokeWidth="2.5" strokeLinecap="round" /><path d="M50 38 L60 48 L68 36" stroke="#f47763" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              <span className="ph-text">{isArabic ? "تقدر تختار من الخدمات اللي تحت ✦" : "Pick a service from the phone ✦"}</span>
+              <span className="ph-icons"><span>▣</span><span>⚙</span><span>✎</span><span>○</span></span>
+            </div>
           </div>
           <div className="reference-hero-art phone-only-scene">
             <img className="hero-illustration" src={heroImage} alt={isArabic ? "رسم توضيحي لخدمات سَفَر الرقمية" : "Illustration of SAFAR digital services"} />

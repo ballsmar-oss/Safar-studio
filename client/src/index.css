@@ -295,3 +295,15 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
 /* Room for the character above the phone: the phone sits 62px lower on desktop */
 @media (min-width: 851px) { .phone-only-scene { min-height: 790px; } .phone-only-scene .interactive-phone { margin-top: 104px; } }
 @media (max-width: 850px) { .phone-only-scene { min-height: 680px; } .phone-only-scene .interactive-phone { margin-top: 110px; } }
+
+/* Hint under the hero button: tells visitors they can choose from the phone */
+.pick-hint { position:relative; margin-top:36px; max-width:280px; color:var(--navy); font-family:"Noto Kufi Arabic",sans-serif; font-weight:700; font-size:15px; line-height:1.6; }
+.pick-hint .ph-arrow { position:absolute; right:-6px; top:-34px; width:64px; height:48px; transform:scaleX(-1); }
+.pick-hint .ph-text { display:block; }
+.pick-hint .ph-icons { display:flex; gap:10px; margin-top:12px; }
+.pick-hint .ph-icons span { width:38px; height:38px; border-radius:50%; background:#fff; border:1.5px solid var(--navy); box-shadow:2px 3px 0 rgba(13,43,82,.18); display:grid; place-items:center; font-size:16px; line-height:1; animation:phFloat 3.4s ease-in-out infinite; }
+.pick-hint .ph-icons span:nth-child(2) { animation-delay:.5s; }
+.pick-hint .ph-icons span:nth-child(3) { animation-delay:1s; }
+.pick-hint .ph-icons span:nth-child(4) { animation-delay:1.5s; }
+@keyframes phFloat { 50% { transform:translateY(-5px); } }
+@media (prefers-reduced-motion:reduce) { .pick-hint .ph-icons span { animation:none; } }
