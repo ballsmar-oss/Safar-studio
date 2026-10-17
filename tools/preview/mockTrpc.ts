@@ -35,6 +35,12 @@ const changed = () => { version += 1; listeners.forEach((listener) => listener()
 const useVersion = () => useSyncExternalStore((cb) => { listeners.add(cb); return () => listeners.delete(cb); }, () => version);
 
 const queries: Record<string, () => any> = {
+  "publicContent.all": () => ({
+    content: [],
+    portfolio: store.portfolio.filter((item: any) => item.isPublished),
+    testimonials: store.testimonials.filter((item: any) => item.isPublished),
+    settings: { whatsappNumber: null, instagramUrl: null, linkedinUrl: null, tiktokUrl: null, businessEmail: null },
+  }),
   "auth.me": () => ({ isAdmin: true }),
   "admin.dashboard": () => ({ portfolio: [...store.portfolio], testimonials: [...store.testimonials], content: [...store.content], leads: [...store.leads], payments: [...store.payments] }),
   "admin.integrationSettings": () => ({ ...store.settings }),
@@ -48,6 +54,7 @@ const upsert = (list: any[], input: any) => {
 };
 const PREVIEW_ONLY = "هذي نسخة معاينة: الإيميلات تنرسل بعد رفع الموقع على السيرفر.";
 const mutations: Record<string, (input: any) => any> = {
+  "publicContent.createLead": () => ({ success: true }),
   "admin.saveContent": (input) => { store.content = store.content.filter((item: any) => item.contentKey !== input.contentKey).concat({ ...input, id: nextId++ }); },
   "admin.createPortfolio": (input) => upsert(store.portfolio, input),
   "admin.updatePortfolio": (input) => upsert(store.portfolio, input),
