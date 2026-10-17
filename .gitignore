@@ -116,3 +116,4 @@ data/
 # Leftovers from the old setup (not used)
 dist-static/
 .project-config.json
+dist-preview/
