@@ -10,7 +10,10 @@
     "check": "tsc --noEmit",
     "format": "prettier --write .",
     "test": "vitest run",
-    "db:push": "drizzle-kit generate && drizzle-kit migrate"
+    "db:push": "drizzle-kit generate && drizzle-kit migrate",
+    "dev:static": "vite --config vite.static.config.ts",
+    "build:static": "vite build --config vite.static.config.ts",
+    "preview:static": "vite preview --config vite.static.config.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.693.0",
