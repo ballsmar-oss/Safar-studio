@@ -131,7 +131,12 @@ export default function Home() {
             <div className="pick-hint" aria-hidden="true">
               <svg className="ph-arrow" viewBox="0 0 80 60" fill="none"><path d="M6 8 C 36 0, 70 14, 60 46" stroke="#f47763" strokeWidth="2.5" strokeLinecap="round" /><path d="M50 38 L60 48 L68 36" stroke="#f47763" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
               <span className="ph-text">{isArabic ? "تقدر تختار من الخدمات اللي تحت ✦" : "Pick a service from the phone ✦"}</span>
-              <span className="ph-icons"><span>▣</span><span>⚙</span><span>✎</span><span>○</span></span>
+              <span className="ph-icons">
+                <span title="إنتاج الفيديو"><svg viewBox="0 0 40 40" fill="none" stroke="#0d2b52" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="8" y="11" width="24" height="18" rx="5" /><path d="M18 16 L24 20 L18 24 Z" fill="#f47763" stroke="#f47763" /><path d="M31 8 L33 5 M35 12 L38 11" stroke="#f47763" /></svg></span>
+                <span title="الأتمتة"><svg viewBox="0 0 40 40" fill="none" stroke="#0d2b52" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12 Q9 9 12 9 H28 Q31 9 31 12 V23 Q31 26 28 26 H19 L13 31 V26 H12 Q9 26 9 23 Z" /><circle cx="15" cy="17.5" r="1.4" fill="#f47763" stroke="none" /><circle cx="20" cy="17.5" r="1.4" fill="#f47763" stroke="none" /><circle cx="25" cy="17.5" r="1.4" fill="#f47763" stroke="none" /></svg></span>
+                <span title="الهوية البصرية"><svg viewBox="0 0 40 40" fill="none" stroke="#0d2b52" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 30 L15 25 L27 13 Q29 11 31 13 Q33 15 31 17 L19 29 L14 31 Z" /><path d="M24 16 L28 20" /><path d="M9 33 Q12 30 16 33" stroke="#f47763" /></svg></span>
+                <span title="الاستشارات"><svg viewBox="0 0 40 40" fill="none" stroke="#0d2b52" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 26 Q11 23 11 17 A9 9 0 0 1 29 17 Q29 23 25 26 Q24 28 24 30 H16 Q16 28 15 26 Z" /><path d="M17 34 H23" /><path d="M20 3 V5 M9 8 L10.5 9.5 M31 8 L29.5 9.5" stroke="#f47763" /></svg></span>
+              </span>
             </div>
           </div>
           <div className="reference-hero-art phone-only-scene">
