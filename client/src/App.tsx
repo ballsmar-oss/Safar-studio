@@ -9,12 +9,14 @@ import Admin from "@/pages/Admin";
 import Pay from "@/pages/Pay";
 import Works from "@/pages/Works";
 import Work from "@/pages/Work";
+import HomeV2 from "@/pages/HomeV2";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
       <Route path={"/"} component={Home} />
+      <Route path={"/v2"} component={HomeV2} />
       <Route path={"/works"} component={Works} />
       <Route path={"/works/:id"} component={Work} />
       <Route path={"/admin"} component={Admin} />
