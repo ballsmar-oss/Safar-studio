@@ -288,3 +288,10 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
   .phone-only-scene .interactive-phone { top:50% !important; transform:translate(-50%,-50%) rotate(-2deg) !important; }
   .phone-only-scene .interactive-phone.is-open { top:50% !important; transform:translate(-50%,-55%) rotate(-2deg) scale(1.03) !important; }
 }
+
+/* The character sleeping under the phone (phone acts as the blanket) */
+.interactive-phone .phone-sleeper { position:absolute; left:50%; bottom:100%; width:100%; transform:translateX(-50%); pointer-events:none; z-index:1; }
+
+/* Room for the character above the phone: the phone sits 62px lower on desktop */
+@media (min-width: 851px) { .phone-only-scene { min-height: 790px; } .phone-only-scene .interactive-phone { margin-top: 104px; } }
+@media (max-width: 850px) { .phone-only-scene { min-height: 680px; } .phone-only-scene .interactive-phone { margin-top: 110px; } }
