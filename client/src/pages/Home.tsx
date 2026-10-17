@@ -1,52 +1,112 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
-import {
-  ArrowLeft,
-  ArrowUpLeft,
-  Check,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  CirclePlay,
-  Instagram,
-  Linkedin,
-  MessageCircle,
-  Menu,
-  Music2,
-  MoveDown,
-  Sparkles,
-  X,
-} from "lucide-react";
+import { Instagram, Linkedin, MessageCircle, Music2 } from "lucide-react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
+import "./home-v2.css";
 
-const heroImage = "/brand/hero.png"; // hidden by the stylesheet; kept for the layout
+type Lang = "ar" | "en";
+type ServiceKey = "motion" | "systems" | "branding" | "ui" | "consulting";
 
-type Service = {
-  id: string;
-  title: string;
-  enTitle: string;
-  subtitle: string;
-  enSubtitle: string;
-  details: string[];
-  enDetails: string[];
-  icon: string;
-  image: string;
-  enImage: string;
+const serviceKeys: ServiceKey[] = ["motion", "systems", "branding", "ui", "consulting"];
+
+const services: Record<ServiceKey, { icon: string; ar: { title: string; sub: string; details: string[] }; en: { title: string; sub: string; details: string[] } }> = {
+  motion: {
+    icon: "▣",
+    ar: { title: "إنتاج الفيديو بالذكاء الاصطناعي", sub: "فريمات وقصص تتحرك", details: ["فيديوهات إعلانية مبتكرة", "محتوى سوشال ميديا جاذب", "شخصيات رقمية ثابتة ومونتاج احترافي"] },
+    en: { title: "AI Video Production", sub: "Dynamic frames & compelling stories", details: ["Innovative commercial videos", "Engaging social media campaigns", "Consistent digital avatars & pro editing"] },
+  },
+  systems: {
+    icon: "⚙",
+    ar: { title: "الأتمتة والأنظمة الذكية", sub: "نظام واضح، نتائج أسرع", details: ["ربط واتساب للأعمال الذكي", "أنظمة مواعيد وحجوزات متقدمة", "لوحات تحكم ومتابعة العملاء CRM"] },
+    en: { title: "Automation & Smart Systems", sub: "Smarter workflows, time saved", details: ["WhatsApp Business integration", "Automated booking & scheduling", "Custom CRM & analytics dashboards"] },
+  },
+  branding: {
+    icon: "✎",
+    ar: { title: "التصميم والهويات البصرية", sub: "علامة لها حضور وبصمة فريدة", details: ["شعار وهوية بصرية متكاملة", "قوالب وتطبيقات سوشال ميديا", "دليل استخدام الهوية الشامل"] },
+    en: { title: "Branding & Visual Identity", sub: "A distinct, memorable presence", details: ["Complete visual identity & logos", "Social media design kits", "Comprehensive brand guidelines"] },
+  },
+  ui: {
+    icon: "▣",
+    ar: { title: "تصميم واجهات وتجربة المستخدم", sub: "تجربة أسهل وأوضح لكل مستخدم", details: ["تصميم مواقع ومنتجات رقمية عصرية", "استراتيجية وهندسة تجربة المستخدم UX", "نماذج تفاعلية ونظام تصميم متكامل"] },
+    en: { title: "UI / UX Product Design", sub: "Intuitive, seamless digital journeys", details: ["Modern website & app design", "User experience architecture & UX", "Interactive prototypes & design systems"] },
+  },
+  consulting: {
+    icon: "○",
+    ar: { title: "استشارات إبداعية", sub: "قرار أفضل من البداية", details: ["جلسة اكتشاف وتحديد الرؤية", "توجيه استراتيجي للهوية والتموضع", "خطة محتوى بصري وخارطة طريق"] },
+    en: { title: "Creative Consulting", sub: "Smart strategic direction from day one", details: ["Discovery & vision session", "Strategic identity & positioning", "Visual content roadmap & execution plan"] },
+  },
 };
 
-const services: Service[] = [
-  { id: "motion", title: "إنتاج الفيديو بالذكاء الاصطناعي", enTitle: "AI video production", subtitle: "فيديوهات إبداعية وسريعة لعلامتك التجارية.", enSubtitle: "Fast, creative videos for your brand.", details: ["فيديوهات إعلانية", "محتوى سوشال ميديا", "شخصيات ثابتة (Character)", "مونتاج احترافي"], enDetails: ["Ad videos", "Social media content", "Consistent characters", "Professional editing"], icon: "▣", image: "فريمات وقصص تتحرك", enImage: "Frames and stories in motion" },
-  { id: "systems", title: "الأتمتة والأنظمة الذكية", enTitle: "Smart systems & automation", subtitle: "حلول أذكى تسهّل عملك وتوفّر وقتك.", enSubtitle: "Smarter workflows that save time.", details: ["ربط واتساب للأعمال", "أنظمة مواعيد وحجوزات", "لوحات تحكم CRM", "حضور وانصراف للموظفين"], enDetails: ["WhatsApp for business", "Booking systems", "CRM dashboards", "Team attendance tools"], icon: "⚙", image: "نظام واضح، نتائج أسرع", enImage: "Clear systems, faster results" },
-  { id: "branding", title: "التصميم والهويات البصرية", enTitle: "Brand identity & visual design", subtitle: "هويات كاملة وتصاميم تعكس قصتك.", enSubtitle: "Complete identities that tell your story.", details: ["شعار وهوية بصرية", "قوالب سوشال ميديا", "دليل استخدام الهوية", "تصاميم الحملات"], enDetails: ["Logo and visual identity", "Social media templates", "Brand guidelines", "Campaign design"], icon: "✎", image: "علامة لها حضور", enImage: "A brand with presence" },
-  { id: "ui", title: "تصميم واجهات وتجربة المستخدم", enTitle: "UI/UX design", subtitle: "واجهات عصرية وتجربة استخدام مميزة.", enSubtitle: "Modern interfaces and effortless experiences.", details: ["تصميم مواقع ومنتجات", "تجربة مستخدم UX", "نماذج أولية تفاعلية", "نظام تصميم UI"], enDetails: ["Web and product design", "UX strategy", "Interactive prototypes", "UI design systems"], icon: "▣", image: "تجربة أسهل وأوضح", enImage: "A simpler, clearer experience" },
-  { id: "consulting", title: "استشارات إبداعية", enTitle: "Creative consulting", subtitle: "من الفكرة إلى التنفيذ بخبرة حقيقية.", enSubtitle: "From idea to execution with real expertise.", details: ["جلسة اكتشاف", "توجيه للهوية", "خطة محتوى بصري", "خارطة طريق للمشروع"], enDetails: ["Discovery session", "Brand direction", "Visual content plan", "Project roadmap"], icon: "○", image: "قرار أفضل، من البداية", enImage: "Better decisions from day one" },
-];
+// Used until the dashboard has testimonials of its own.
+const sampleTestimonials = {
+  ar: [
+    { quote: "سَفَر فهم فكرتنا من أول جلسة، وحوّلها إلى هوية وتجربة تشبهنا فعلًا وخلت تواجدنا الرقمي يلفت الأنظار من أول يوم.", name: "ليان السالم", company: "مؤسسة نَواة", rating: 5 },
+    { quote: "فريق استثنائي وسرعة إنجاز تفوق التوقعات! موشن الجرافيك والأتمتة وفرت علينا ساعات طويلة من العمل اليومي.", name: "عمر الخالدي", company: "منصة تدفق", rating: 5 },
+    { quote: "التجربة والتنفيذ فاقا كل التطلعات. الدقة في تفاصيل الهوية البصرية والواجهات منحتنا مكانة تنافسية قوية.", name: "سارة المهيدب", company: "استوديو مدار", rating: 5 },
+  ],
+  en: [
+    { quote: "SAFAR got our vision from our very first meeting, turning it into a distinct identity and digital presence that captivated our audience immediately.", name: "Layan Al-Salem", company: "Nawaah Foundation", rating: 5 },
+    { quote: "Exceptional team with remarkable delivery speed! Their AI motion and WhatsApp automation saved our operations dozens of hours every week.", name: "Omar Al-Khalidi", company: "Tadafoq Platform", rating: 5 },
+    { quote: "Flawless execution that surpassed expectations. The precision in visual brand guidelines and interface design gave us an immediate edge.", name: "Sara Al-Mohaideb", company: "Madar Studio", rating: 5 },
+  ],
+};
 
-function SectionKicker({ children, light = false }: { children: React.ReactNode; light?: boolean }) {
-  return <div className={`section-kicker ${light ? "section-kicker--light" : ""}`}><span className="kicker-dot" />{children}</div>;
-}
+const copy = {
+  ar: {
+    title: "سَفَر | استوديو إبداعي وتجارب رقمية",
+    topbar1: "نحوّل الأفكار إلى تجارب تُحرّك الأثر", topbar2: "الرياض · جدة · عن بُعد",
+    navHome: "الرئيسية", navServices: "الخدمات", navWork: "أعمالنا", navReviews: "الآراء", navContact: "تواصل",
+    handNote: ["Good ideas", "work."],
+    heroTitle: ["أفكارك", "نصممها", "تنفّذ."], heroDesc: "تحويل أفكارك إلى تصاميم وتجارب رقمية تترك أثرًا يخلد في ذاكرة جمهورك.", heroCta: "اختر ما يلهمك",
+    badgeTop: ["فكرة", "تتبيّن"], badgeBottom: ["تصميم", "يتحرك"],
+    phoneHeader: "اختر ما يهمك", phoneCta: "لنبدأ مشروعك الآن", learnMore: "اعرف المزيد", startProject: "ابدأ مشروعك الآن",
+    sideA: ["كل ما تحتاجه", "في مكان واحد", "..."], sideB: ["واختيارك يحدد", "ما يظهر لك"], mascot: "سَفَر ستوديو",
+    workKicker: "أعمالنا", workTitle: ["أفكار تحولت", "إلى حضور."], workDesc: "مشاريع مختارة تعكس أسلوبنا وجودة أعمالنا في الهوية والموشن والواجهات الرقمية.", workLink: "شاهد أعمالنا كاملة",
+    workFallback: [
+      { title: "موشن إعلاني", sub: "فكرة تتحرك بذكاء وتأثير", service: "motion" as ServiceKey },
+      { title: "هوية بصرية", sub: "علامة لها حضور وبصمة فريدة", service: "branding" as ServiceKey },
+      { title: "تصميم واجهات UI/UX", sub: "تجربة أسهل وأوضح لكل مستخدم", service: "ui" as ServiceKey },
+      { title: "أتمتة وأنظمة ذكية", sub: "ربط واتساب وحجوزات متقدمة", service: "systems" as ServiceKey },
+    ],
+    reviewsKicker: "مساحة للتجربة", reviewsTitle: "تقييمات عملائنا", reviewsSub: "نترك الأثر… ويكمل العملاء الحكاية", testimonialKicker: "قالوا عن التجربة",
+    contactKicker: "خلّنا نبدأ", contactTitle: ["جاهز تخلي", "فكرتك تُرى؟"], contactDesc: "أرسل لنا تفاصيل بسيطة عن مشروعك، وسنعود لك باقتراح يناسب مرحلتك ورؤيتك الاستراتيجية.",
+    chatWa: "محادثة واتساب مباشرة",
+    formTitle: "لنبنِ الشيء الصحيح", formName: "الاسم الكامل", formEmail: "البريد الإلكتروني", formPhone: "رقم الجوال", formService: "الخدمة المطلوبة",
+    formSelectService: "اختر خدمة", formMsg: "نبذة عن المشروع", formOptional: "(اختياري)", formSubmit: "أرسل الطلب", sending: "جارٍ الإرسال...",
+    privacy: "نحترم خصوصيتك ولن نشارك بياناتك أبدًا.", successTitle: "تم إرسال طلبك بنجاح!",
+    successDesc: "شكرًا لثقتك بنا. وصلتنا تفاصيل مشروعك وسيقوم فريق سَفَر بالتواصل معك خلال 24 ساعة للبدء في خطتك.",
+    resetForm: "إرسال استفسار آخر", footer: "أفكار جيدة. تصاميم أفضل. أثر يدوم.", copyright: "© 2025 SAFAR Studio. جميع الحقوق محفوظة.",
+    phPlaceholder: "مثال: ليان السالم", msgPlaceholder: "حدثنا عن فكرتك باختصار...", errorName: "اكتب اسمك الكامل", errorService: "اختر الخدمة المطلوبة",
+  },
+  en: {
+    title: "SAFAR | Creative Studio & Digital Experiences",
+    topbar1: "Transforming ideas into impactful experiences", topbar2: "Riyadh · Jeddah · Remote",
+    navHome: "Home", navServices: "Services", navWork: "Work", navReviews: "Reviews", navContact: "Contact",
+    handNote: ["Good ideas", "work."],
+    heroTitle: ["Your ideas.", "Designed", "executed."], heroDesc: "Turning visionary concepts into digital craft and enduring brands that captivate your audience.", heroCta: "Explore What Inspires",
+    badgeTop: ["Ideas", "Realized"], badgeBottom: ["Design", "In Motion"],
+    phoneHeader: "Select a Service", phoneCta: "Start Your Project Now", learnMore: "Learn More", startProject: "Start Your Project",
+    sideA: ["Everything you need", "in one place", "..."], sideB: ["Your choice shapes", "what comes alive"], mascot: "SAFAR Studio",
+    workKicker: "Our Work", workTitle: ["Ideas turned into", "presence."], workDesc: "Selected projects demonstrating our craftsmanship in identity, motion AI, and digital experiences.", workLink: "View all projects",
+    workFallback: [
+      { title: "Commercial Motion", sub: "Smart, fast-moving stories", service: "motion" as ServiceKey },
+      { title: "Brand Identity", sub: "Distinct character & lasting mark", service: "branding" as ServiceKey },
+      { title: "UI/UX Experience", sub: "Clear, frictionless digital flow", service: "ui" as ServiceKey },
+      { title: "Smart Automation", sub: "WhatsApp APIs & workflows", service: "systems" as ServiceKey },
+    ],
+    reviewsKicker: "Proof of Impact", reviewsTitle: "Client Reviews", reviewsSub: "We leave the mark… clients tell the story", testimonialKicker: "Client Testimonial",
+    contactKicker: "Let's Begin", contactTitle: ["Ready to make", "your idea seen?"], contactDesc: "Send us a brief note about your project, and we will get back with tailored strategic recommendations.",
+    chatWa: "Direct WhatsApp Chat",
+    formTitle: "Let's Build It Right", formName: "Full Name", formEmail: "Work Email", formPhone: "Phone Number", formService: "Required Service",
+    formSelectService: "Select a service", formMsg: "Project Brief", formOptional: "(Optional)", formSubmit: "Send Request", sending: "Sending...",
+    privacy: "We respect your privacy. No spam ever.", successTitle: "Request Sent Successfully!",
+    successDesc: "Thank you for reaching out! SAFAR Studio will review your project and get in touch within 24 hours.",
+    resetForm: "Submit Another Request", footer: "Good ideas. Better design. Lasting impact.", copyright: "© 2025 SAFAR Studio. All rights reserved.",
+    phPlaceholder: "e.g. Sarah Miller", msgPlaceholder: "Tell us briefly about your vision...", errorName: "Enter your full name", errorService: "Choose a service",
+  },
+} as const;
 
-function normalizeWhatsappNumber(value: string | null | undefined) {
+function normalizeWhatsapp(value: string | null | undefined) {
   const digits = (value ?? "").replace(/\D/g, "");
   if (!digits) return "";
   if (digits.startsWith("00")) return digits.slice(2);
@@ -54,105 +114,353 @@ function normalizeWhatsappNumber(value: string | null | undefined) {
   return digits;
 }
 
+function Arrow() {
+  return <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><line x1="19" x2="5" y1="12" y2="12" /><polyline points="12 19 5 12 12 5" /></svg>;
+}
+
 export default function Home() {
-  const publicData = trpc.publicContent.all.useQuery();
-  const createLead = trpc.publicContent.createLead.useMutation({
-    onSuccess: () => { setSubmitted(true); toast.success("وصلنا طلبك — سنتواصل معك قريبًا."); },
-    onError: (submitError) => toast.error(submitError.message),
-  });
+  const [lang, setLang] = useState<Lang>("ar");
+  const t = copy[lang];
+  const isAr = lang === "ar";
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const [language, setLanguage] = useState<"ar" | "en">("ar");
-  const [activeId, setActiveId] = useState("motion");
-  const [phoneOpen, setPhoneOpen] = useState(false);
+  const [activeService, setActiveService] = useState<ServiceKey>("motion");
+  const [onServices, setOnServices] = useState<Record<ServiceKey, boolean>>({ motion: true, systems: false, branding: false, ui: false, consulting: false });
+  const [phonePulse, setPhonePulse] = useState(false);
+  const [formPulse, setFormPulse] = useState(false);
+  const [catIndex, setCatIndex] = useState(0);
+  const [testimonialIndex, setTestimonialIndex] = useState(0);
+  const [quoteFading, setQuoteFading] = useState(false);
+  const [carouselPaused, setCarouselPaused] = useState(false);
+  const [formService, setFormService] = useState<ServiceKey | "">("");
   const [submitted, setSubmitted] = useState(false);
-  const [activeTestimonial, setActiveTestimonial] = useState(0);
-  const testimonialTouchStart = useRef<number | null>(null);
-  const activeService = services.find((service) => service.id === activeId) ?? services[0];
+  const [formError, setFormError] = useState("");
+
+  const phoneRef = useRef<HTMLDivElement>(null);
+  const formCardRef = useRef<HTMLDivElement>(null);
+  const nameRef = useRef<HTMLInputElement>(null);
+
+  const publicData = trpc.publicContent.all.useQuery();
+  const createLead = trpc.publicContent.createLead.useMutation({
+    onSuccess: () => { setSubmitted(true); setFormError(""); setTimeout(() => document.getElementById("contactSuccess")?.scrollIntoView({ behavior: "smooth", block: "center" }), 50); },
+    onError: (error) => toast.error(error.message),
+  });
+
+  const settings = publicData.data?.settings;
+  const whatsapp = normalizeWhatsapp(settings?.whatsappNumber);
+  const whatsappHref = whatsapp ? `https://wa.me/${whatsapp}` : "";
   const contentMap = Object.fromEntries((publicData.data?.content ?? []).map((item) => [item.contentKey, item.contentValue]));
-  const livePortfolio = publicData.data?.portfolio ?? [];
-  const liveTestimonials = publicData.data?.testimonials ?? [];
-  const whatsappDigits = normalizeWhatsappNumber(publicData.data?.settings?.whatsappNumber);
-  const whatsappHref = whatsappDigits ? `https://wa.me/${whatsappDigits}` : "";
-  const displayedTestimonial = liveTestimonials[activeTestimonial] ?? liveTestimonials[0];
+  const heroDesc = isAr && contentMap["hero.lead"] ? contentMap["hero.lead"] : t.heroDesc;
+
+  const liveWork = publicData.data?.portfolio ?? [];
+  const liveTestimonials = (publicData.data?.testimonials ?? []).map((item) => ({ quote: item.quote, name: item.name, company: item.company ?? "", rating: item.rating }));
+  const testimonials = liveTestimonials.length ? liveTestimonials : sampleTestimonials[lang];
+  const current = testimonials[testimonialIndex % testimonials.length];
+
   useEffect(() => {
-    if (liveTestimonials.length === 0) return;
-    if (activeTestimonial >= liveTestimonials.length) setActiveTestimonial(0);
-    if (liveTestimonials.length < 2) return;
-    const timer = window.setInterval(() => setActiveTestimonial((current) => (current + 1) % liveTestimonials.length), 3000);
+    document.documentElement.lang = lang;
+    document.documentElement.dir = isAr ? "rtl" : "ltr";
+    document.title = t.title;
+  }, [lang, isAr, t.title]);
+
+  useEffect(() => {
+    if (carouselPaused || testimonials.length < 2) return;
+    const timer = window.setInterval(() => showTestimonial(testimonialIndex + 1), 6000);
     return () => window.clearInterval(timer);
-  }, [liveTestimonials.length, activeTestimonial]);
-  const moveTestimonial = (direction: 1 | -1) => setActiveTestimonial((current) => liveTestimonials.length ? (current + direction + liveTestimonials.length) % liveTestimonials.length : 0);
-  const text = (key: string, fallback: string) => contentMap[key] || fallback;
-  const isArabic = language === "ar";
-  const copy = isArabic ? {
-    home: "الرئيسية", services: "الخدمات", work: "أعمالنا", contact: "تواصل", topbar: "نحوّل الأفكار إلى تجارب تُحرّك الأثر", places: "الرياض · جدة · عن بُعد", heroA: "أفكارك", heroB: "نصممها", heroC: "تنفّذ.", heroLead: "تحويل أفكارك إلى تصاميم وتجارب رقمية تترك أثرًا.", heroCta: "اختر ما يلهمك", sideA: "كل ما تحتاجه", sideB: "في مكان واحد", sideC: "واختيارك يحدد", sideD: "ما يظهر لك", phoneTitle: "اختر ما يهمك", more: "اعرف المزيد", start: "لنبدأ مشروعك الآن", proofKicker: "من الفكرة إلى التأثير", proofTitleA: "نصمّم لك", proofTitleB: "المساحة", proofTitleC: "لتكبر.", proofLead: "نشتغل معك من أول سؤال إلى آخر تفصيلة، حتى تكون النتيجة واضحة لك ولجمهورك.", reviewKicker: "قالوا عن التجربة", review: "سَفَر فهم فكرتنا من أول جلسة، وحوّلها إلى هوية وتجربة تشبهنا فعلًا.", contactKicker: "خلّنا نبدأ", contactTitleA: "جاهز تخلي", contactTitleB: "فكرتك تُرى؟", contactLead: "أرسل لنا تفاصيل بسيطة عن مشروعك، وسنعود لك باقتراح يناسب مرحلتك.", formTitle: "لنبنِ الشيء الصحيح", name: "الاسم الكامل", email: "البريد الإلكتروني", choose: "اختر خدمة", message: "نبذة عن المشروع", submit: "أرسل الطلب", thanks: "وصلنا طلبك.", thanksLead: "شكرًا لثقتك. سنعود إليك قريبًا لنبدأ الحديث.", newRequest: "إرسال طلب جديد", footer: "أفكار جيدة. تصاميم أفضل. أثر يدوم."
-  } : {
-    home: "Home", services: "Services", work: "Our work", contact: "Contact", topbar: "We turn ideas into experiences that move people", places: "Riyadh · Jeddah · Remote", heroA: "Your ideas", heroB: "We design them", heroC: "to move.", heroLead: "Turning your ideas into digital design and experiences that leave a mark.", heroCta: "Explore your direction", sideA: "Everything you need", sideB: "in one place", sideC: "Your choice decides", sideD: "what appears", phoneTitle: "Choose what matters", more: "Learn more", start: "Start your project", proofKicker: "From idea to impact", proofTitleA: "We design the", proofTitleB: "space", proofTitleC: "for you to grow.", proofLead: "From the first question to the last detail, we make the result clear for you and your audience.", reviewKicker: "What clients say", review: "SAFAR understood our idea from the first session and turned it into an identity and experience that truly feels like us.", contactKicker: "Let’s start", contactTitleA: "Ready to make", contactTitleB: "your idea seen?", contactLead: "Share a few details about your project and we’ll come back with a direction that fits your stage.", formTitle: "Let’s build the right thing", name: "Full name", email: "Email address", choose: "Choose a service", message: "Tell us about your project", submit: "Send request", thanks: "We got your request.", thanksLead: "Thanks for trusting us. We’ll be in touch soon.", newRequest: "Send another request", footer: "Good ideas. Better design. Lasting impact."
-  };
+  }, [carouselPaused, testimonialIndex, testimonials.length]);
 
-  const selectService = (id: string) => {
-    setActiveId(id);
-    document.getElementById("service-details")?.scrollIntoView({ behavior: "smooth", block: "center" });
-  };
+  useEffect(() => { setTestimonialIndex(0); }, [lang, liveTestimonials.length]);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  function showTestimonial(index: number) {
+    const next = (index + testimonials.length) % testimonials.length;
+    setQuoteFading(true);
+    window.setTimeout(() => { setTestimonialIndex(next); setQuoteFading(false); }, 150);
+  }
+
+  function selectService(key: ServiceKey) {
+    setActiveService(key);
+    setOnServices((state) => ({ ...state, [key]: true }));
+    setFormService(key);
+  }
+
+  function clickServiceButton(key: ServiceKey) {
+    if (key === activeService) {
+      const wasOn = onServices[key];
+      setOnServices((state) => ({ ...state, [key]: !wasOn }));
+      if (wasOn) {
+        const other = serviceKeys.find((k) => k !== key) ?? key;
+        setActiveService(other);
+      }
+    } else {
+      selectService(key);
+    }
+  }
+
+  function goToForm() {
+    setFormService(activeService);
+    formCardRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    window.setTimeout(() => {
+      setFormPulse(false);
+      window.requestAnimationFrame(() => setFormPulse(true));
+      nameRef.current?.focus();
+    }, 600);
+  }
+
+  function showFromWork(key: ServiceKey) {
+    selectService(key);
+    phoneRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    setPhonePulse(true);
+    window.setTimeout(() => setPhonePulse(false), 500);
+  }
+
+  function onPhoneBackground(event: React.MouseEvent<HTMLDivElement>) {
+    if ((event.target as HTMLElement).closest("button, a")) return;
+    const index = serviceKeys.indexOf(activeService);
+    selectService(serviceKeys[(index + 1) % serviceKeys.length]);
+    setPhonePulse(true);
+    window.setTimeout(() => setPhonePulse(false), 500);
+  }
+
+  function submitForm(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
+    const name = String(form.get("name") ?? "").trim();
+    const service = String(form.get("service") ?? "") as ServiceKey | "";
+    if (name.length < 2) return setFormError(t.errorName);
+    if (!service) return setFormError(t.errorService);
+    setFormError("");
     createLead.mutate({
-      name: String(form.get("name") ?? ""),
-      email: String(form.get("email") ?? ""),
-      phone: String(form.get("phone") ?? "") || undefined,
-      service: String(form.get("service") ?? "") || undefined,
-      message: String(form.get("message") ?? "") || undefined,
+      name,
+      email: String(form.get("email") ?? "").trim(),
+      phone: String(form.get("phone") ?? "").trim() || undefined,
+      service: services[service].ar.title,
+      message: String(form.get("message") ?? "").trim() || undefined,
     });
-  };
+  }
+
+  const liveCards = useMemo(() => liveWork.slice(0, 6), [liveWork]);
+  const variants = ["video", "coral", "mint", "yellow"] as const;
 
   return (
-    <div className={`reference-site ${isArabic ? "is-arabic" : "is-english"}`} dir={isArabic ? "rtl" : "ltr"}>
-      <div className="reference-topbar"><span>{copy.topbar}</span><span>{copy.places}</span></div>
-      <header className="reference-header">
-        <a className="reference-brand" href="#top"><img className="reference-brand-logo" src={isArabic ? "/brand/safar-ar.png" : "/brand/safar-en.png"} alt={isArabic ? "شعار سَفَر" : "SAFAR logo"} /></a>
-        <button className="reference-menu" onClick={() => setMenuOpen(!menuOpen)} aria-label="فتح القائمة">{menuOpen ? <X size={20} /> : <Menu size={20} />}</button>
-        <nav className={menuOpen ? "reference-nav is-open" : "reference-nav"}>
-          <a href="#top" onClick={() => setMenuOpen(false)}>{copy.home}</a><a href="#services" onClick={() => setMenuOpen(false)}>{copy.services}</a><a href="/works" onClick={() => setMenuOpen(false)}>{copy.work}</a><a href="#contact" onClick={() => setMenuOpen(false)}>{copy.contact}</a>
-          <button className="language-switch" onClick={() => setLanguage(isArabic ? "en" : "ar")} aria-label={isArabic ? "Switch to English" : "التبديل إلى العربية"}><span className={isArabic ? "active" : ""}>ع</span><i>/</i><span className={!isArabic ? "active" : ""}>EN</span></button>
-        </nav>
-      </header>
+    <div className="home-v2" dir={isAr ? "rtl" : "ltr"}>
+      <div className={`reference-site ${isAr ? "is-arabic" : "is-english"}`}>
+        <div className="reference-topbar">
+          <span>{t.topbar1}</span>
+          <span>{t.topbar2}</span>
+        </div>
 
-      <main id="top">
-        <section id="services" className="reference-hero">
-          <div className="reference-hero-copy">
-            <div className="hand-note">Good ideas<br />work.</div>
-            <h1>{text("hero.a", copy.heroA)}<br /><span>{text("hero.b", copy.heroB)}</span><br />{text("hero.c", copy.heroC)}</h1>
-            <div className="coral-underline" />
-            <p>{text("hero.lead", copy.heroLead)}</p>
-            <a className="reference-cta" href="#services">{copy.heroCta} <ArrowLeft size={17} /></a>
-          </div>
-          <div className="reference-hero-art phone-only-scene">
-            <img className="hero-illustration" src={heroImage} alt={isArabic ? "رسم توضيحي لخدمات سَفَر الرقمية" : "Illustration of SAFAR digital services"} />
-            <div className={`interactive-phone ${phoneOpen ? "is-open" : ""}`} onClick={() => setPhoneOpen((open) => !open)} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") setPhoneOpen((open) => !open); }} aria-label={isArabic ? "شاشة خدمات سَفَر" : "SAFAR services screen"}>
-              <div className="phone-speaker" /><div className="phone-screen"><div className="phone-header"><strong>{copy.phoneTitle}</strong><span>+</span></div><div className="phone-service-list">{services.map((service) => <button key={service.id} className={`phone-service ${service.id === activeId ? "is-active" : ""}`} onClick={(event) => { event.stopPropagation(); setActiveId(service.id); setPhoneOpen(true); }} aria-pressed={service.id === activeId}><span className="phone-service-icon">{service.icon}</span><span><b>{isArabic ? service.title : service.enTitle}</b><small>{isArabic ? service.subtitle : service.enSubtitle}</small></span><i className={service.id === activeId ? "is-on" : ""}><em /></i></button>)}</div><div className="phone-active-details"><div className="phone-detail-title"><span>{isArabic ? activeService.title : activeService.enTitle}</span><small>{isArabic ? activeService.image : activeService.enImage}</small></div><ul>{(isArabic ? activeService.details : activeService.enDetails).slice(0, 3).map((detail) => <li key={detail}><Check size={12} />{detail}</li>)}</ul><a href="#contact" className="phone-more" onClick={(event) => event.stopPropagation()}>{copy.more} <ArrowLeft size={13} /></a></div><a className="phone-cta" href="#contact" onClick={(event) => event.stopPropagation()}>{copy.start} <ArrowLeft size={14} /></a></div>
+        <header className="reference-header">
+          <a className="reference-brand" href="/#top">
+            <div className="reference-brand-box">
+              <span className="brand-ar">سَفَر</span>
+              <span className="brand-slash">/</span>
+              <span className="brand-en">SAFAR</span>
             </div>
-            <div className="art-badge art-badge--top">{isArabic ? <>فكرة<br />تتبيّن</> : <>Ideas<br />made clear</>}</div><div className="art-badge art-badge--bottom">{isArabic ? <>تصميم<br />يتحرك</> : <>Design<br />in motion</>}</div>
+          </a>
+          <button aria-label="القائمة" className="mobile-menu-btn" onClick={() => setMenuOpen((open) => !open)}>{menuOpen ? "✕" : "☰"}</button>
+          <nav className={`reference-nav ${menuOpen ? "is-open" : ""}`} onClick={() => setMenuOpen(false)}>
+            <a href="#top">{t.navHome}</a>
+            <a href="#services">{t.navServices}</a>
+            <a href="#work">{t.navWork}</a>
+            <a href="#reviews">{t.navReviews}</a>
+            <a href="#contact">{t.navContact}</a>
+            <button aria-label={isAr ? "Switch to English" : "التبديل إلى العربية"} className="language-switch" onClick={(event) => { event.stopPropagation(); setLang(isAr ? "en" : "ar"); }}>
+              <span className={isAr ? "active" : ""}>ع</span><i>/</i><span className={!isAr ? "active" : ""}>EN</span>
+            </button>
+          </nav>
+        </header>
+
+        <main id="top">
+          <section className="reference-hero" id="services">
+            <div className="reference-hero-copy">
+              <div className="hand-note">{t.handNote[0]}<br />{t.handNote[1]}</div>
+              <h1>{t.heroTitle[0]}<br /><span>{t.heroTitle[1]}</span><br />{t.heroTitle[2]}</h1>
+              <div className="coral-underline" />
+              <p>{heroDesc}</p>
+              <a className="reference-cta" href="#contact">{t.heroCta} <Arrow /></a>
+            </div>
+
+            <div className="reference-hero-art">
+              <div className="phone-bg-glow" />
+              <div className="art-badge art-badge--top">{t.badgeTop[0]}<br />{t.badgeTop[1]}</div>
+              <div ref={phoneRef} className={`interactive-phone ${phonePulse ? "phone-pulse" : ""}`} title={isAr ? "اضغط لاستكشاف الخدمات" : "Tap to explore"} onClick={onPhoneBackground}>
+                <div className="phone-speaker" />
+                <div className="phone-screen">
+                  <div className="phone-header"><strong>{t.phoneHeader}</strong><span>+</span></div>
+                  <div className="phone-service-list">
+                    {serviceKeys.map((key) => {
+                      const on = onServices[key];
+                      const active = key === activeService;
+                      return (
+                        <button key={key} className={`phone-service ${active ? "is-active" : ""} ${on ? "is-on" : ""}`} onClick={(event) => { event.stopPropagation(); clickServiceButton(key); }}>
+                          <span className="phone-service-icon">{services[key].icon}</span>
+                          <span><b>{services[key][lang].title}</b><small>{services[key][lang].sub}</small></span>
+                          <i className="toggle-switch"><em /></i>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <div className="phone-active-details">
+                    <div className="phone-detail-title">
+                      <span>{services[activeService][lang].title}</span>
+                      <small>{services[activeService][lang].sub}</small>
+                    </div>
+                    <ul>
+                      {services[activeService][lang].details.map((detail) => (
+                        <li key={detail}><svg fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" /></svg><span>{detail}</span></li>
+                      ))}
+                    </ul>
+                    <div className="phone-actions-row">
+                      <button className="phone-btn-secondary" type="button" onClick={(event) => { event.stopPropagation(); goToForm(); }}>
+                        <span>{t.learnMore}</span>
+                      </button>
+                      <button className="phone-btn-primary" type="button" onClick={(event) => { event.stopPropagation(); goToForm(); }}>
+                        <span>{t.startProject}</span>
+                      </button>
+                    </div>
+                  </div>
+                  <a className="phone-cta" href="#contact" onClick={(event) => { event.stopPropagation(); event.preventDefault(); goToForm(); }}>{t.phoneCta} <Arrow /></a>
+                </div>
+              </div>
+              <div className="art-badge art-badge--bottom">{t.badgeBottom[0]}<br />{t.badgeBottom[1]}</div>
+            </div>
+
+            <div className="reference-hero-side">
+              <p>{t.sideA[0]}<br />{t.sideA[1]}<br />{t.sideA[2]}</p>
+              <p>{t.sideB[0]}<br />{t.sideB[1]}</p>
+              <svg className="arrow-down-icon" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><line x1="12" x2="12" y1="5" y2="19" /><polyline points="19 12 12 19 5 12" /></svg>
+              <div className="cat-mascot-box" onClick={() => setCatIndex((i) => (i + 1) % 5)} role="button" tabIndex={0}>
+                <span>{["🐱", "😸", "✨", "🐾", "🦁"][catIndex]}</span>
+                <small>{t.mascot}</small>
+              </div>
+              <span className="doodle-spark doodle-spark--one">✦</span>
+              <span className="doodle-spark doodle-spark--two">〰</span>
+            </div>
+          </section>
+
+          <section className="work-section" id="work">
+            <div className="work-heading">
+              <div className="section-kicker"><span className="kicker-dot" /><span>{t.workKicker}</span></div>
+              <h2>{t.workTitle[0]}<br /><span>{t.workTitle[1]}</span></h2>
+              <p>{t.workDesc}</p>
+              <a className="work-page-link" href="/works">{t.workLink} <Arrow /></a>
+            </div>
+            <div className="work-grid">
+              {liveCards.length
+                ? liveCards.map((item, index) => (
+                    <article key={item.id} className={`work-card work-card--${variants[index % variants.length]}`}>
+                      {item.mediaType === "video" && <video className="work-media" src={item.mediaUrl} poster={item.thumbnailUrl ?? undefined} muted loop playsInline autoPlay preload="metadata" />}
+                      {item.mediaType === "image" && <img className="work-media" src={item.mediaUrl} alt={item.title} />}
+                      {item.mediaType === "link" && <div className="work-emoji">↗</div>}
+                      <div className="work-caption"><strong>{item.title}</strong><small>{item.category}</small></div>
+                      <span className="work-arrow">↗</span>
+                      <a className="work-card-link" href={item.mediaType === "link" ? (item.projectUrl || item.mediaUrl) : `/works/${item.id}`} {...(item.mediaType === "link" ? { target: "_blank", rel: "noreferrer" } : {})} aria-label={item.title} />
+                    </article>
+                  ))
+                : t.workFallback.map((item, index) => (
+                    <article key={item.title} className={`work-card work-card--${variants[index]}`} onClick={() => showFromWork(item.service)}>
+                      <div className="work-emoji">{services[item.service].icon}</div>
+                      <div><strong>{item.title}</strong><small>{item.sub}</small></div>
+                      <span className="work-arrow">↗</span>
+                    </article>
+                  ))}
+            </div>
+          </section>
+
+          <div className="reviews-intro" aria-hidden="true">
+            <span className="reviews-intro-line reviews-intro-line--left" />
+            <div className="reviews-intro-copy">
+              <span>{t.reviewsKicker}</span>
+              <h2>{t.reviewsTitle}</h2>
+              <p>{t.reviewsSub}</p>
+            </div>
+            <span className="reviews-intro-line reviews-intro-line--right" />
           </div>
-          <div className="reference-hero-side"><p>{copy.sideA}<br />{copy.sideB}<br />...</p><p>{copy.sideC}<br />{copy.sideD}</p><MoveDown size={27} /><img className="cat-mascot" src="/brand/cat.png" alt={isArabic ? "قطة مرسومة بأسلوب مرح" : "Playful illustrated cat"} /><span className="doodle-spark doodle-spark--one">✦</span><span className="doodle-spark doodle-spark--two">〰</span></div>
-        </section>
 
+          <section className="reference-testimonial" id="reviews" onMouseEnter={() => setCarouselPaused(true)} onMouseLeave={() => setCarouselPaused(false)}>
+            <div className="quote-mark">“</div>
+            <div className="testimonial-carousel">
+              <div className="section-kicker"><span className="kicker-dot" /><span>{t.testimonialKicker}</span></div>
+              <blockquote className={quoteFading ? "fade-out" : ""}>{current.quote}</blockquote>
+              <div className="testimonial-person">
+                <span className="testimonial-avatar">{current.name.slice(0, 1)}</span>
+                <div><strong>{current.name}</strong><small>{current.company}</small></div>
+                <b>{"★".repeat(current.rating)}</b>
+              </div>
+              <div className="testimonial-controls">
+                <button aria-label={isAr ? "السابق" : "Previous"} onClick={() => showTestimonial(testimonialIndex - 1)} type="button">{isAr ? "›" : "‹"}</button>
+                <span>{`0${(testimonialIndex % testimonials.length) + 1} / 0${testimonials.length}`}</span>
+                <button aria-label={isAr ? "التالي" : "Next"} onClick={() => showTestimonial(testimonialIndex + 1)} type="button">{isAr ? "‹" : "›"}</button>
+              </div>
+            </div>
+          </section>
 
-        <section id="work" className="work-section">
-          <div className="work-heading"><SectionKicker>{copy.work}</SectionKicker><h2>{text("work.titleA", "أفكار تحولت")}<br /><span>{text("work.titleB", "إلى حضور.")}</span></h2><p>{text("work.lead", "مشاريع مختارة تعكس أسلوبنا وجودة أعمالنا في الهوية والموشن والواجهات.")}</p><a className="work-page-link" href="/works">{isArabic ? "شاهد أعمالنا كاملة" : "View all our work"}<ArrowLeft size={16} /></a></div>
-          <div className="work-grid">{livePortfolio.length ? livePortfolio.map((item) => <article key={item.id} className={`work-card work-card--${item.mediaType === "video" ? "video" : item.mediaType === "image" ? "coral" : "mint"}`}>{item.mediaType === "video" ? <video src={item.mediaUrl} poster={item.thumbnailUrl ?? undefined} muted loop playsInline autoPlay /> : item.mediaType === "image" ? <img src={item.mediaUrl} alt={item.title} /> : <div className="work-link-card">↗</div>}<a className="work-card-overlay" href={item.mediaType === "link" ? (item.projectUrl || item.mediaUrl) : `/works/${item.id}`} {...(item.mediaType === "link" ? { target: "_blank", rel: "noreferrer" } : {})} aria-label={`فتح ${item.title}`}><span>{item.mediaType === "video" ? "▶" : "↗"}</span><div><strong>{item.title}</strong><small>{item.category} · فتح العمل</small></div></a></article>) : <><article className="work-card work-card--video"><video src="/media/video1.mp4" muted loop playsInline autoPlay /><div className="work-card-overlay"><span>▶</span><div><strong>موشن إعلاني</strong><small>فكرة تتحرك</small></div></div></article><article className="work-card work-card--coral"><div className="work-emoji">✦</div><strong>هوية بصرية</strong><small>علامة لها حضور</small><span className="work-arrow">↗</span></article><article className="work-card work-card--mint"><div className="work-ui"><span>▰</span><span>▱</span><span>▰</span></div><strong>تصميم واجهة</strong><small>تجربة أوضح وأسهل</small><span className="work-arrow">↗</span></article><article className="work-card work-card--yellow"><div className="work-emoji">◉</div><strong>فيديو للعلامة</strong><small>قصة بصريّة مختصرة</small><span className="work-arrow">↗</span></article></>}</div>
-        </section>
+          <section className="reference-contact" id="contact">
+            <div className="contact-intro">
+              <div className="section-kicker"><span className="kicker-dot" /><span>{t.contactKicker}</span></div>
+              <h2>{t.contactTitle[0]}<br /><span>{t.contactTitle[1]}</span></h2>
+              <p>{isAr && contentMap["contact.lead"] ? contentMap["contact.lead"] : t.contactDesc}</p>
+              <div className="contact-links">
+                {settings?.businessEmail && <a href={`mailto:${settings.businessEmail}`}>{settings.businessEmail}</a>}
+                {whatsappHref && <a className="whatsapp-contact-link" href={whatsappHref} target="_blank" rel="noreferrer"><MessageCircle size={16} />{t.chatWa}</a>}
+              </div>
+            </div>
 
-          <div className="reviews-intro" aria-hidden="true"><span className="reviews-intro-line reviews-intro-line--left" /><div className="reviews-intro-copy"><span>{isArabic ? "مساحة للتجربة" : "A space for experience"}</span><h2>{isArabic ? "تقييمات عملائنا" : "Client reviews"}</h2><p>{isArabic ? "نترك الأثر… ويكمل العملاء الحكاية" : "The work leaves a mark. Our clients tell the story."}</p></div><span className="reviews-intro-line reviews-intro-line--right" /><img className="reviews-intro-illustration" src="/brand/reviews-girl-stars.png" alt="" /></div>
-          <section id="reviews" className="reference-testimonial" onTouchStart={(event) => { testimonialTouchStart.current = event.changedTouches[0]?.clientX ?? null; }} onTouchEnd={(event) => { const start = testimonialTouchStart.current; testimonialTouchStart.current = null; if (start == null) return; const delta = event.changedTouches[0]?.clientX - start; if (Math.abs(delta) > 35) moveTestimonial(delta > 0 ? -1 : 1); }}><div className="quote-mark">“</div><div className="testimonial-carousel"><SectionKicker>{copy.reviewKicker}</SectionKicker><blockquote key={activeTestimonial}>{displayedTestimonial?.quote || text("review.quote", copy.review)}</blockquote><div className="testimonial-person"><span>{(displayedTestimonial?.name || "ليان").slice(0, 1)}</span><div><strong>{displayedTestimonial?.name || (isArabic ? "ليان السالم" : "Layan Al Salem")}</strong><small>{displayedTestimonial?.company || (isArabic ? "مؤسسة نواة" : "Founder, Nawa")}</small></div><b>{"★".repeat(displayedTestimonial?.rating || 5)}</b></div>{liveTestimonials.length > 1 && <div className="testimonial-controls"><button type="button" onClick={() => moveTestimonial(-1)} aria-label={isArabic ? "التقييم السابق" : "Previous testimonial"}><ChevronRight size={19} /></button><span>{String((activeTestimonial % liveTestimonials.length) + 1).padStart(2, "0")} / {String(liveTestimonials.length).padStart(2, "0")}</span><button type="button" onClick={() => moveTestimonial(1)} aria-label={isArabic ? "التقييم التالي" : "Next testimonial"}><ChevronLeft size={19} /></button></div>}</div></section>
+            <div ref={formCardRef} className={`reference-form-card ${formPulse ? "form-highlight-pulse" : ""}`}>
+              {!submitted ? (
+                <form onSubmit={submitForm}>
+                  <div className="form-card-title"><span>{t.formTitle}</span><span style={{ color: "var(--coral)" }}>✦</span></div>
+                  <label><span>{t.formName}</span><input ref={nameRef} name="name" required placeholder={t.phPlaceholder} type="text" /></label>
+                  <label><span>{t.formEmail}</span><input name="email" required placeholder="name@company.com" type="email" /></label>
+                  <label><span>{t.formPhone}</span><input name="phone" placeholder="05xxxxxxxx" type="tel" /></label>
+                  <label>
+                    <span>{t.formService}</span>
+                    <select name="service" value={formService} onChange={(event) => setFormService(event.target.value as ServiceKey)}>
+                      <option value="" disabled>{t.formSelectService}</option>
+                      {serviceKeys.map((key) => <option key={key} value={key}>{services[key][lang].title}</option>)}
+                    </select>
+                  </label>
+                  <label><span>{t.formMsg}</span> <span style={{ opacity: 0.6, fontSize: 11 }}>{t.formOptional}</span><textarea name="message" rows={3} placeholder={t.msgPlaceholder} /></label>
+                  {formError && <p style={{ color: "#b42318", fontWeight: 700, marginBottom: 12 }}>{formError}</p>}
+                  <button className="reference-submit" disabled={createLead.isPending} type="submit"><span>{createLead.isPending ? t.sending : t.formSubmit}</span></button>
+                  <small className="privacy-note">{t.privacy}</small>
+                </form>
+              ) : (
+                <div id="contactSuccess" className="reference-success is-visible">
+                  <div className="success-badge">✨</div>
+                  <h3>{t.successTitle}</h3>
+                  <p>{t.successDesc}</p>
+                  <button className="reset-form-btn" onClick={() => setSubmitted(false)} type="button"><span>{t.resetForm}</span></button>
+                </div>
+              )}
+            </div>
+          </section>
+        </main>
 
-        <section id="contact" className="reference-contact"><div className="contact-intro"><SectionKicker>{copy.contactKicker}</SectionKicker><h2>{text("contact.titleA", copy.contactTitleA)}<br /><span>{text("contact.titleB", copy.contactTitleB)}</span></h2><p>{text("contact.lead", copy.contactLead)}</p><div className="contact-links"><a href="mailto:hello@safar.studio">hello@safar.studio</a>{whatsappDigits && <a href={`tel:+${whatsappDigits}`}>+{whatsappDigits}</a>}{whatsappHref && <a className="whatsapp-contact-link" href={whatsappHref} target="_blank" rel="noreferrer"><MessageCircle size={17} />{isArabic ? "محادثة واتساب" : "Chat on WhatsApp"}</a>}</div></div><div className="reference-form-card">{submitted ? <div className="reference-success"><div><Check size={28} /></div><h3>{copy.thanks}</h3><p>{copy.thanksLead}</p><button className="more-link" onClick={() => setSubmitted(false)}>{copy.newRequest} <ArrowLeft size={15} /></button></div> : <form onSubmit={handleSubmit}><div className="form-card-title">{copy.formTitle} <Sparkles size={18} /></div><label>{copy.name}<input name="name" required placeholder={isArabic ? "مثال: ليان السالم" : "e.g. Layan Al Salem"} /></label><label>{copy.email}<input name="email" required type="email" placeholder="name@company.com" /></label><label>{isArabic ? "رقم الجوال" : "Phone"}<input name="phone" placeholder="05xxxxxxxx" /></label><label>{isArabic ? "الخدمة المطلوبة" : "Service needed"}<select name="service" required defaultValue=""><option value="" disabled>{copy.choose}</option>{services.map((service) => <option key={service.id} value={service.id}>{isArabic ? service.title : service.enTitle}</option>)}</select><ChevronDown className="select-chevron" size={16} /></label><label>{copy.message} <span className="optional-label">({isArabic ? "اختياري" : "optional"})</span><textarea name="message" rows={3} placeholder={isArabic ? "حدثنا عن فكرتك باختصار..." : "Tell us a little about your idea..."} /></label><button type="submit" disabled={createLead.isPending} className="reference-submit">{createLead.isPending ? "جارٍ الإرسال…" : copy.submit} <ArrowLeft size={17} /></button><small className="privacy-note">{isArabic ? "نحترم خصوصيتك ولن نشارك بياناتك." : "We respect your privacy and never share your data."}</small></form>}</div></section>
-      </main>
+        <footer className="reference-footer">
+          <div className="footer-brand">
+            <div className="reference-brand-box">
+              <span className="brand-ar">سَفَر</span>
+              <span className="brand-slash">/</span>
+              <span className="brand-en">SAFAR</span>
+            </div>
+          </div>
+          <p>{t.footer}</p>
+          <div className="footer-social">
+            {settings?.instagramUrl && <a aria-label="Instagram" href={settings.instagramUrl} target="_blank" rel="noreferrer"><Instagram size={17} /></a>}
+            {settings?.linkedinUrl && <a aria-label="LinkedIn" href={settings.linkedinUrl} target="_blank" rel="noreferrer"><Linkedin size={17} /></a>}
+            {settings?.tiktokUrl && <a aria-label="TikTok" href={settings.tiktokUrl} target="_blank" rel="noreferrer"><Music2 size={17} /></a>}
+            {whatsappHref && <a aria-label="WhatsApp" href={whatsappHref} target="_blank" rel="noreferrer"><MessageCircle size={17} /></a>}
+          </div>
+          <small>{t.copyright}</small>
+        </footer>
 
-      <footer className="reference-footer"><div className="footer-brand"><img className="footer-brand-logo" src={isArabic ? "/brand/safar-ar.png" : "/brand/safar-en.png"} alt={isArabic ? "شعار سَفَر" : "SAFAR logo"} /></div><p>{copy.footer}</p><div className="footer-social">{publicData.data?.settings?.instagramUrl && <a href={publicData.data.settings.instagramUrl} target="_blank" rel="noreferrer" aria-label="Instagram"><Instagram size={17} /></a>}{publicData.data?.settings?.linkedinUrl && <a href={publicData.data.settings.linkedinUrl} target="_blank" rel="noreferrer" aria-label="LinkedIn"><Linkedin size={17} /></a>}{publicData.data?.settings?.tiktokUrl && <a href={publicData.data.settings.tiktokUrl} target="_blank" rel="noreferrer" aria-label="TikTok"><Music2 size={17} /></a>}{whatsappHref && <a href={whatsappHref} target="_blank" rel="noreferrer" aria-label="WhatsApp"><MessageCircle size={17} /></a>}</div><small>© 2025 SAFAR Studio</small></footer>
-      {whatsappHref && <a className="whatsapp-float" href={whatsappHref} target="_blank" rel="noreferrer" aria-label={isArabic ? "تواصل معنا عبر واتساب" : "Contact us on WhatsApp"} title={isArabic ? "تواصل معنا عبر واتساب" : "Contact us on WhatsApp"}><MessageCircle size={28} fill="currentColor" /></a>}
+        {whatsappHref && (
+          <a aria-label={isAr ? "تواصل معنا عبر واتساب" : "Contact us on WhatsApp"} className="whatsapp-float" href={whatsappHref} rel="noreferrer" target="_blank">
+            <MessageCircle size={26} />
+          </a>
+        )}
+      </div>
     </div>
   );
 }

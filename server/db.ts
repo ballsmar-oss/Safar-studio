@@ -32,6 +32,7 @@ export const getSettings = () => db.select().from(integrationSettings).limit(1).
 export function getPublicContactSettings() {
   const settings = getSettings();
   return {
+    businessEmail: settings?.businessEmail ?? null,
     whatsappNumber: settings?.whatsappNumber ?? null,
     instagramUrl: settings?.instagramUrl ?? null,
     linkedinUrl: settings?.linkedinUrl ?? null,
