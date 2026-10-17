@@ -8,6 +8,7 @@ import Home from "./pages/Home";
 import Admin from "@/pages/Admin";
 import Pay from "@/pages/Pay";
 import Works from "@/pages/Works";
+import Work from "@/pages/Work";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -15,6 +16,7 @@ function Router() {
     <Switch>
       <Route path={"/"} component={Home} />
       <Route path={"/works"} component={Works} />
+      <Route path={"/works/:id"} component={Work} />
       <Route path={"/admin"} component={Admin} />
       <Route path={"/pay"} component={Pay} />
       <Route path={"/pay/:token"} component={Pay} />

@@ -4,7 +4,7 @@ import { randomBytes } from "node:crypto";
 import { z } from "zod";
 import { adminDevices, integrationSettings, leads, paymentRequests, portfolioItems, siteContent, testimonials } from "../drizzle/schema";
 import { adminProcedure, publicProcedure, router } from "./_core/trpc";
-import { db, getPaymentRequestByToken, getPublicContactSettings, getSettings, listContent, listLeads, listPaymentRequests, listPortfolio, listPublishedPortfolio, listPublishedTestimonials, listTestimonials } from "./db";
+import { db, getPaymentRequestByToken, getPublishedPortfolioItem, getPublicContactSettings, getSettings, listContent, listLeads, listPaymentRequests, listPortfolio, listPublishedPortfolio, listPublishedTestimonials, listTestimonials } from "./db";
 import { notifyOwner, sendEmail } from "./mail";
 import { encryptSecret, secretMeta } from "./secrets";
 
@@ -35,6 +35,7 @@ export const appRouter = router({
   }),
   publicContent: router({
     all: publicProcedure.query(() => ({ content: listContent(), portfolio: listPublishedPortfolio(), testimonials: listPublishedTestimonials(), settings: getPublicContactSettings() })),
+    work: publicProcedure.input(idInput).query(({ input }) => getPublishedPortfolioItem(input.id)),
     getPaymentRequest: publicProcedure.input(z.object({ token: z.string().min(12).max(80) })).query(({ input }) => {
       const request = getPaymentRequestByToken(input.token);
       return request ? { ...request, testMode: (getSettings()?.mode ?? "test") === "test" } : null;

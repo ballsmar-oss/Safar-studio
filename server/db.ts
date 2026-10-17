@@ -1,5 +1,5 @@
 import Database from "better-sqlite3";
-import { asc, desc, eq } from "drizzle-orm";
+import { and, asc, desc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import { migrate } from "drizzle-orm/better-sqlite3/migrator";
 import fs from "node:fs";
@@ -21,6 +21,7 @@ export function runMigrations() {
 
 export const listPublishedPortfolio = () => db.select().from(portfolioItems).where(eq(portfolioItems.isPublished, true)).orderBy(asc(portfolioItems.sortOrder), desc(portfolioItems.createdAt)).all();
 export const listPortfolio = () => db.select().from(portfolioItems).orderBy(asc(portfolioItems.sortOrder), desc(portfolioItems.createdAt)).all();
+export const getPublishedPortfolioItem = (id: number) => db.select().from(portfolioItems).where(and(eq(portfolioItems.id, id), eq(portfolioItems.isPublished, true))).get() ?? null;
 export const listPublishedTestimonials = () => db.select().from(testimonials).where(eq(testimonials.isPublished, true)).orderBy(asc(testimonials.sortOrder), desc(testimonials.createdAt)).all();
 export const listTestimonials = () => db.select().from(testimonials).orderBy(asc(testimonials.sortOrder), desc(testimonials.createdAt)).all();
 export const listContent = () => db.select().from(siteContent).orderBy(asc(siteContent.contentKey)).all();
