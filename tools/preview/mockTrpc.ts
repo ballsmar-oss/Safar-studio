@@ -41,6 +41,7 @@ const queries: Record<string, () => any> = {
     testimonials: store.testimonials.filter((item: any) => item.isPublished),
     settings: { whatsappNumber: null, instagramUrl: null, linkedinUrl: null, tiktokUrl: null, businessEmail: null },
   }),
+  "publicContent.work": () => null,
   "auth.me": () => ({ isAdmin: true }),
   "admin.dashboard": () => ({ portfolio: [...store.portfolio], testimonials: [...store.testimonials], content: [...store.content], leads: [...store.leads], payments: [...store.payments] }),
   "admin.integrationSettings": () => ({ ...store.settings }),
@@ -73,11 +74,21 @@ const mutations: Record<string, (input: any) => any> = {
     store.settings = next;
   },
   "admin.revokeDevice": ({ id }) => { store.devices = store.devices.filter((device: any) => device.id !== id); },
+  "publicContent.simulatePayment": ({ token }) => {
+    const request = store.payments.find((item: any) => item.publicToken === token);
+    if (!request || request.status !== "pending") throw new Error("هذا الرابط غير صالح أو مدفوع مسبقًا.");
+    request.status = "paid";
+    return { success: true, status: "paid" };
+  },
 };
 
-function useMockQuery(path: string) {
+function useMockQuery(path: string, input?: any) {
   useVersion();
-  const data = queries[path]?.();
+  const data = path === "publicContent.work"
+    ? store.portfolio.find((item: any) => item.id === input?.id && item.isPublished) ?? null
+    : path === "publicContent.getPaymentRequest"
+      ? (() => { const request = store.payments.find((item: any) => item.publicToken === input?.token); return request ? { ...request, testMode: true } : null; })()
+      : queries[path]?.();
   return { data, isLoading: false, error: null, refetch: async () => { changed(); return { data }; } };
 }
 
@@ -106,7 +117,7 @@ export const trpc: any = new Proxy({}, {
   get(_target, group: string) {
     if (group === "useUtils") return () => utils;
     return new Proxy({}, { get: (_t, name: string) => ({
-      useQuery: () => useMockQuery(`${group}.${name}`),
+      useQuery: (input?: any) => useMockQuery(`${group}.${name}`, input),
       useMutation: (options?: any) => useMockMutation(`${group}.${name}`, options),
     }) });
   },

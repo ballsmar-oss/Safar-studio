@@ -1,5 +1,5 @@
 // Builds the homepage preview with sample data (no server):
-//   pnpm exec vite build --config tools/preview/home-preview.config.ts   →  dist-home-preview/
+//   pnpm exec vite build --config tools/preview/home-preview.config.ts   →  dist-all-preview/
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import path from "node:path";
@@ -18,5 +18,5 @@ export default defineConfig({
   },
   root: import.meta.dirname,
   publicDir: path.join(root, "client/public"),
-  build: { outDir: path.join(root, "dist-home-preview"), emptyOutDir: true, rollupOptions: { input: path.join(import.meta.dirname, "home.html") } },
+  build: { outDir: path.join(root, "dist-all-preview"), emptyOutDir: true, rollupOptions: { input: path.join(import.meta.dirname, "all.html") } },
 });

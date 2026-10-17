@@ -118,3 +118,4 @@ dist-static/
 .project-config.json
 dist-preview/
 dist-home-preview/
+dist-all-preview/
