@@ -1,23 +1,48 @@
-import Database from "better-sqlite3";
 import { and, asc, desc, eq } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/better-sqlite3";
-import { migrate } from "drizzle-orm/better-sqlite3/migrator";
+import { drizzle, type SQLJsDatabase } from "drizzle-orm/sql-js";
+import { migrate } from "drizzle-orm/sql-js/migrator";
+import initSqlJs, { type Database as SqlFile } from "sql.js";
 import fs from "node:fs";
 import path from "node:path";
 import * as schema from "../drizzle/schema";
 import { integrationSettings, leads, paymentRequests, portfolioItems, siteContent, testimonials } from "../drizzle/schema";
 import { ENV } from "./env";
 
+// SQLite runs in-process through sql.js (WebAssembly), so it needs no native build step.
+// The database lives in memory and is written to DATA_DIR/safar.db every few seconds and on exit.
 fs.mkdirSync(ENV.dataDir, { recursive: true });
-const sqlite = new Database(path.join(ENV.dataDir, "safar.db"));
-sqlite.pragma("journal_mode = WAL");
-sqlite.pragma("foreign_keys = ON");
+const dbFile = path.join(ENV.dataDir, "safar.db");
 
-export const db = drizzle(sqlite, { schema });
+export let db!: SQLJsDatabase<typeof schema>;
+let sqlite!: SqlFile;
+
+// Opens the database. Call once at startup, before the server accepts requests.
+export async function openDb() {
+  const SQL = await initSqlJs();
+  sqlite = fs.existsSync(dbFile) ? new SQL.Database(fs.readFileSync(dbFile)) : new SQL.Database();
+  sqlite.run("PRAGMA foreign_keys = ON;");
+  db = drizzle(sqlite, { schema });
+  const saver = setInterval(save, 3000);
+  saver.unref();
+  for (const signal of ["SIGINT", "SIGTERM"] as const) {
+    process.once(signal, () => { save(); process.exit(0); });
+  }
+  process.once("exit", save);
+}
+
+function save() {
+  if (!sqlite) return;
+  const tmp = `${dbFile}.tmp`;
+  fs.writeFileSync(tmp, Buffer.from(sqlite.export()));
+  fs.renameSync(tmp, dbFile);
+}
 
 export function runMigrations() {
   migrate(db, { migrationsFolder: path.resolve(import.meta.dirname, "..", "drizzle", "migrations") });
+  save();
 }
+
+
 
 export const listPublishedPortfolio = () => db.select().from(portfolioItems).where(eq(portfolioItems.isPublished, true)).orderBy(asc(portfolioItems.sortOrder), desc(portfolioItems.createdAt)).all();
 export const listPortfolio = () => db.select().from(portfolioItems).orderBy(asc(portfolioItems.sortOrder), desc(portfolioItems.createdAt)).all();

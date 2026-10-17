@@ -2,7 +2,7 @@ import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import express from "express";
 import { createServer } from "http";
 import { registerAdminRoutes } from "../auth";
-import { runMigrations } from "../db";
+import { openDb, runMigrations } from "../db";
 import { ENV } from "../env";
 import { appRouter } from "../routers";
 import { seedIfEmpty } from "../seed";
@@ -11,6 +11,7 @@ import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 
 async function startServer() {
+  await openDb();
   runMigrations();
   seedIfEmpty();
 
