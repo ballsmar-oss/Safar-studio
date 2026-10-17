@@ -1,1 +1,0 @@
-ALTER TABLE `integrationSettings` ADD `whatsappNumber` varchar(40);

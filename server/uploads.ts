@@ -7,7 +7,7 @@ import { ENV } from "./env";
 
 export const uploadsDir = path.join(ENV.dataDir, "uploads");
 const MAX_BYTES = 300 * 1024 * 1024;
-const ALLOWED = /^(image\/(png|jpe?g|gif|webp|avif|svg\+xml)|video\/(mp4|webm|quicktime))$/;
+const ALLOWED = /^(image\/(png|jpe?g|gif|webp|avif)|video\/(mp4|webm|quicktime))$/;
 
 // Files go to DATA_DIR/uploads on the server and are served from /uploads/<name>.
 export function registerUploads(app: Express) {

@@ -7,17 +7,21 @@ import { adminProcedure, publicProcedure, router } from "./_core/trpc";
 import { db, getPaymentRequestByToken, getPublishedPortfolioItem, getPublicContactSettings, getSettings, listContent, listLeads, listPaymentRequests, listPortfolio, listPublishedPortfolio, listPublishedTestimonials, listTestimonials } from "./db";
 import { notifyOwner, sendEmail } from "./mail";
 import { encryptSecret, secretMeta } from "./secrets";
+import { allowRequest } from "./rate-limit";
+
+const tooMany = () => new TRPCError({ code: "TOO_MANY_REQUESTS", message: "طلبات كثيرة. حاول بعد قليل." });
 
 const idInput = z.object({ id: z.number().int().positive() });
-const mediaUrl = z.string().url().or(z.string().regex(/^\/(uploads|media|brand)\/[\w.-]+$/));
+const webUrl = z.string().url().refine((value) => /^https?:\/\//.test(value), "Only http(s) links are allowed");
+const mediaUrl = webUrl.or(z.string().regex(/^\/(uploads|media|brand)\/[\w.-]+$/));
 const portfolioInput = z.object({
   title: z.string().min(1).max(180), description: z.string().max(5000).optional().nullable(), category: z.string().min(1).max(80),
   mediaType: z.enum(["image", "video", "link"]), mediaUrl,
-  thumbnailUrl: mediaUrl.optional().nullable(), projectUrl: z.string().url().optional().nullable(),
+  thumbnailUrl: mediaUrl.optional().nullable(), projectUrl: webUrl.optional().nullable(),
   isPublished: z.boolean(), sortOrder: z.number().int().default(0),
 });
 const testimonialInput = z.object({ name: z.string().min(1).max(160), company: z.string().max(180).optional().nullable(), quote: z.string().min(1).max(5000), rating: z.number().int().min(1).max(5), avatarUrl: mediaUrl.optional().nullable(), isPublished: z.boolean(), sortOrder: z.number().int().default(0) });
-const optionalUrl = z.string().url().optional().or(z.literal("")).nullable();
+const optionalUrl = webUrl.optional().or(z.literal("")).nullable();
 const integrationSettingsInput = z.object({
   brandName: z.string().min(1).max(160), officialDomain: z.string().max(255).optional().nullable(), businessEmail: z.string().email().optional().or(z.literal("")).nullable(), whatsappNumber: z.string().max(40).optional().nullable(),
   instagramUrl: optionalUrl, linkedinUrl: optionalUrl, tiktokUrl: optionalUrl, senderName: z.string().max(160).optional().nullable(),
@@ -41,7 +45,8 @@ export const appRouter = router({
       return request ? { ...request, testMode: (getSettings()?.mode ?? "test") === "test" } : null;
     }),
     // Stand-in for the payment gateway until Moyasar is connected; refused once the site is in live mode.
-    simulatePayment: publicProcedure.input(z.object({ token: z.string().min(12).max(80) })).mutation(({ input }) => {
+    simulatePayment: publicProcedure.input(z.object({ token: z.string().min(12).max(80) })).mutation(({ input, ctx }) => {
+      if (!allowRequest(`pay:${ctx.req.ip}`, 10, 10 * 60 * 1000)) throw tooMany();
       if ((getSettings()?.mode ?? "test") !== "test") throw new TRPCError({ code: "FORBIDDEN", message: "الدفع التجريبي متوقف في الوضع الحقيقي." });
       const request = getPaymentRequestByToken(input.token);
       if (!request || request.status !== "pending") throw new TRPCError({ code: "BAD_REQUEST", message: "هذا الرابط غير صالح أو مدفوع مسبقًا." });
@@ -49,7 +54,8 @@ export const appRouter = router({
       void notifyOwner(`تم دفع طلب — ${request.name}`, `${request.name} — ${request.email}\nالخدمة: ${request.service}\nالمبلغ: ${(request.amount / 100).toFixed(2)} ر.س`);
       return { success: true, status: "paid" as const };
     }),
-    createLead: publicProcedure.input(z.object({ name: z.string().min(2).max(160), email: z.string().email(), phone: z.string().max(50).optional(), service: z.string().max(160).optional(), message: z.string().max(5000).optional() })).mutation(({ input }) => {
+    createLead: publicProcedure.input(z.object({ name: z.string().min(2).max(160), email: z.string().email(), phone: z.string().max(50).optional(), service: z.string().max(160).optional(), message: z.string().max(5000).optional() })).mutation(({ input, ctx }) => {
+      if (!allowRequest(`lead:${ctx.req.ip}`, 5, 60 * 60 * 1000)) throw tooMany();
       const email = input.email.trim().toLowerCase();
       const existing = db.select({ id: leads.id }).from(leads).where(sql`lower(${leads.email}) = ${email}`).get();
       if (existing) throw new TRPCError({ code: "CONFLICT", message: "يوجد تواصل سابق بهذا البريد الإلكتروني. سنعود لك من خلال الطلب المسجل." });
