@@ -35,7 +35,7 @@ export default function Works() {
     <div className={`works-page ${isArabic ? "is-arabic" : "is-english"}`} dir={isArabic ? "rtl" : "ltr"}>
       <div className="works-topbar"><span>{isArabic ? "أعمال مختارة من سَفَر" : "Selected work from SAFAR"}</span><span>{isArabic ? "الرياض · جدة · عن بُعد" : "Riyadh · Jeddah · Remote"}</span></div>
       <header className="works-header">
-        <a className="works-logo" href="/" aria-label={isArabic ? "العودة للرئيسية" : "Back home"}><img src={isArabic ? "/manus-storage/safar-ar-wide_70a991ce.png" : "/manus-storage/safar-en-wide_64b08516.png"} alt={isArabic ? "شعار سَفَر" : "SAFAR logo"} /></a>
+        <a className="works-logo" href="/" aria-label={isArabic ? "العودة للرئيسية" : "Back home"}><img src={isArabic ? "/brand/safar-ar.png" : "/brand/safar-en.png"} alt={isArabic ? "شعار سَفَر" : "SAFAR logo"} /></a>
         <nav><a href="/">{isArabic ? "الرئيسية" : "Home"}</a><a className="is-current" href="/works">{isArabic ? "أعمالنا" : "Our work"}</a><a href="/#contact">{isArabic ? "تواصل" : "Contact"}</a></nav>
         <button className="works-language" onClick={() => setLanguage(isArabic ? "en" : "ar")}><span className={isArabic ? "active" : ""}>ع</span><i>/</i><span className={!isArabic ? "active" : ""}>EN</span></button>
       </header>

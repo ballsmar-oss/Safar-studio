@@ -1,0 +1,17 @@
+# /etc/systemd/system/safar.service
+[Unit]
+Description=Safar Studio website
+After=network.target
+
+[Service]
+Type=simple
+User=safar
+WorkingDirectory=/opt/safar
+EnvironmentFile=/opt/safar/.env
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/node dist/index.js
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

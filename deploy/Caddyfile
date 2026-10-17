@@ -1,0 +1,8 @@
+# /etc/caddy/Caddyfile — Caddy issues and renews the HTTPS certificate by itself.
+safarstudio.sa, www.safarstudio.sa {
+	encode zstd gzip
+	request_body {
+		max_size 310MB
+	}
+	reverse_proxy 127.0.0.1:3000
+}
