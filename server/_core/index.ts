@@ -6,6 +6,7 @@ import { openDb, runMigrations } from "../db";
 import { ENV } from "../env";
 import { appRouter } from "../routers";
 import { seedIfEmpty } from "../seed";
+import { registerMoyasarWebhook } from "../moyasar-webhook";
 import { registerUploads } from "../uploads";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
@@ -23,6 +24,7 @@ async function startServer() {
 
   registerUploads(app);
   registerAdminRoutes(app);
+  registerMoyasarWebhook(app);
   app.use("/api/trpc", createExpressMiddleware({ router: appRouter, createContext }));
 
   if (ENV.isProduction) serveStatic(app);

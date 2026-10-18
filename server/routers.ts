@@ -6,7 +6,8 @@ import { adminDevices, integrationSettings, leads, paymentRequests, portfolioIte
 import { adminProcedure, publicProcedure, router } from "./_core/trpc";
 import { db, getPaymentRequestByToken, getPublishedPortfolioItem, getPublicContactSettings, getSettings, listContent, listLeads, listPaymentRequests, listPortfolio, listPublishedPortfolio, listPublishedTestimonials, listTestimonials } from "./db";
 import { notifyOwner, sendEmail } from "./mail";
-import { encryptSecret, secretMeta } from "./secrets";
+import { createInvoice } from "./moyasar";
+import { decryptSecret, encryptSecret, secretMeta } from "./secrets";
 import { allowRequest } from "./rate-limit";
 
 const tooMany = () => new TRPCError({ code: "TOO_MANY_REQUESTS", message: "طلبات كثيرة. حاول بعد قليل." });
@@ -27,8 +28,9 @@ const integrationSettingsInput = z.object({
   instagramUrl: optionalUrl, linkedinUrl: optionalUrl, tiktokUrl: optionalUrl, senderName: z.string().max(160).optional().nullable(),
   dnsRecords: z.string().max(30000).optional().nullable(), applePayAssociation: z.string().max(30000).optional().nullable(),
   resendApiKey: z.string().max(500).optional(), moyasarPublishableKey: z.string().max(500).optional(), moyasarSecretKey: z.string().max(500).optional(), moyasarWebhookSecret: z.string().max(500).optional(), mode: z.enum(["test", "live"]),
+  smtpHost: z.string().max(255).optional().nullable(), smtpPort: z.number().int().min(1).max(65535).optional().nullable(), smtpUser: z.string().max(255).optional().nullable(), smtpPassword: z.string().max(500).optional(),
 });
-const secretFields = ["resendApiKey", "moyasarPublishableKey", "moyasarSecretKey", "moyasarWebhookSecret"] as const;
+const secretFields = ["resendApiKey", "moyasarPublishableKey", "moyasarSecretKey", "moyasarWebhookSecret", "smtpPassword"] as const;
 
 const fillTemplate = (template: string, values: Record<string, string>) =>
   Object.entries(values).reduce((text, [key, value]) => text.replaceAll(`{${key}}`, value), template);
@@ -54,6 +56,25 @@ export const appRouter = router({
       void notifyOwner(`تم دفع طلب — ${request.name}`, `${request.name} — ${request.email}\nالخدمة: ${request.service}\nالمبلغ: ${(request.amount / 100).toFixed(2)} ر.س`);
       return { success: true, status: "paid" as const };
     }),
+    // Live mode: opens a Moyasar invoice for the request and returns its hosted payment page.
+    startPayment: publicProcedure.input(z.object({ token: z.string().min(12).max(80) })).mutation(async ({ input, ctx }) => {
+      if (!allowRequest(`pay:${ctx.req.ip}`, 10, 10 * 60 * 1000)) throw tooMany();
+      const settings = getSettings();
+      if ((settings?.mode ?? "test") !== "live") throw new TRPCError({ code: "FORBIDDEN", message: "الدفع الحقيقي متوقف في الوضع التجريبي." });
+      const secretKey = decryptSecret(settings?.moyasarSecretKey);
+      if (!secretKey) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "لم يتم ربط مفاتيح Moyasar بعد." });
+      const request = getPaymentRequestByToken(input.token);
+      if (!request || request.status !== "pending") throw new TRPCError({ code: "BAD_REQUEST", message: "هذا الرابط غير صالح أو مدفوع مسبقًا." });
+      const origin = `${ctx.req.protocol}://${ctx.req.get("host")}`;
+      try {
+        const invoice = await createInvoice(secretKey, { amount: request.amount, description: `${request.service} — ${request.name}`, callbackUrl: `${origin}/api/moyasar/webhook`, backUrl: `${origin}/pay/${request.publicToken}`, metadata: { token: request.publicToken } });
+        db.update(paymentRequests).set({ gatewayInvoiceId: invoice.id }).where(eq(paymentRequests.id, request.id)).run();
+        return { url: invoice.url };
+      } catch (error) {
+        console.error(`[moyasar] invoice failed: ${error instanceof Error ? error.message : error}`);
+        throw new TRPCError({ code: "BAD_GATEWAY", message: "تعذر فتح صفحة الدفع. حاول مرة ثانية." });
+      }
+    }),
     createLead: publicProcedure.input(z.object({ name: z.string().min(2).max(160), email: z.string().email(), phone: z.string().max(50).optional(), service: z.string().max(160).optional(), message: z.string().max(5000).optional() })).mutation(({ input, ctx }) => {
       if (!allowRequest(`lead:${ctx.req.ip}`, 5, 60 * 60 * 1000)) throw tooMany();
       const email = input.email.trim().toLowerCase();
@@ -69,13 +90,14 @@ export const appRouter = router({
     integrationSettings: adminProcedure.query(() => {
       const row = getSettings();
       if (!row) return null;
-      return { ...row, resendApiKey: secretMeta(row.resendApiKey), moyasarPublishableKey: secretMeta(row.moyasarPublishableKey), moyasarSecretKey: secretMeta(row.moyasarSecretKey), moyasarWebhookSecret: secretMeta(row.moyasarWebhookSecret) };
+      return { ...row, resendApiKey: secretMeta(row.resendApiKey), moyasarPublishableKey: secretMeta(row.moyasarPublishableKey), moyasarSecretKey: secretMeta(row.moyasarSecretKey), moyasarWebhookSecret: secretMeta(row.moyasarWebhookSecret), smtpPassword: secretMeta(row.smtpPassword) };
     }),
     saveIntegrationSettings: adminProcedure.input(integrationSettingsInput).mutation(({ input }) => {
       const values: Partial<typeof integrationSettings.$inferInsert> = {
         brandName: input.brandName, officialDomain: input.officialDomain || null, businessEmail: input.businessEmail || null, whatsappNumber: input.whatsappNumber?.trim() || null,
         instagramUrl: input.instagramUrl || null, linkedinUrl: input.linkedinUrl || null, tiktokUrl: input.tiktokUrl || null, senderName: input.senderName || null,
         dnsRecords: input.dnsRecords || null, applePayAssociation: input.applePayAssociation || null, mode: input.mode,
+        smtpHost: input.smtpHost?.trim() || null, smtpPort: input.smtpPort ?? null, smtpUser: input.smtpUser?.trim() || null,
       };
       for (const key of secretFields) if (input[key]?.trim()) values[key] = encryptSecret(input[key]!.trim());
       const existing = getSettings();
@@ -101,6 +123,13 @@ export const appRouter = router({
     }),
     updatePaymentStatus: adminProcedure.input(idInput.extend({ status: z.enum(["pending", "paid", "failed", "expired"]) })).mutation(({ input }) => { db.update(paymentRequests).set({ status: input.status }).where(eq(paymentRequests.id, input.id)).run(); return { success: true }; }),
     // Emails a message to the customer; {name} {email} {service} {amount} {link} are filled in.
+    testEmail: adminProcedure.mutation(async () => {
+      const to = getSettings()?.businessEmail;
+      if (!to) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "احفظ البريد الرسمي أولًا." });
+      const sent = await sendEmail({ to, subject: "اختبار البريد — سَفَر", text: "هذي رسالة اختبار من لوحة التحكم. إذا وصلتك، البريد شغال." });
+      if (!sent) throw new TRPCError({ code: "BAD_GATEWAY", message: "ما قدر يرسل. تأكد من إعدادات SMTP أو Resend." });
+      return { success: true };
+    }),
     emailCustomer: adminProcedure.input(z.object({ to: z.string().email(), subject: z.string().min(1).max(200), template: z.string().min(1).max(10000), values: z.record(z.string(), z.string()) })).mutation(async ({ input }) => {
       const sent = await sendEmail({ to: input.to, subject: input.subject, text: fillTemplate(input.template, input.values) });
       if (!sent) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "البريد غير مفعّل بعد. أضف مفتاح Resend والبريد الرسمي من الإعدادات." });

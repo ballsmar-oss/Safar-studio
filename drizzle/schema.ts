@@ -50,6 +50,7 @@ export const paymentRequests = sqliteTable("paymentRequests", {
   amount: integer("amount").notNull(),
   currency: text("currency").notNull().default("SAR"),
   status: text("status", { enum: ["pending", "paid", "failed", "expired"] }).notNull().default("pending"),
+  gatewayInvoiceId: text("gatewayInvoiceId"),
   createdAt: createdAt(),
   updatedAt: updatedAt(),
 });
@@ -82,6 +83,10 @@ export const integrationSettings = sqliteTable("integrationSettings", {
   moyasarPublishableKey: text("moyasarPublishableKey"),
   moyasarSecretKey: text("moyasarSecretKey"),
   moyasarWebhookSecret: text("moyasarWebhookSecret"),
+  smtpHost: text("smtpHost"),
+  smtpPort: integer("smtpPort"),
+  smtpUser: text("smtpUser"),
+  smtpPassword: text("smtpPassword"),
   mode: text("mode", { enum: ["test", "live"] }).notNull().default("test"),
   updatedAt: updatedAt(),
 });
