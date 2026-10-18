@@ -382,3 +382,26 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
 .poster-plant--left { left:20%; top:76%; }
 .poster-plant--right { left:72%; top:72%; }
 .reference-hero-side .side-note { position:absolute; top:84%; left:0; right:0; margin:0; font-size:6cqw; font-weight:700; line-height:1.6; color:var(--navy); }
+
+/* Hero poster, full width under the phone: sized in the poster's own units so the composition matches at every width */
+.hero-poster-wrap { width:min(1000px, calc(100% - 72px)); margin:0 auto 90px; }
+.reference-hero-side { width:100%; max-width:none; min-height:0; aspect-ratio:1000 / 730; }
+.reference-hero-side .side-headline { top:0; font-size:7.5cqw; line-height:1.2; }
+.reference-hero-side .side-squiggle { top:17%; left:42%; width:27%; }
+.reference-hero-side .sticker { width:14cqw; height:14cqw; }
+.reference-hero-side .sticker svg { width:6cqw; height:6cqw; }
+.reference-hero-side .sticker--bulb { left:78%; top:4%; }
+.reference-hero-side .sticker--image { left:8%; top:40%; }
+.reference-hero-side .sticker--play { left:76%; top:60%; }
+.reference-hero-side .cat-mascot-box { width:40cqw; top:40%; }
+.reference-hero-side .cat-mascot-box .zz { font-size:4cqw; }
+.reference-hero-side .cat-mascot-box .zz-3 { font-size:5cqw; }
+.poster-plant { width:9cqw; height:10cqw; }
+.poster-plant--left { left:26%; top:78%; }
+.poster-plant--right { left:70%; top:76%; }
+.reference-hero-side .side-note { top:84%; font-size:4.6cqw; }
+@media(max-width:850px){.hero-poster-wrap{width:calc(100% - 36px)}}
+.reference-hero-side { aspect-ratio:1000 / 860; }
+.hero-poster-wrap { margin-bottom:110px; }
+.reference-hero-side .side-note { top:86%; }
+.reference-hero-side .side-note { top:79%; }
