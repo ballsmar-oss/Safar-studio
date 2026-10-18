@@ -2,18 +2,14 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { pickText, useLanguage } from "@/hooks/useLanguage";
 import {
   ArrowLeft,
-  ArrowUpLeft,
   Check,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  CirclePlay,
   Instagram,
   Linkedin,
   MessageCircle,
   Menu,
-  Image as ImageIcon,
-  Lightbulb,
   Music2,
   Sparkles,
   X,
@@ -133,10 +129,6 @@ export default function Home() {
     home: "Home", services: "Services", work: "Our work", contact: "Contact", topbar: "We turn ideas into experiences that move people", places: "Riyadh · Jeddah · Remote", heroA: "Your ideas", heroB: "We design them", heroC: "to move.", heroLead: "Turning your ideas into digital design and experiences that leave a mark.", heroCta: "Explore your direction", sideA: "Everything you need", sideB: "in one place", sideC: "Your choice decides", sideD: "what appears", phoneTitle: "Choose what matters", more: "Learn more", start: "Start your project", proofKicker: "From idea to impact", proofTitleA: "We design the", proofTitleB: "space", proofTitleC: "for you to grow.", proofLead: "From the first question to the last detail, we make the result clear for you and your audience.", reviewKicker: "What clients say", review: "SAFAR understood our idea from the first session and turned it into an identity and experience that truly feels like us.", contactKicker: "Let’s start", contactTitleA: "Ready to make", contactTitleB: "your idea seen?", contactLead: "Share a few details about your project and we’ll come back with a direction that fits your stage.", formTitle: "Let’s build the right thing", name: "Full name", email: "Email address", choose: "Choose a service", message: "Tell us about your project", submit: "Send request", thanks: "We got your request.", thanksLead: "Thanks for trusting us. We’ll be in touch soon.", newRequest: "Send another request", footer: "Good ideas. Better design. Lasting impact."
   };
 
-  const selectService = (id: string) => {
-    setActiveId(id);
-    document.getElementById("service-details")?.scrollIntoView({ behavior: "smooth", block: "center" });
-  };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

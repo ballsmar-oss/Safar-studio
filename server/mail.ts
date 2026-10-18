@@ -24,6 +24,9 @@ export async function sendEmail(mail: Mail) {
         port: settings.smtpPort ?? 465,
         secure: (settings.smtpPort ?? 465) === 465,
         auth: { user: settings.smtpUser, pass: smtpPassword },
+        connectionTimeout: 15_000,
+        greetingTimeout: 15_000,
+        socketTimeout: 20_000,
       });
       await transport.sendMail({ from: sender, to: mail.to, subject: mail.subject, text: mail.text, attachments: mail.attachments });
       return true;
@@ -38,6 +41,7 @@ export async function sendEmail(mail: Mail) {
     return false;
   }
   const response = await fetch("https://api.resend.com/emails", {
+    signal: AbortSignal.timeout(20_000),
     method: "POST",
     headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
     body: JSON.stringify({

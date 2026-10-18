@@ -5,7 +5,7 @@ import { pickText, useLanguage } from "@/hooks/useLanguage";
 import NotFound from "@/pages/NotFound";
 
 export default function Work() {
-  const [language, setLanguage] = useLanguage();
+  const [language] = useLanguage();
   const [, params] = useRoute("/works/:id");
   const id = Number(params?.id);
   const work = trpc.publicContent.work.useQuery({ id }, { enabled: Number.isInteger(id) && id > 0 });

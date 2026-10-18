@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { ArrowLeft, ArrowUpLeft, ChevronDown, ExternalLink, Filter, MoveDown, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowUpLeft, ExternalLink, Filter, MoveDown, Sparkles } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { pickText, useLanguage } from "@/hooks/useLanguage";
 

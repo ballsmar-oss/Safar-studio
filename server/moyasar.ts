@@ -7,6 +7,7 @@ export type MoyasarInvoice = { id: string; url: string; status: string; amount: 
 
 export async function createInvoice(secretKey: string, input: { amount: number; description: string; callbackUrl: string; backUrl: string; metadata: Record<string, string> }) {
   const response = await fetch(`${API}/invoices`, {
+    signal: AbortSignal.timeout(20_000),
     method: "POST",
     headers: { Authorization: authorization(secretKey), "Content-Type": "application/json" },
     body: JSON.stringify({ amount: input.amount, currency: "SAR", description: input.description, callback_url: input.callbackUrl, back_url: input.backUrl, metadata: input.metadata }),
@@ -16,7 +17,7 @@ export async function createInvoice(secretKey: string, input: { amount: number; 
 }
 
 export async function getInvoice(secretKey: string, invoiceId: string) {
-  const response = await fetch(`${API}/invoices/${encodeURIComponent(invoiceId)}`, { headers: { Authorization: authorization(secretKey) } });
+  const response = await fetch(`${API}/invoices/${encodeURIComponent(invoiceId)}`, { signal: AbortSignal.timeout(20_000), headers: { Authorization: authorization(secretKey) } });
   if (!response.ok) throw new Error(`Moyasar ${response.status}`);
   return (await response.json()) as MoyasarInvoice;
 }

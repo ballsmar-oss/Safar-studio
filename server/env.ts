@@ -13,6 +13,8 @@ function required(name: string, devFallback: string) {
 export const ENV = {
   isProduction,
   port: Number(process.env.PORT || 3000),
+  // The public address of the site, e.g. https://safarstudio.sa. Used in payment links.
+  publicUrl: process.env.PUBLIC_URL?.trim().replace(/\/$/, "") || undefined,
   dataDir: path.resolve(process.env.DATA_DIR || "data"),
   // Opening /admin/connect/<this key> once marks the browser as an admin device.
   adminSetupKey: required("ADMIN_SETUP_KEY", "dev-setup-key"),

@@ -20,6 +20,12 @@ async function startServer() {
   const server = createServer(app);
   app.set("trust proxy", "loopback"); // Caddy runs in front on the same server
   app.disable("x-powered-by");
+  app.use((_req, res, next) => {
+    res.setHeader("X-Content-Type-Options", "nosniff");
+    res.setHeader("X-Frame-Options", "SAMEORIGIN");
+    res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+    next();
+  });
   app.use(express.json({ limit: "2mb" }));
 
   registerUploads(app);
@@ -34,6 +40,9 @@ async function startServer() {
     console.log(`Server running on http://localhost:${ENV.port}/`);
   });
 }
+
+process.on("unhandledRejection", (reason) => console.error("[unhandled]", reason));
+process.on("uncaughtException", (error) => console.error("[uncaught]", error));
 
 startServer().catch((error) => {
   console.error(error);

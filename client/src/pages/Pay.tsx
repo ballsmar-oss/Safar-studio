@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { useRoute } from "wouter";
-import { ArrowUpLeft, Check, Copy, CreditCard, Loader2, ReceiptText, Sparkles } from "lucide-react";
+import { Check, CreditCard, Loader2, ReceiptText } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { useLanguage } from "@/hooks/useLanguage";
-
-const inputClass = "w-full rounded-xl border border-[#132e52]/15 bg-white px-4 py-3 outline-none focus:border-[#f47763]";
 
 function playPrinterSound() {
   try {
@@ -33,7 +31,7 @@ export default function Pay() {
   const [, params] = useRoute("/pay/:token");
   const token = params?.token ?? "";
   const [showInvoice, setShowInvoice] = useState(false);
-  const [language, setLanguage] = useLanguage();
+  const [language] = useLanguage();
   const isArabic = language === "ar";
   const t = (arabic: string, english: string) => (isArabic ? arabic : english);
   const request = trpc.publicContent.getPaymentRequest.useQuery({ token }, { enabled: Boolean(token) });
@@ -41,7 +39,6 @@ export default function Pay() {
   const startPay = trpc.publicContent.startPayment.useMutation({ onSuccess: (result) => { window.location.href = result.url; }, onError: (error) => toast.error(error.message) });
   const data = request.data;
 
-  const copyLink = async () => { await navigator.clipboard?.writeText(window.location.href); toast.success(t("تم نسخ رابط الطلب", "Order link copied")); };
   const saveInvoice = () => window.print();
   const shareInvoice = async () => { const text = `فاتورة سَفَر\nالخدمة: ${data?.service ?? ""}\nالمبلغ: ${data ? (data.amount / 100).toFixed(2) : ""} ر.س`; if (navigator.share) await navigator.share({ title: "فاتورة سَفَر", text, url: window.location.href }); else { await navigator.clipboard?.writeText(`${text}\n${window.location.href}`); toast.success(t("تم نسخ بيانات الفاتورة للمشاركة", "Invoice details copied to share")); } };
 

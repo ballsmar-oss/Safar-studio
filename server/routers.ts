@@ -9,6 +9,7 @@ import { notifyOwner, sendEmail } from "./mail";
 import { createInvoice } from "./moyasar";
 import { decryptSecret, encryptSecret, secretMeta } from "./secrets";
 import { allowRequest } from "./rate-limit";
+import { ENV } from "./env";
 import { uploadsDir } from "./uploads";
 import fs from "node:fs";
 import path from "node:path";
@@ -68,7 +69,7 @@ export const appRouter = router({
       if (!secretKey) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "لم يتم ربط مفاتيح Moyasar بعد." });
       const request = getPaymentRequestByToken(input.token);
       if (!request || request.status !== "pending") throw new TRPCError({ code: "BAD_REQUEST", message: "هذا الرابط غير صالح أو مدفوع مسبقًا." });
-      const origin = `${ctx.req.protocol}://${ctx.req.get("host")}`;
+      const origin = ENV.publicUrl ?? `${ctx.req.protocol}://${ctx.req.get("host")}`;
       try {
         const invoice = await createInvoice(secretKey, { amount: request.amount, description: `${request.service} — ${request.name}`, callbackUrl: `${origin}/api/moyasar/webhook`, backUrl: `${origin}/pay/${request.publicToken}`, metadata: { token: request.publicToken } });
         db.update(paymentRequests).set({ gatewayInvoiceId: invoice.id }).where(eq(paymentRequests.id, request.id)).run();
