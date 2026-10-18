@@ -11,8 +11,9 @@ import {
   Linkedin,
   MessageCircle,
   Menu,
+  Image as ImageIcon,
+  Lightbulb,
   Music2,
-  MoveDown,
   Sparkles,
   X,
 } from "lucide-react";
@@ -180,7 +181,7 @@ export default function Home() {
             </div>
             <div className="art-badge art-badge--top">{isArabic ? <>فكرة<br />تتبيّن</> : <>Ideas<br />made clear</>}</div><div className="art-badge art-badge--bottom">{isArabic ? <>تصميم<br />يتحرك</> : <>Design<br />in motion</>}</div>
           </div>
-          <div className="reference-hero-side"><p>{copy.sideA}<br />{copy.sideB}<br />...</p><p>{copy.sideC}<br />{copy.sideD}</p><MoveDown size={27} /><div className="cat-mascot-box"><img className="cat-mascot" src="/brand/cat.png" alt={isArabic ? "قطة مرسومة بأسلوب مرح" : "Playful illustrated cat"} /><span className="zz zz-1" aria-hidden="true">z</span><span className="zz zz-2" aria-hidden="true">z</span><span className="zz zz-3" aria-hidden="true">Z</span></div><span className="doodle-spark doodle-spark--one">✦</span><span className="doodle-spark doodle-spark--two">〰</span></div>
+          <div className="reference-hero-side"><div className="side-stickers" aria-hidden="true"><span className="sticker sticker--bulb"><Lightbulb size={24} /></span><span className="sticker sticker--image"><ImageIcon size={24} /></span><span className="sticker sticker--play"><CirclePlay size={24} /></span></div><p className="side-headline">{copy.sideA}<br /><span>{copy.sideB} ...</span></p><div className="cat-mascot-box"><img className="cat-mascot" src="/brand/cat.png" alt={isArabic ? "قطة مرسومة بأسلوب مرح" : "Playful illustrated cat"} /><span className="zz zz-1" aria-hidden="true">z</span><span className="zz zz-2" aria-hidden="true">z</span><span className="zz zz-3" aria-hidden="true">Z</span></div><span className="doodle-spark doodle-spark--one">✦</span><span className="doodle-spark doodle-spark--two">〰</span></div>
         </section>
 
 

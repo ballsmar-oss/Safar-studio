@@ -117,8 +117,18 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
 @keyframes zzRise { 0% { opacity:0; transform:translate(0,0) scale(.6); } 15% { opacity:1; } 100% { opacity:0; transform:translate(20px,-60px) scale(1.2); } }
 @media (prefers-reduced-motion:reduce) { .zz { animation:none; opacity:1; } }
 
-/* On phones the two text blocks stack instead of sitting side by side */
-@media(max-width:480px){.reference-hero-side{flex-direction:column;align-items:flex-start;justify-content:center;gap:6px}.reference-hero-side .cat-mascot-box{position:relative;right:auto;bottom:auto;align-self:center;width:110px;height:110px;margin-top:4px}.reference-hero-side .doodle-spark--one{display:none}}
+/* Hero side block: centered headline, floating sticker icons, and the sleeping cat with zzz under it */
+.reference-hero-side { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; text-align:center; min-height:360px; padding:0; }
+.reference-hero-side .side-headline { margin:0; font-size:34px; font-weight:800; line-height:1.4; color:var(--navy); }
+.reference-hero-side .side-headline span { color:var(--coral); }
+.side-stickers { position:absolute; inset:0; pointer-events:none; }
+.sticker { position:absolute; width:56px; height:56px; display:grid; place-items:center; color:var(--navy); border:2px solid var(--navy); border-radius:14px; box-shadow:3px 4px 0 var(--navy); }
+.sticker--bulb { top:-6px; right:-8px; background:var(--mint); transform:rotate(8deg); }
+.sticker--image { top:46%; left:-14px; background:#f8c3b5; transform:rotate(-8deg); }
+.sticker--play { bottom:-4px; right:-6px; background:#bfe6ea; transform:rotate(6deg); }
+.reference-hero-side .cat-mascot-box { position:relative; right:auto; bottom:auto; width:150px; height:150px; margin-top:6px; }
+@media(max-width:850px){.reference-hero-side{min-height:300px}.reference-hero-side .cat-mascot-box{width:120px;height:120px}}
+@media(max-width:480px){.reference-hero-side .side-headline{font-size:28px}.reference-hero-side .cat-mascot-box{width:130px;height:130px}.sticker{width:44px;height:44px}.sticker--bulb{right:0}.sticker--play{right:0}}
 
 .receipt-paper { transform-origin: top center; animation: receipt-print 1100ms cubic-bezier(.22,.8,.25,1) both; }
 .receipt-scroll { animation: receipt-rise 900ms 180ms cubic-bezier(.22,.8,.25,1) both; }
