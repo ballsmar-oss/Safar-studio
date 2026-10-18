@@ -9,6 +9,9 @@ import { notifyOwner, sendEmail } from "./mail";
 import { createInvoice } from "./moyasar";
 import { decryptSecret, encryptSecret, secretMeta } from "./secrets";
 import { allowRequest } from "./rate-limit";
+import { uploadsDir } from "./uploads";
+import fs from "node:fs";
+import path from "node:path";
 
 const tooMany = () => new TRPCError({ code: "TOO_MANY_REQUESTS", message: "طلبات كثيرة. حاول بعد قليل." });
 
@@ -130,8 +133,14 @@ export const appRouter = router({
       if (!sent) throw new TRPCError({ code: "BAD_GATEWAY", message: "ما قدر يرسل. تأكد من إعدادات SMTP أو Resend." });
       return { success: true };
     }),
-    emailCustomer: adminProcedure.input(z.object({ to: z.string().email(), subject: z.string().min(1).max(200), template: z.string().min(1).max(10000), values: z.record(z.string(), z.string()) })).mutation(async ({ input }) => {
-      const sent = await sendEmail({ to: input.to, subject: input.subject, text: fillTemplate(input.template, input.values) });
+    emailCustomer: adminProcedure.input(z.object({ to: z.string().email(), subject: z.string().min(1).max(200), template: z.string().min(1).max(10000), values: z.record(z.string(), z.string()), attachmentUrl: z.string().regex(/^\/uploads\/[A-Za-z0-9._-]+$/).max(200).optional() })).mutation(async ({ input }) => {
+      let attachments;
+      if (input.attachmentUrl) {
+        const file = path.join(uploadsDir, path.basename(input.attachmentUrl));
+        if (!fs.existsSync(file)) throw new TRPCError({ code: "BAD_REQUEST", message: "ملف العقد غير موجود، ارفعه من جديد." });
+        attachments = [{ filename: `Safar-contract${path.extname(file)}`, path: file }];
+      }
+      const sent = await sendEmail({ to: input.to, subject: input.subject, text: fillTemplate(input.template, input.values), attachments });
       if (!sent) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "البريد غير مفعّل بعد. أضف مفتاح Resend والبريد الرسمي من الإعدادات." });
       return { success: true };
     }),

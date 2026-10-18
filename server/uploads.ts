@@ -7,7 +7,7 @@ import { ENV } from "./env";
 
 export const uploadsDir = path.join(ENV.dataDir, "uploads");
 const MAX_BYTES = 300 * 1024 * 1024;
-const ALLOWED = /^(image\/(png|jpe?g|gif|webp|avif)|video\/(mp4|webm|quicktime))$/;
+const ALLOWED = /^(image\/(png|jpe?g|gif|webp|avif)|video\/(mp4|webm|quicktime)|application\/pdf)$/;
 
 // Files go to DATA_DIR/uploads on the server and are served from /uploads/<name>.
 export function registerUploads(app: Express) {
@@ -17,7 +17,7 @@ export function registerUploads(app: Express) {
   app.post("/api/upload", (req, res, next) => {
     if (!getAdminDevice(req)) return res.status(404).end();
     const type = String(req.headers["content-type"] ?? "").split(";")[0].trim();
-    if (!ALLOWED.test(type)) return res.status(415).json({ error: "نوع الملف غير مدعوم. ارفع صورة أو فيديو." });
+    if (!ALLOWED.test(type)) return res.status(415).json({ error: "نوع الملف غير مدعوم. ارفع صورة أو فيديو أو PDF." });
     next();
   }, express.raw({ type: () => true, limit: MAX_BYTES }), (req, res) => {
     const original = decodeURIComponent(String(req.headers["x-file-name"] ?? "file"));

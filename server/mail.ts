@@ -1,8 +1,10 @@
+import fs from "node:fs";
 import nodemailer from "nodemailer";
 import { getSettings } from "./db";
 import { decryptSecret } from "./secrets";
 
-type Mail = { to: string; subject: string; text: string };
+type Attachment = { filename: string; path: string };
+type Mail = { to: string; subject: string; text: string; attachments?: Attachment[] };
 
 // Sends through your own SMTP account once its host, user and password are saved in the dashboard.
 // Resend is used only when SMTP is not set. Returns false (and logs) when neither is set up.
@@ -23,7 +25,7 @@ export async function sendEmail(mail: Mail) {
         secure: (settings.smtpPort ?? 465) === 465,
         auth: { user: settings.smtpUser, pass: smtpPassword },
       });
-      await transport.sendMail({ from: sender, to: mail.to, subject: mail.subject, text: mail.text });
+      await transport.sendMail({ from: sender, to: mail.to, subject: mail.subject, text: mail.text, attachments: mail.attachments });
       return true;
     } catch (error) {
       console.error(`[mail] SMTP failed: ${error instanceof Error ? error.message : error}`);
@@ -38,7 +40,13 @@ export async function sendEmail(mail: Mail) {
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ from: sender, to: [mail.to], subject: mail.subject, text: mail.text }),
+    body: JSON.stringify({
+      from: sender,
+      to: [mail.to],
+      subject: mail.subject,
+      text: mail.text,
+      attachments: mail.attachments?.map((file) => ({ filename: file.filename, content: fs.readFileSync(file.path).toString("base64") })),
+    }),
   });
   if (!response.ok) {
     console.error(`[mail] Resend ${response.status}: ${await response.text().catch(() => "")}`);
