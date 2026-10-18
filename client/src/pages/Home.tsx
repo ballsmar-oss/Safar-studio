@@ -169,7 +169,7 @@ export default function Home() {
             <p>{text("hero.lead", copy.heroLead)}</p>
             <a className="reference-cta" href="#services">{copy.heroCta} <ArrowLeft size={17} /></a>
             <div className="pick-hint" aria-hidden="true">
-              <img className="pick-cat" src="/brand/cat.png" alt="" />
+              <div className="pick-cat-box"><img className="pick-cat" src="/brand/cat.png" alt="" /><span className="zz zz-1">z</span><span className="zz zz-2">z</span><span className="zz zz-3">Z</span></div>
               <span className="ph-text">{isArabic ? "اختر من الجوال ↓" : "Pick from the phone ↓"}</span>
             </div>
           </div>
