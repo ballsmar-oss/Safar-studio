@@ -1,3 +1,4 @@
+import { useAuth } from "@/_core/hooks/useAuth";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import {
   ArrowLeft,
@@ -7,20 +8,22 @@ import {
   ChevronLeft,
   ChevronRight,
   CirclePlay,
+  Image as ImageIcon,
+  Lightbulb,
   Instagram,
   Linkedin,
   MessageCircle,
   Menu,
-  Image as ImageIcon,
-  Lightbulb,
   Music2,
+  MoveDown,
+  Send,
   Sparkles,
   X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 
-const heroImage = "/brand/hero.png"; // hidden by the stylesheet; kept for the layout
+const heroImage = "/manus-storage/teq-teal-hero_8ab836b2.png";
 
 type Service = {
   id: string;
@@ -56,6 +59,12 @@ function normalizeWhatsappNumber(value: string | null | undefined) {
 }
 
 export default function Home() {
+  // The useAuth hook provides authentication state.
+  // To implement login/logout, call logout(), or start login from an event
+  // handler: onClick={() => startLogin()} (imported from "@/const"). Never call
+  // startLogin() during render (no href={startLogin()}) — it mints a one-time
+  // nonce cookie and must run only at the moment of navigation.
+  let { user, loading, error, isAuthenticated, logout } = useAuth();
   const publicData = trpc.publicContent.all.useQuery();
   const createLead = trpc.publicContent.createLead.useMutation({
     onSuccess: () => { setSubmitted(true); toast.success("وصلنا طلبك — سنتواصل معك قريبًا."); },
@@ -63,46 +72,6 @@ export default function Home() {
   });
 
   const [menuOpen, setMenuOpen] = useState(false);
-  // First visit only: a translucent pointer taps three services so visitors know they can choose.
-  useEffect(() => {
-    const phone = phoneRef.current;
-    if (!phone || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    try { if (sessionStorage.getItem("safar-pointer-intro")) return; sessionStorage.setItem("safar-pointer-intro", "1"); } catch { /* storage unavailable: play anyway */ }
-    const rows = Array.from(phone.querySelectorAll<HTMLElement>(".phone-service"));
-    if (!rows.length) return;
-    const ghost = document.createElement("div");
-    ghost.className = "ghost-pointer";
-    ghost.innerHTML = '<svg viewBox="0 0 28 28" width="28" height="28"><path d="M5 3 L5 22 L10 17 L13.5 25 L16.5 23.8 L13 16 L20 16 Z" fill="rgba(13,43,82,.55)" stroke="rgba(255,245,223,.85)" stroke-width="1.4" stroke-linejoin="round"/></svg>';
-    phone.appendChild(ghost);
-    const at = (el: HTMLElement) => {
-      const p = phone.getBoundingClientRect(), r = el.getBoundingClientRect();
-      return { x: r.left - p.left + r.width * 0.72, y: r.top - p.top + r.height * 0.5 };
-    };
-    const start = { x: phone.clientWidth * 0.5, y: 6 };
-    const timers: number[] = [];
-    let t = 900;
-    const move = (to: { x: number; y: number }, from: { x: number; y: number }, dur: number) =>
-      ghost.animate([{ transform: `translate(${from.x}px, ${from.y}px)` }, { transform: `translate(${to.x}px, ${to.y}px)` }], { duration: dur, easing: "cubic-bezier(.3,.7,.2,1)", fill: "forwards" });
-    ghost.animate([{ opacity: 0 }, { opacity: 0.9 }], { duration: 500, delay: t, fill: "forwards" });
-    let from = start;
-    for (let i = 0; i < 3; i++) {
-      const row = rows[i % rows.length];
-      const to = at(row);
-      const when = t + 500 + i * 1100;
-      timers.push(window.setTimeout(() => {
-        move(to, from, 700);
-      }, when - 500 + (i === 0 ? 0 : 0)));
-      timers.push(window.setTimeout(() => row.classList.add("ghost-tap"), when + 700));
-      timers.push(window.setTimeout(() => row.classList.remove("ghost-tap"), when + 1000));
-      from = to;
-    }
-    const end = t + 500 + 3 * 1100 + 300;
-    ghost.animate([{ opacity: 0.9 }, { opacity: 0 }], { duration: 600, delay: end, fill: "forwards" });
-    timers.push(window.setTimeout(() => ghost.remove(), end + 700));
-    return () => { timers.forEach(clearTimeout); ghost.remove(); };
-  }, []);
-
-  const phoneRef = useRef<HTMLDivElement>(null);
   const [language, setLanguage] = useState<"ar" | "en">("ar");
   const [activeId, setActiveId] = useState("motion");
   const [phoneOpen, setPhoneOpen] = useState(false);
@@ -153,7 +122,7 @@ export default function Home() {
     <div className={`reference-site ${isArabic ? "is-arabic" : "is-english"}`} dir={isArabic ? "rtl" : "ltr"}>
       <div className="reference-topbar"><span>{copy.topbar}</span><span>{copy.places}</span></div>
       <header className="reference-header">
-        <a className="reference-brand" href="#top"><img className="reference-brand-logo" src={isArabic ? "/brand/safar-ar.png" : "/brand/safar-en.png"} alt={isArabic ? "شعار سَفَر" : "SAFAR logo"} /></a>
+        <a className="reference-brand" href="#top"><img className="reference-brand-logo" src={isArabic ? "/manus-storage/safar-ar-wide_70a991ce.png" : "/manus-storage/safar-en-wide_64b08516.png"} alt={isArabic ? "شعار سَفَر" : "SAFAR logo"} /></a>
         <button className="reference-menu" onClick={() => setMenuOpen(!menuOpen)} aria-label="فتح القائمة">{menuOpen ? <X size={20} /> : <Menu size={20} />}</button>
         <nav className={menuOpen ? "reference-nav is-open" : "reference-nav"}>
           <a href="#top" onClick={() => setMenuOpen(false)}>{copy.home}</a><a href="#services" onClick={() => setMenuOpen(false)}>{copy.services}</a><a href="/works" onClick={() => setMenuOpen(false)}>{copy.work}</a><a href="#contact" onClick={() => setMenuOpen(false)}>{copy.contact}</a>
@@ -169,34 +138,45 @@ export default function Home() {
             <div className="coral-underline" />
             <p>{text("hero.lead", copy.heroLead)}</p>
             <a className="reference-cta" href="#services">{copy.heroCta} <ArrowLeft size={17} /></a>
-            <div className="pick-hint" aria-hidden="true">
-              <div className="pick-cat-box"><img className="pick-cat" src="/brand/cat.png" alt="" /><span className="zz zz-1">z</span><span className="zz zz-2">z</span><span className="zz zz-3">Z</span></div>
-              <span className="ph-text">{isArabic ? "اختر من الجوال ↓" : "Pick from the phone ↓"}</span>
-            </div>
           </div>
           <div className="reference-hero-art phone-only-scene">
             <img className="hero-illustration" src={heroImage} alt={isArabic ? "رسم توضيحي لخدمات سَفَر الرقمية" : "Illustration of SAFAR digital services"} />
-            <div ref={phoneRef} className={`interactive-phone ${phoneOpen ? "is-open" : ""}`} onClick={() => setPhoneOpen((open) => !open)} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") setPhoneOpen((open) => !open); }} aria-label={isArabic ? "شاشة خدمات سَفَر" : "SAFAR services screen"}>
+            <div className={`interactive-phone ${phoneOpen ? "is-open" : ""}`} onClick={() => setPhoneOpen((open) => !open)} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") setPhoneOpen((open) => !open); }} aria-label={isArabic ? "شاشة خدمات سَفَر" : "SAFAR services screen"}>
               <div className="phone-speaker" /><div className="phone-screen"><div className="phone-header"><strong>{copy.phoneTitle}</strong><span>+</span></div><div className="phone-service-list">{services.map((service) => <button key={service.id} className={`phone-service ${service.id === activeId ? "is-active" : ""}`} onClick={(event) => { event.stopPropagation(); setActiveId(service.id); setPhoneOpen(true); }} aria-pressed={service.id === activeId}><span className="phone-service-icon">{service.icon}</span><span><b>{isArabic ? service.title : service.enTitle}</b><small>{isArabic ? service.subtitle : service.enSubtitle}</small></span><i className={service.id === activeId ? "is-on" : ""}><em /></i></button>)}</div><div className="phone-active-details"><div className="phone-detail-title"><span>{isArabic ? activeService.title : activeService.enTitle}</span><small>{isArabic ? activeService.image : activeService.enImage}</small></div><ul>{(isArabic ? activeService.details : activeService.enDetails).slice(0, 3).map((detail) => <li key={detail}><Check size={12} />{detail}</li>)}</ul><a href="#contact" className="phone-more" onClick={(event) => event.stopPropagation()}>{copy.more} <ArrowLeft size={13} /></a></div><a className="phone-cta" href="#contact" onClick={(event) => event.stopPropagation()}>{copy.start} <ArrowLeft size={14} /></a></div>
             </div>
             <div className="art-badge art-badge--top">{isArabic ? <>فكرة<br />تتبيّن</> : <>Ideas<br />made clear</>}</div><div className="art-badge art-badge--bottom">{isArabic ? <>تصميم<br />يتحرك</> : <>Design<br />in motion</>}</div>
           </div>
-                  </section>
-        <div className="hero-poster-wrap"><div className="reference-hero-side"><svg className="poster-doodles" viewBox="0 0 100 125" preserveAspectRatio="none" aria-hidden="true"><path d="M6 42 Q14 32 27 36" stroke="#f47763" /><path d="M18 61 C14 80 26 92 40 94" stroke="#f47763" strokeDasharray="5 6" /><path d="M32 87 L40 94 L38 84" stroke="#f47763" /><path d="M79 68 C85 84 77 94 66 92" stroke="#f47763" strokeDasharray="5 6" /><path d="M71 85 L66 92 L74 93" stroke="#f47763" /><path d="M13 106 q4 -5 8 0 t8 0" stroke="#0d2b52" /></svg><span className="poster-spark poster-spark--a" aria-hidden="true">✦</span><span className="poster-spark poster-spark--b" aria-hidden="true">✦</span><p className="side-headline"><span className="line-a">{copy.sideA}</span><span className="line-b">{copy.sideB} ...</span></p><svg className="side-squiggle" viewBox="0 0 200 20" aria-hidden="true"><path d="M4 12 Q24 2 44 12 T84 12 T124 12 T164 12 T196 12" /></svg><span className="sticker sticker--bulb" aria-hidden="true"><Lightbulb /></span><span className="sticker sticker--image" aria-hidden="true"><ImageIcon /></span><span className="sticker sticker--play" aria-hidden="true"><CirclePlay /></span><div className="cat-mascot-box"><img className="cat-mascot" src="/brand/cat.png" alt={isArabic ? "قطة مرسومة بأسلوب مرح" : "Playful illustrated cat"} /><span className="zz zz-1" aria-hidden="true">z</span><span className="zz zz-2" aria-hidden="true">z</span><span className="zz zz-3" aria-hidden="true">Z</span></div><svg className="poster-plant poster-plant--left" viewBox="0 0 44 50" aria-hidden="true"><path d="M20 48 C4 36 6 18 16 6 M22 48 C22 30 30 18 40 14 M20 48 C28 38 26 28 34 22" /></svg><svg className="poster-plant poster-plant--right" viewBox="0 0 44 50" aria-hidden="true"><path d="M22 48 C38 36 36 18 26 6 M22 48 C22 30 14 18 4 14" /></svg><p className="side-note">{copy.sideC}<br />{copy.sideD}</p></div></div>
+          <div className="reference-hero-side">
+            <div className="hero-symbol hero-symbol--bulb"><Lightbulb size={30} /></div>
+            <div className="hero-symbol hero-symbol--image"><ImageIcon size={29} /></div>
+            <div className="hero-symbol hero-symbol--play"><CirclePlay size={29} /></div>
+            <div className="hero-symbol hero-symbol--spark"><Sparkles size={27} /></div>
+            <div className="hero-doodle hero-doodle--left">⌁</div>
+            <div className="hero-doodle hero-doodle--right"><Send size={24} /></div>
+            <p className="hero-side-copy">{copy.sideA}<br />{copy.sideB}<br /><span>...</span></p>
+            <p className="hero-side-choice">{copy.sideC}<br />{copy.sideD}</p>
+            <MoveDown className="hero-side-arrow" size={27} />
+            <div className="cat-resting">
+              <div className="cat-zzz" aria-hidden="true"><span>Z</span><span>Z</span><span>z</span></div>
+              <img className="cat-mascot" src="/manus-storage/tabyank-cat_98cf277b.png" alt={isArabic ? "قطة مرسومة بأسلوب مرح" : "Playful illustrated cat"} />
+            </div>
+            <span className="doodle-spark doodle-spark--one">✦</span><span className="doodle-spark doodle-spark--two">〰</span>
+          </div>
+        </section>
 
 
         <section id="work" className="work-section">
-          <div className="work-heading"><SectionKicker>{copy.work}</SectionKicker><h2>{text("work.titleA", "مشاريع تعبّر عن")}<br /><span>{text("work.titleB", "فكرتنا.")}</span></h2><p>{text("work.lead", "مشاريع مختارة تعكس أسلوبنا وجودة أعمالنا في الهوية والموشن والواجهات.")}</p><a className="work-page-link" href="/works">{isArabic ? "شاهد أعمالنا كاملة" : "View all our work"}<ArrowLeft size={16} /></a></div>
-          <div className="work-grid">{livePortfolio.length ? livePortfolio.map((item, index) => <article key={item.id} className={`work-card work-card--${item.mediaType === "video" ? "video" : item.mediaType === "image" ? "coral" : "mint"}`}>{item.mediaType === "video" ? (item.thumbnailUrl ? <img src={item.thumbnailUrl} alt={item.title} /> : <video src={item.mediaUrl} muted playsInline preload="metadata" />) : item.mediaType === "image" ? <img src={item.mediaUrl} alt={item.title} /> : <div className="work-link-card">↗</div>}<span className="work-num" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span><a className="work-card-overlay" href={item.mediaType === "link" ? (item.projectUrl || item.mediaUrl) : `/works/${item.id}`} {...(item.mediaType === "link" ? { target: "_blank", rel: "noreferrer" } : {})} aria-label={`فتح ${item.title}`}><span>{item.mediaType === "video" ? "▶" : "↗"}</span><div><strong>{item.title}</strong><small>{item.category} · فتح العمل</small></div></a></article>) : <><article className="work-card work-card--video"><video src="/media/video1.mp4" muted playsInline preload="metadata" /><div className="work-card-overlay"><span>▶</span><div><strong>موشن إعلاني</strong><small>فكرة تتحرك</small></div></div></article><article className="work-card work-card--coral"><div className="work-emoji">✦</div><strong>هوية بصرية</strong><small>علامة لها حضور</small><span className="work-arrow">↗</span></article><article className="work-card work-card--mint"><div className="work-ui"><span>▰</span><span>▱</span><span>▰</span></div><strong>تصميم واجهة</strong><small>تجربة أوضح وأسهل</small><span className="work-arrow">↗</span></article><article className="work-card work-card--yellow"><div className="work-emoji">◉</div><strong>فيديو للعلامة</strong><small>قصة بصريّة مختصرة</small><span className="work-arrow">↗</span></article></>}</div>
+          <div className="work-heading"><SectionKicker>{copy.work}</SectionKicker><h2>{text("work.titleA", "أفكار تحولت")}<br /><span>{text("work.titleB", "إلى حضور.")}</span></h2><p>{text("work.lead", "مشاريع مختارة تعكس أسلوبنا وجودة أعمالنا في الهوية والموشن والواجهات.")}</p><a className="work-page-link" href="/works">{isArabic ? "شاهد أعمالنا كاملة" : "View all our work"}<ArrowLeft size={16} /></a></div>
+          <div className="work-grid">{livePortfolio.length ? livePortfolio.map((item) => <article key={item.id} className={`work-card work-card--${item.mediaType === "video" ? "video" : item.mediaType === "image" ? "coral" : "mint"}`}>{item.mediaType === "video" ? <video src={item.mediaUrl} poster={item.thumbnailUrl ?? undefined} muted loop playsInline autoPlay /> : item.mediaType === "image" ? <img src={item.mediaUrl} alt={item.title} /> : <div className="work-link-card">↗</div>}<a className="work-card-overlay" href={item.projectUrl || item.mediaUrl} target="_blank" rel="noreferrer" aria-label={`فتح ${item.title}`}><span>{item.mediaType === "video" ? "▶" : "↗"}</span><div><strong>{item.title}</strong><small>{item.category} · فتح العمل</small></div></a></article>) : <><article className="work-card work-card--video"><video src="/manus-storage/9062a3c9f2fec74f0523d99d4eb5075b_b1a5015c.mp4" muted loop playsInline autoPlay /><div className="work-card-overlay"><span>▶</span><div><strong>موشن إعلاني</strong><small>فكرة تتحرك</small></div></div></article><article className="work-card work-card--coral"><div className="work-emoji">✦</div><strong>هوية بصرية</strong><small>علامة لها حضور</small><span className="work-arrow">↗</span></article><article className="work-card work-card--mint"><div className="work-ui"><span>▰</span><span>▱</span><span>▰</span></div><strong>تصميم واجهة</strong><small>تجربة أوضح وأسهل</small><span className="work-arrow">↗</span></article><article className="work-card work-card--yellow"><div className="work-emoji">◉</div><strong>فيديو للعلامة</strong><small>قصة بصريّة مختصرة</small><span className="work-arrow">↗</span></article></>}</div>
         </section>
 
-          <div className="reviews-intro" aria-hidden="true"><span className="reviews-intro-line reviews-intro-line--left" /><div className="reviews-intro-copy"><span>{isArabic ? "مساحة للتجربة" : "A space for experience"}</span><h2>{isArabic ? "تقييمات عملائنا" : "Client reviews"}</h2><p>{isArabic ? "نترك الأثر… ويكمل العملاء الحكاية" : "The work leaves a mark. Our clients tell the story."}</p></div><span className="reviews-intro-line reviews-intro-line--right" /><img className="reviews-intro-illustration" src="/brand/reviews-girl-stars.png" alt="" /></div>
+          <div className="reviews-intro" aria-hidden="true"><span className="reviews-intro-line reviews-intro-line--left" /><div className="reviews-intro-copy"><span>{isArabic ? "مساحة للتجربة" : "A space for experience"}</span><h2>{isArabic ? "تقييمات عملائنا" : "Client reviews"}</h2><p>{isArabic ? "نترك الأثر… ويكمل العملاء الحكاية" : "The work leaves a mark. Our clients tell the story."}</p></div><span className="reviews-intro-line reviews-intro-line--right" /><img className="reviews-intro-illustration" src="/manus-storage/safar-reviews-girl-stars-clean_8637709e.png" alt="" /></div>
           <section id="reviews" className="reference-testimonial" onTouchStart={(event) => { testimonialTouchStart.current = event.changedTouches[0]?.clientX ?? null; }} onTouchEnd={(event) => { const start = testimonialTouchStart.current; testimonialTouchStart.current = null; if (start == null) return; const delta = event.changedTouches[0]?.clientX - start; if (Math.abs(delta) > 35) moveTestimonial(delta > 0 ? -1 : 1); }}><div className="quote-mark">“</div><div className="testimonial-carousel"><SectionKicker>{copy.reviewKicker}</SectionKicker><blockquote key={activeTestimonial}>{displayedTestimonial?.quote || text("review.quote", copy.review)}</blockquote><div className="testimonial-person"><span>{(displayedTestimonial?.name || "ليان").slice(0, 1)}</span><div><strong>{displayedTestimonial?.name || (isArabic ? "ليان السالم" : "Layan Al Salem")}</strong><small>{displayedTestimonial?.company || (isArabic ? "مؤسسة نواة" : "Founder, Nawa")}</small></div><b>{"★".repeat(displayedTestimonial?.rating || 5)}</b></div>{liveTestimonials.length > 1 && <div className="testimonial-controls"><button type="button" onClick={() => moveTestimonial(-1)} aria-label={isArabic ? "التقييم السابق" : "Previous testimonial"}><ChevronRight size={19} /></button><span>{String((activeTestimonial % liveTestimonials.length) + 1).padStart(2, "0")} / {String(liveTestimonials.length).padStart(2, "0")}</span><button type="button" onClick={() => moveTestimonial(1)} aria-label={isArabic ? "التقييم التالي" : "Next testimonial"}><ChevronLeft size={19} /></button></div>}</div></section>
 
         <section id="contact" className="reference-contact"><div className="contact-intro"><SectionKicker>{copy.contactKicker}</SectionKicker><h2>{text("contact.titleA", copy.contactTitleA)}<br /><span>{text("contact.titleB", copy.contactTitleB)}</span></h2><p>{text("contact.lead", copy.contactLead)}</p><div className="contact-links"><a href="mailto:hello@safar.studio">hello@safar.studio</a>{whatsappDigits && <a href={`tel:+${whatsappDigits}`}>+{whatsappDigits}</a>}{whatsappHref && <a className="whatsapp-contact-link" href={whatsappHref} target="_blank" rel="noreferrer"><MessageCircle size={17} />{isArabic ? "محادثة واتساب" : "Chat on WhatsApp"}</a>}</div></div><div className="reference-form-card">{submitted ? <div className="reference-success"><div><Check size={28} /></div><h3>{copy.thanks}</h3><p>{copy.thanksLead}</p><button className="more-link" onClick={() => setSubmitted(false)}>{copy.newRequest} <ArrowLeft size={15} /></button></div> : <form onSubmit={handleSubmit}><div className="form-card-title">{copy.formTitle} <Sparkles size={18} /></div><label>{copy.name}<input name="name" required placeholder={isArabic ? "مثال: ليان السالم" : "e.g. Layan Al Salem"} /></label><label>{copy.email}<input name="email" required type="email" placeholder="name@company.com" /></label><label>{isArabic ? "رقم الجوال" : "Phone"}<input name="phone" placeholder="05xxxxxxxx" /></label><label>{isArabic ? "الخدمة المطلوبة" : "Service needed"}<select name="service" required defaultValue=""><option value="" disabled>{copy.choose}</option>{services.map((service) => <option key={service.id} value={service.id}>{isArabic ? service.title : service.enTitle}</option>)}</select><ChevronDown className="select-chevron" size={16} /></label><label>{copy.message} <span className="optional-label">({isArabic ? "اختياري" : "optional"})</span><textarea name="message" rows={3} placeholder={isArabic ? "حدثنا عن فكرتك باختصار..." : "Tell us a little about your idea..."} /></label><button type="submit" disabled={createLead.isPending} className="reference-submit">{createLead.isPending ? "جارٍ الإرسال…" : copy.submit} <ArrowLeft size={17} /></button><small className="privacy-note">{isArabic ? "نحترم خصوصيتك ولن نشارك بياناتك." : "We respect your privacy and never share your data."}</small></form>}</div></section>
       </main>
 
-      <footer className="reference-footer"><div className="footer-brand"><img className="footer-brand-logo" src={isArabic ? "/brand/safar-ar.png" : "/brand/safar-en.png"} alt={isArabic ? "شعار سَفَر" : "SAFAR logo"} /></div><p>{copy.footer}</p><div className="footer-social">{publicData.data?.settings?.instagramUrl && <a href={publicData.data.settings.instagramUrl} target="_blank" rel="noreferrer" aria-label="Instagram"><Instagram size={17} /></a>}{publicData.data?.settings?.linkedinUrl && <a href={publicData.data.settings.linkedinUrl} target="_blank" rel="noreferrer" aria-label="LinkedIn"><Linkedin size={17} /></a>}{publicData.data?.settings?.tiktokUrl && <a href={publicData.data.settings.tiktokUrl} target="_blank" rel="noreferrer" aria-label="TikTok"><Music2 size={17} /></a>}{whatsappHref && <a href={whatsappHref} target="_blank" rel="noreferrer" aria-label="WhatsApp"><MessageCircle size={17} /></a>}</div><small>© 2025 SAFAR Studio</small></footer>
+      <footer className="reference-footer"><div className="footer-brand"><img className="footer-brand-logo" src={isArabic ? "/manus-storage/safar-ar-wide_70a991ce.png" : "/manus-storage/safar-en-wide_64b08516.png"} alt={isArabic ? "شعار سَفَر" : "SAFAR logo"} /></div><p>{copy.footer}</p><div className="footer-social">{publicData.data?.settings?.instagramUrl && <a href={publicData.data.settings.instagramUrl} target="_blank" rel="noreferrer" aria-label="Instagram"><Instagram size={17} /></a>}{publicData.data?.settings?.linkedinUrl && <a href={publicData.data.settings.linkedinUrl} target="_blank" rel="noreferrer" aria-label="LinkedIn"><Linkedin size={17} /></a>}{publicData.data?.settings?.tiktokUrl && <a href={publicData.data.settings.tiktokUrl} target="_blank" rel="noreferrer" aria-label="TikTok"><Music2 size={17} /></a>}{whatsappHref && <a href={whatsappHref} target="_blank" rel="noreferrer" aria-label="WhatsApp"><MessageCircle size={17} /></a>}</div><small>© 2025 SAFAR Studio</small></footer>
       {whatsappHref && <a className="whatsapp-float" href={whatsappHref} target="_blank" rel="noreferrer" aria-label={isArabic ? "تواصل معنا عبر واتساب" : "Contact us on WhatsApp"} title={isArabic ? "تواصل معنا عبر واتساب" : "Contact us on WhatsApp"}><MessageCircle size={28} fill="currentColor" /></a>}
     </div>
   );
