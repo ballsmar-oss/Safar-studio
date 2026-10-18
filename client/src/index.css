@@ -292,7 +292,7 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
 /* The character sleeping under the phone (phone acts as the blanket), breathing with zzz rising from its head */
 .interactive-phone .phone-sleeper { position:absolute; left:50%; top:100%; margin-top:-36px; width:100%; transform:translateX(-50%); pointer-events:none; z-index:1; }
 .phone-sleeper img { display:block; width:100%; height:auto; transform-origin:50% 100%; animation:sleeperBreathe 3.6s ease-in-out infinite; }
-.phone-sleeper .zz { position:absolute; left:44%; top:8%; font-family:"Noto Kufi Arabic",sans-serif; font-weight:900; font-size:26px; color:var(--navy); opacity:0; animation:zzRise 3.6s ease-in infinite; }
+.phone-sleeper .zz { position:absolute; left:36%; top:2%; font-family:"Noto Kufi Arabic",sans-serif; font-weight:900; font-size:26px; color:var(--navy); opacity:0; animation:zzRise 3.6s ease-in infinite; }
 .phone-sleeper .zz-2 { animation-delay:1.2s; }
 .phone-sleeper .zz-3 { animation-delay:2.4s; font-size:32px; }
 @keyframes sleeperBreathe { 0%,100% { transform:scale(1); } 50% { transform:scale(1.025,.975); } }
