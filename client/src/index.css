@@ -339,3 +339,21 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
 .reference-hero-side .side-note { margin:0; font-size:16px; line-height:1.7; color:var(--ink); }
 .cat-mascot-box::after { content:""; position:absolute; left:12%; right:12%; bottom:-6px; height:14px; border-radius:50%; background:rgba(13,43,82,.12); z-index:-1; }
 @media(max-width:480px){.side-doodle,.side-plant,.spark--two{display:none}.side-squiggle{width:140px}}
+
+/* Works section, redesigned: teal panel, navy project cards with a number badge, title and category under it, and a coral arrow */
+.work-section { width:min(1180px,calc(100% - 72px)); background:#b9e4dc; border-radius:36px; padding:70px 56px 80px; }
+.work-heading h2 span { position:relative; color:var(--coral); }
+.work-heading h2 span::after { content:""; position:absolute; left:-4%; right:-4%; bottom:-6px; height:6px; border-radius:6px; background:var(--coral); transform:rotate(-2deg); }
+.work-grid { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+.work-card { position:relative; min-height:300px; border-radius:26px; overflow:hidden; background:var(--navy); border:3px solid var(--navy); box-shadow:6px 7px 0 var(--navy); color:#fff; }
+.work-card:nth-child(1) { border-color:var(--coral); }
+.work-card:nth-child(2) { border-color:#78d2ce; }
+.work-card img, .work-card video { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+.work-card-overlay { position:absolute; inset:0; display:flex; flex-direction:row-reverse; align-items:flex-end; justify-content:space-between; gap:12px; padding:20px; background:linear-gradient(to top, rgba(13,43,82,.96) 30%, rgba(13,43,82,0) 72%); color:#fff; text-decoration:none; }
+.work-card-overlay > span:first-child { flex:none; width:52px; height:52px; border-radius:50%; background:var(--coral); color:var(--navy); display:grid; place-items:center; font-size:18px; font-weight:800; }
+.work-card-overlay > div { flex:1; min-width:0; }
+.work-card-overlay strong { display:block; font-size:24px; font-weight:800; line-height:1.3; }
+.work-card-overlay small { display:block; font-size:14px; color:rgba(255,255,255,.82); }
+.work-num { position:absolute; top:16px; right:16px; z-index:2; padding:6px 14px; border-radius:999px; background:rgba(13,43,82,.72); color:#fff; font-size:13px; font-weight:800; }
+@media(max-width:850px){.work-section{width:calc(100% - 36px);padding:44px 18px 52px;border-radius:28px}}
+@media(max-width:480px){.work-card{min-height:240px;border-radius:22px}.work-card-overlay{padding:14px}.work-card-overlay strong{font-size:17px}.work-card-overlay small{font-size:11px}.work-card-overlay > span:first-child{width:40px;height:40px;font-size:14px}.work-num{top:10px;right:10px;font-size:11px}}
