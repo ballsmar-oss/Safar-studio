@@ -15,6 +15,13 @@
       "when": 1792334779534,
       "tag": "0001_free_green_goblin",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1792335371757,
+      "tag": "0002_nebulous_echo",
+      "breakpoints": true
     }
   ]
 }

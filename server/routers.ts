@@ -16,7 +16,7 @@ const idInput = z.object({ id: z.number().int().positive() });
 const webUrl = z.string().url().refine((value) => /^https?:\/\//.test(value), "Only http(s) links are allowed");
 const mediaUrl = webUrl.or(z.string().regex(/^\/(uploads|media|brand)\/[\w.-]+$/));
 const portfolioInput = z.object({
-  title: z.string().min(1).max(180), description: z.string().max(5000).optional().nullable(), category: z.string().min(1).max(80),
+  title: z.string().min(1).max(180), titleEn: z.string().max(180).optional().nullable(), description: z.string().max(5000).optional().nullable(), descriptionEn: z.string().max(5000).optional().nullable(), category: z.string().min(1).max(80), categoryEn: z.string().max(80).optional().nullable(),
   mediaType: z.enum(["image", "video", "link"]), mediaUrl,
   thumbnailUrl: mediaUrl.optional().nullable(), projectUrl: webUrl.optional().nullable(),
   isPublished: z.boolean(), sortOrder: z.number().int().default(0),

@@ -414,3 +414,7 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
 .reference-hero-side .zz-2 { top:59.5%; }
 .reference-hero-side .zz-3 { top:64.5%; font-size:4cqw; }
 .hero-poster-wrap { position:relative; z-index:2; }
+/* English version of the hero poster: the headline is live text over the erased Arabic one */
+.side-headline-en { position:absolute; top:12%; left:0; right:0; margin:0; font-size:7.5cqw; font-weight:800; line-height:1.2; color:var(--navy); text-align:center; }
+.side-headline-en span, .side-headline-en em { display:block; font-style:normal; }
+.side-headline-en em { color:var(--coral); }

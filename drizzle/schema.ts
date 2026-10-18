@@ -14,8 +14,11 @@ export const siteContent = sqliteTable("siteContent", {
 export const portfolioItems = sqliteTable("portfolioItems", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   title: text("title").notNull(),
+  titleEn: text("titleEn"),
   description: text("description"),
+  descriptionEn: text("descriptionEn"),
   category: text("category").notNull().default("عام"),
+  categoryEn: text("categoryEn"),
   mediaType: text("mediaType", { enum: ["image", "video", "link"] }).notNull().default("image"),
   mediaUrl: text("mediaUrl").notNull(),
   thumbnailUrl: text("thumbnailUrl"),
