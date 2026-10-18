@@ -418,3 +418,5 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
 .side-headline-en { position:absolute; top:12%; left:0; right:0; margin:0; font-size:7.5cqw; font-weight:800; line-height:1.2; color:var(--navy); text-align:center; }
 .side-headline-en span, .side-headline-en em { display:block; font-style:normal; }
 .side-headline-en em { color:var(--coral); }
+/* The English headline sits centred and uses the same heavy face as the Arabic one */
+.is-english .reference-hero-side .side-headline-en { text-align:center; font-family:"IBM Plex Sans Arabic","Noto Kufi Arabic",sans-serif; font-weight:800; font-size:7cqw; line-height:1.25; }
