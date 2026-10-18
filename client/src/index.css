@@ -296,15 +296,12 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
 @media (min-width: 851px) { .phone-only-scene { min-height: 790px; } .phone-only-scene .interactive-phone { margin-top: 104px; } }
 @media (max-width: 850px) { .phone-only-scene { min-height: 680px; } .phone-only-scene .interactive-phone { margin-top: 110px; } }
 
-/* Hint under the hero button: tells visitors they can choose from the phone */
-.pick-hint { position:relative; margin-top:36px; max-width:280px; color:var(--navy); font-family:"Noto Kufi Arabic",sans-serif; font-weight:700; font-size:15px; line-height:1.6; }
-.pick-hint .ph-arrow { position:absolute; right:-6px; top:-58px; width:64px; height:48px; transform:scaleX(-1); }
+/* Hint under the hero button: the sleeping cat points to the phone, gently breathing */
+.pick-hint { display:flex; flex-direction:column; align-items:flex-start; gap:8px; margin-top:30px; color:var(--navy); font-family:"Noto Kufi Arabic",sans-serif; font-weight:700; font-size:15px; }
+.pick-hint .pick-cat { width:120px; height:auto; transform-origin:50% 100%; animation:catBreathe 4.2s ease-in-out infinite; }
 .pick-hint .ph-text { display:block; }
-.pick-hint .ph-icons { display:flex; gap:10px; margin-top:12px; }
-.pick-hint .ph-icons span { width:46px; height:46px; border-radius:50%; background:#fff; border:1.5px solid var(--navy); box-shadow:2px 3px 0 rgba(13,43,82,.18); display:grid; place-items:center; padding:7px; animation:phFloat 3.4s ease-in-out infinite; }
-.pick-hint .ph-icons span svg { width:100%; height:100%; }
-.pick-hint .ph-icons span:nth-child(2) { animation-delay:.5s; }
-.pick-hint .ph-icons span:nth-child(3) { animation-delay:1s; }
-.pick-hint .ph-icons span:nth-child(4) { animation-delay:1.5s; }
-@keyframes phFloat { 50% { transform:translateY(-5px); } }
-@media (prefers-reduced-motion:reduce) { .pick-hint .ph-icons span { animation:none; } }
+@keyframes catBreathe { 0%,100% { transform:scale(1) translateY(0); } 50% { transform:scale(1.035,.97) translateY(-2px); } }
+/* translucent pointer used on the first visit */
+.ghost-pointer { position:absolute; left:0; top:0; width:28px; height:28px; pointer-events:none; z-index:8; opacity:0; filter:drop-shadow(0 2px 4px rgba(13,43,82,.25)); }
+.phone-service.ghost-tap { background:rgba(244,119,99,.18) !important; transition:background .25s; }
+@media (prefers-reduced-motion:reduce) { .pick-hint .pick-cat { animation:none; } }

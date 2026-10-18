@@ -62,6 +62,46 @@ export default function Home() {
   });
 
   const [menuOpen, setMenuOpen] = useState(false);
+  // First visit only: a translucent pointer taps three services so visitors know they can choose.
+  useEffect(() => {
+    const phone = phoneRef.current;
+    if (!phone || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    try { if (sessionStorage.getItem("safar-pointer-intro")) return; sessionStorage.setItem("safar-pointer-intro", "1"); } catch { /* storage unavailable: play anyway */ }
+    const rows = Array.from(phone.querySelectorAll<HTMLElement>(".phone-service"));
+    if (!rows.length) return;
+    const ghost = document.createElement("div");
+    ghost.className = "ghost-pointer";
+    ghost.innerHTML = '<svg viewBox="0 0 28 28" width="28" height="28"><path d="M5 3 L5 22 L10 17 L13.5 25 L16.5 23.8 L13 16 L20 16 Z" fill="rgba(13,43,82,.55)" stroke="rgba(255,245,223,.85)" stroke-width="1.4" stroke-linejoin="round"/></svg>';
+    phone.appendChild(ghost);
+    const at = (el: HTMLElement) => {
+      const p = phone.getBoundingClientRect(), r = el.getBoundingClientRect();
+      return { x: r.left - p.left + r.width * 0.72, y: r.top - p.top + r.height * 0.5 };
+    };
+    const start = { x: phone.clientWidth * 0.5, y: 6 };
+    const timers: number[] = [];
+    let t = 900;
+    const move = (to: { x: number; y: number }, from: { x: number; y: number }, dur: number) =>
+      ghost.animate([{ transform: `translate(${from.x}px, ${from.y}px)` }, { transform: `translate(${to.x}px, ${to.y}px)` }], { duration: dur, easing: "cubic-bezier(.3,.7,.2,1)", fill: "forwards" });
+    ghost.animate([{ opacity: 0 }, { opacity: 0.9 }], { duration: 500, delay: t, fill: "forwards" });
+    let from = start;
+    for (let i = 0; i < 3; i++) {
+      const row = rows[i % rows.length];
+      const to = at(row);
+      const when = t + 500 + i * 1100;
+      timers.push(window.setTimeout(() => {
+        move(to, from, 700);
+      }, when - 500 + (i === 0 ? 0 : 0)));
+      timers.push(window.setTimeout(() => row.classList.add("ghost-tap"), when + 700));
+      timers.push(window.setTimeout(() => row.classList.remove("ghost-tap"), when + 1000));
+      from = to;
+    }
+    const end = t + 500 + 3 * 1100 + 300;
+    ghost.animate([{ opacity: 0.9 }, { opacity: 0 }], { duration: 600, delay: end, fill: "forwards" });
+    timers.push(window.setTimeout(() => ghost.remove(), end + 700));
+    return () => { timers.forEach(clearTimeout); ghost.remove(); };
+  }, []);
+
+  const phoneRef = useRef<HTMLDivElement>(null);
   const [language, setLanguage] = useState<"ar" | "en">("ar");
   const [activeId, setActiveId] = useState("motion");
   const [phoneOpen, setPhoneOpen] = useState(false);
@@ -129,19 +169,13 @@ export default function Home() {
             <p>{text("hero.lead", copy.heroLead)}</p>
             <a className="reference-cta" href="#services">{copy.heroCta} <ArrowLeft size={17} /></a>
             <div className="pick-hint" aria-hidden="true">
-              <svg className="ph-arrow" viewBox="0 0 80 60" fill="none"><path d="M6 8 C 36 0, 70 14, 60 46" stroke="#f47763" strokeWidth="2.5" strokeLinecap="round" /><path d="M50 38 L60 48 L68 36" stroke="#f47763" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-              <span className="ph-text">{isArabic ? "تقدر تختار من الخدمات اللي تحت ✦" : "Pick a service from the phone ✦"}</span>
-              <span className="ph-icons">
-                <span title="إنتاج الفيديو"><svg viewBox="0 0 40 40" fill="none" stroke="#0d2b52" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="8" y="11" width="24" height="18" rx="5" /><path d="M18 16 L24 20 L18 24 Z" fill="#f47763" stroke="#f47763" /><path d="M31 8 L33 5 M35 12 L38 11" stroke="#f47763" /></svg></span>
-                <span title="الأتمتة"><svg viewBox="0 0 40 40" fill="none" stroke="#0d2b52" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12 Q9 9 12 9 H28 Q31 9 31 12 V23 Q31 26 28 26 H19 L13 31 V26 H12 Q9 26 9 23 Z" /><circle cx="15" cy="17.5" r="1.4" fill="#f47763" stroke="none" /><circle cx="20" cy="17.5" r="1.4" fill="#f47763" stroke="none" /><circle cx="25" cy="17.5" r="1.4" fill="#f47763" stroke="none" /></svg></span>
-                <span title="الهوية البصرية"><svg viewBox="0 0 40 40" fill="none" stroke="#0d2b52" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 30 L15 25 L27 13 Q29 11 31 13 Q33 15 31 17 L19 29 L14 31 Z" /><path d="M24 16 L28 20" /><path d="M9 33 Q12 30 16 33" stroke="#f47763" /></svg></span>
-                <span title="الاستشارات"><svg viewBox="0 0 40 40" fill="none" stroke="#0d2b52" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 26 Q11 23 11 17 A9 9 0 0 1 29 17 Q29 23 25 26 Q24 28 24 30 H16 Q16 28 15 26 Z" /><path d="M17 34 H23" /><path d="M20 3 V5 M9 8 L10.5 9.5 M31 8 L29.5 9.5" stroke="#f47763" /></svg></span>
-              </span>
+              <img className="pick-cat" src="/brand/cat.png" alt="" />
+              <span className="ph-text">{isArabic ? "اختر من الجوال ↓" : "Pick from the phone ↓"}</span>
             </div>
           </div>
           <div className="reference-hero-art phone-only-scene">
             <img className="hero-illustration" src={heroImage} alt={isArabic ? "رسم توضيحي لخدمات سَفَر الرقمية" : "Illustration of SAFAR digital services"} />
-            <div className={`interactive-phone ${phoneOpen ? "is-open" : ""}`} onClick={() => setPhoneOpen((open) => !open)} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") setPhoneOpen((open) => !open); }} aria-label={isArabic ? "شاشة خدمات سَفَر" : "SAFAR services screen"}>
+            <div ref={phoneRef} className={`interactive-phone ${phoneOpen ? "is-open" : ""}`} onClick={() => setPhoneOpen((open) => !open)} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") setPhoneOpen((open) => !open); }} aria-label={isArabic ? "شاشة خدمات سَفَر" : "SAFAR services screen"}>
               <img className="phone-sleeper" src="/brand/sleeper.png" alt="" aria-hidden="true" /><div className="phone-speaker" /><div className="phone-screen"><div className="phone-header"><strong>{copy.phoneTitle}</strong><span>+</span></div><div className="phone-service-list">{services.map((service) => <button key={service.id} className={`phone-service ${service.id === activeId ? "is-active" : ""}`} onClick={(event) => { event.stopPropagation(); setActiveId(service.id); setPhoneOpen(true); }} aria-pressed={service.id === activeId}><span className="phone-service-icon">{service.icon}</span><span><b>{isArabic ? service.title : service.enTitle}</b><small>{isArabic ? service.subtitle : service.enSubtitle}</small></span><i className={service.id === activeId ? "is-on" : ""}><em /></i></button>)}</div><div className="phone-active-details"><div className="phone-detail-title"><span>{isArabic ? activeService.title : activeService.enTitle}</span><small>{isArabic ? activeService.image : activeService.enImage}</small></div><ul>{(isArabic ? activeService.details : activeService.enDetails).slice(0, 3).map((detail) => <li key={detail}><Check size={12} />{detail}</li>)}</ul><a href="#contact" className="phone-more" onClick={(event) => event.stopPropagation()}>{copy.more} <ArrowLeft size={13} /></a></div><a className="phone-cta" href="#contact" onClick={(event) => event.stopPropagation()}>{copy.start} <ArrowLeft size={14} /></a></div>
             </div>
             <div className="art-badge art-badge--top">{isArabic ? <>فكرة<br />تتبيّن</> : <>Ideas<br />made clear</>}</div><div className="art-badge art-badge--bottom">{isArabic ? <>تصميم<br />يتحرك</> : <>Design<br />in motion</>}</div>
