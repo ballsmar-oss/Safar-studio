@@ -405,3 +405,12 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
 .hero-poster-wrap { margin-bottom:110px; }
 .reference-hero-side .side-note { top:86%; }
 .reference-hero-side .side-note { top:79%; }
+
+/* Hero poster is the approved artwork as one image; only the zzz are live, drawn over the cat's head at fixed spots of the image */
+.reference-hero-side { aspect-ratio:auto; }
+.reference-hero-side .hero-art { display:block; width:100%; height:auto; }
+.reference-hero-side .zz { left:45%; font-size:3.6cqw; line-height:1; }
+.reference-hero-side .zz-1 { top:53%; color:#9aa3ad; }
+.reference-hero-side .zz-2 { top:59.5%; }
+.reference-hero-side .zz-3 { top:64.5%; font-size:4cqw; }
+.hero-poster-wrap { position:relative; z-index:2; }
