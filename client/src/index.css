@@ -104,7 +104,31 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
 .reference-hero::before,.reference-hero::after { content:""; position:absolute; z-index:0; pointer-events:none; }.reference-hero::before { top:15%; right:4%; width:46px; height:15px; border-top:3px solid var(--navy); border-radius:50%; transform:rotate(25deg); }.reference-hero::after { bottom:20%; left:4%; width:54px; height:28px; border-top:3px solid var(--coral); border-radius:50%; transform:rotate(-20deg); }
 .reference-hero-copy,.reference-hero-art,.reference-hero-side { z-index:1; }.reference-hero-side { position:relative; min-height:330px; }.cat-mascot { position:absolute; right:calc(50% - 36px); bottom:-8px; width:128px; height:128px; object-fit:contain; filter:drop-shadow(4px 6px 0 rgba(13,43,82,.12)); transform:rotate(-4deg); }.doodle-spark { position:absolute; color:var(--navy); font-family:cursive; font-weight:900; }.doodle-spark--one { right:12px; bottom:112px; color:var(--coral); font-size:32px; transform:rotate(12deg); }.doodle-spark--two { left:8px; bottom:68px; font-size:34px; transform:rotate(-30deg); }
 .art-badge--top { border-width:2px; }.art-badge--bottom { border-width:2px; }.reference-cta,.reference-submit,.phone-cta { border-width:2px; }.work-section { background:#b9e4dc; border-radius:32px; margin-top:35px; padding-left:35px; padding-right:35px; }.work-section::before { content:""; display:block; }.work-heading .section-kicker { color:var(--navy); }
-@media(max-width:850px){.reference-hero-side{min-height:185px}.cat-mascot{right:20px;bottom:-8px;width:92px;height:92px}.doodle-spark--one{right:2px;bottom:76px;font-size:24px}.doodle-spark--two{left:4px;bottom:45px;font-size:27px}.reference-hero-copy h1::after{right:4%;bottom:-5px;width:58px;height:4px}.work-section{border-radius:24px;padding-left:16px;padding-right:16px}}
+@media(max-width:850px){.reference-hero-side{min-height:185px}.cat-mascot-box{right:20px;bottom:-8px;width:92px;height:92px}.doodle-spark--one{right:2px;bottom:76px;font-size:24px}.doodle-spark--two{left:4px;bottom:45px;font-size:27px}.reference-hero-copy h1::after{right:4%;bottom:-5px;width:58px;height:4px}.work-section{border-radius:24px;padding-left:16px;padding-right:16px}}
+
+/* The small cat in the circle: the box holds the cat and the zzz rising from its head */
+.cat-mascot-box { position:absolute; right:calc(50% - 36px); bottom:-8px; width:128px; height:128px; }
+.cat-mascot-box .cat-mascot { position:static; width:100%; height:100%; }
+/* zzz rising from a cat's head; used by every cat that sleeps on the page */
+.pick-cat-box { position:relative; width:120px; }
+.zz { position:absolute; left:22%; top:4%; font-family:"Noto Kufi Arabic",sans-serif; font-weight:900; font-size:18px; color:var(--navy); opacity:0; pointer-events:none; animation:zzRise 3.6s ease-in infinite; }
+.zz-2 { animation-delay:1.2s; }
+.zz-3 { animation-delay:2.4s; font-size:22px; }
+@keyframes zzRise { 0% { opacity:0; transform:translate(0,0) scale(.6); } 15% { opacity:1; } 100% { opacity:0; transform:translate(20px,-60px) scale(1.2); } }
+@media (prefers-reduced-motion:reduce) { .zz { animation:none; opacity:1; } }
+
+/* Hero side block: centered headline, floating sticker icons, and the sleeping cat with zzz under it */
+.reference-hero-side { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; text-align:center; min-height:360px; padding:0; }
+.reference-hero-side .side-headline { margin:0; font-size:34px; font-weight:800; line-height:1.4; color:var(--navy); }
+.reference-hero-side .side-headline span { color:var(--coral); }
+.side-stickers { position:absolute; inset:0; pointer-events:none; }
+.sticker { position:absolute; width:56px; height:56px; display:grid; place-items:center; color:var(--navy); border:2px solid var(--navy); border-radius:14px; box-shadow:3px 4px 0 var(--navy); }
+.sticker--bulb { top:-6px; right:-8px; background:var(--mint); transform:rotate(8deg); }
+.sticker--image { top:46%; left:-14px; background:#f8c3b5; transform:rotate(-8deg); }
+.sticker--play { bottom:-4px; right:-6px; background:#bfe6ea; transform:rotate(6deg); }
+.reference-hero-side .cat-mascot-box { position:relative; right:auto; bottom:auto; width:150px; height:150px; margin-top:6px; }
+@media(max-width:850px){.reference-hero-side{min-height:300px}.reference-hero-side .cat-mascot-box{width:120px;height:120px}}
+@media(max-width:480px){.reference-hero-side .side-headline{font-size:28px}.reference-hero-side .cat-mascot-box{width:130px;height:130px}.sticker{width:44px;height:44px}.sticker--bulb{right:0}.sticker--play{right:0}}
 
 .receipt-paper { transform-origin: top center; animation: receipt-print 1100ms cubic-bezier(.22,.8,.25,1) both; }
 .receipt-scroll { animation: receipt-rise 900ms 180ms cubic-bezier(.22,.8,.25,1) both; }
@@ -289,55 +313,95 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
   .phone-only-scene .interactive-phone.is-open { top:50% !important; transform:translate(-50%,-55%) rotate(-2deg) scale(1.03) !important; }
 }
 
-/* Mobile reference composition: cropped phone, editorial headline, hand-drawn symbols, and a resting cat. */
-@media(max-width:850px){
-  .reference-hero { gap:0; padding-top:0; padding-bottom:70px; overflow:hidden; }
-  .reference-hero-copy { display:none; }
-  .reference-hero-art { order:1; width:100%; min-height:340px; overflow:visible; align-items:flex-start; }
-  .reference-hero-art::before { display:none; }
-  .phone-only-scene .interactive-phone,
-  .phone-only-scene .interactive-phone.is-open { top:-188px !important; left:50%; transform:translateX(-50%) rotate(-2deg) !important; }
-  .phone-only-scene .art-badge--top { top:202px; right:8%; width:66px; height:66px; font-size:10px; }
-  .phone-only-scene .art-badge--bottom { bottom:-8px; left:8%; width:66px; height:66px; font-size:10px; }
-  .reference-hero-side { order:2; width:100%; min-height:535px; padding:0 8px 32px; display:block; text-align:center; }
-  .hero-side-copy { position:relative; z-index:2; max-width:340px; margin:10px auto 0; font-family:"Noto Kufi Arabic"; font-size:40px !important; line-height:1.45 !important; letter-spacing:-.08em; font-weight:900; }
-  .hero-side-copy span { color:var(--coral); }
-  .hero-side-choice { position:relative; z-index:2; margin:24px auto 0 !important; font-size:16px !important; line-height:1.8 !important; font-weight:700; }
-  .hero-side-arrow { display:none; }
-  .cat-resting { position:absolute; z-index:2; left:50%; bottom:30px; width:290px; height:178px; transform:translateX(-50%); }
-  .cat-resting::after { content:""; position:absolute; left:8px; right:8px; bottom:16px; height:12px; border-radius:50%; background:rgba(13,43,82,.12); filter:blur(2px); }
-  .cat-mascot { right:auto; left:50%; bottom:14px; width:275px; height:165px; transform:translateX(-50%) rotate(-2deg); animation:cat-breathe 3.2s ease-in-out infinite; }
-  .cat-zzz { position:absolute; z-index:3; top:-4px; right:22px; display:grid; gap:0; color:var(--navy); font-family:Georgia,serif; font-weight:900; line-height:.8; transform:rotate(4deg); animation:zzz-float 2.7s ease-in-out infinite; }
-  .cat-zzz span:nth-child(1){font-size:16px;opacity:.45}.cat-zzz span:nth-child(2){font-size:24px;opacity:.7;margin-right:8px}.cat-zzz span:nth-child(3){font-size:32px;margin-right:19px}
-  .hero-symbol { position:absolute; z-index:1; display:grid; place-items:center; width:74px; height:74px; border:1.5px solid var(--navy); border-radius:8px; color:var(--navy); box-shadow:5px 6px 0 rgba(13,43,82,.12); transform:rotate(-8deg); }
-  .hero-symbol::before { content:""; position:absolute; inset:-10px; border:2px solid transparent; border-top-color:var(--coral); border-radius:50%; transform:rotate(20deg); }
-  .hero-symbol--bulb { top:176px; right:8%; background:var(--turquoise); transform:rotate(12deg); }
-  .hero-symbol--image { top:250px; left:6%; background:#ffc9ba; transform:rotate(-12deg); }
-  .hero-symbol--play { bottom:148px; right:8%; background:var(--turquoise); transform:rotate(14deg); }
-  .hero-symbol--spark { bottom:222px; left:12%; width:50px; height:50px; border:0; box-shadow:none; color:#f2ad43; transform:rotate(12deg); }
-  .hero-symbol--spark::before { inset:2px; border:0; }
-  .hero-doodle { position:absolute; z-index:1; color:var(--coral); font-size:48px; font-weight:900; }
-  .hero-doodle--left { left:2%; top:330px; color:var(--navy); transform:rotate(-25deg); }
-  .hero-doodle--right { right:2%; bottom:48px; transform:rotate(-25deg); }
-  .doodle-spark--one { right:18%; bottom:90px; font-size:28px; }
-  .doodle-spark--two { left:13%; bottom:56px; font-size:28px; }
-}
-@media(max-width:480px){
-  .reference-hero-art { min-height:238px; }
-  .phone-only-scene .interactive-phone,
-  .phone-only-scene .interactive-phone.is-open { top:-178px !important; }
-  .hero-side-copy { max-width:300px; font-size:34px !important; }
-  .hero-side-choice { font-size:14px !important; }
-  .reference-hero-art { min-height:310px; }
-  .reference-hero-side { min-height:515px; }
-  .cat-resting { bottom:24px; width:260px; height:155px; }
-  .cat-mascot { width:245px; height:145px; }
-  .hero-symbol { width:62px; height:62px; }
-  .hero-symbol--bulb { top:155px; right:5%; }
-  .hero-symbol--image { top:229px; left:3%; }
-  .hero-symbol--play { bottom:139px; right:4%; }
-  .hero-symbol--spark { bottom:211px; left:10%; width:42px; height:42px; }
-}
-@keyframes cat-breathe { 0%,100% { transform:translateX(-50%) rotate(-2deg) scaleY(1); } 50% { transform:translateX(-50%) rotate(-2deg) scaleY(.965) scaleX(1.018); } }
-@keyframes zzz-float { 0%,100% { opacity:.45; transform:translate(0,4px) rotate(4deg); } 50% { opacity:1; transform:translate(7px,-6px) rotate(4deg); } }
-@media(prefers-reduced-motion:reduce){ .cat-mascot,.cat-zzz { animation:none; } }
+
+/* Hint under the hero button: the sleeping cat points to the phone, gently breathing */
+.pick-hint { display:flex; flex-direction:column; align-items:flex-start; gap:8px; margin-top:30px; color:var(--navy); font-family:"Noto Kufi Arabic",sans-serif; font-weight:700; font-size:15px; }
+.pick-hint .pick-cat { width:120px; height:auto; transform-origin:50% 100%; animation:catBreathe 4.2s ease-in-out infinite; }
+.pick-hint .ph-text { display:block; }
+@keyframes catBreathe { 0%,100% { transform:scale(1) translateY(0); } 50% { transform:scale(1.035,.97) translateY(-2px); } }
+/* translucent pointer used on the first visit */
+.ghost-pointer { position:absolute; left:0; top:0; width:28px; height:28px; pointer-events:none; z-index:8; opacity:0; filter:drop-shadow(0 2px 4px rgba(13,43,82,.25)); }
+.phone-service.ghost-tap { background:rgba(244,119,99,.18) !important; transition:background .25s; }
+@media (prefers-reduced-motion:reduce) { .pick-hint .pick-cat { animation:none; } }
+
+/* Extra doodles around the hero side block: squiggle, dashed arrows, leaves, sparks, and the note under the cat */
+.side-squiggle { display:block; width:180px; height:18px; margin-top:-6px; fill:none; stroke:#78d2ce; stroke-width:4; stroke-linecap:round; }
+.side-doodle { position:absolute; width:90px; height:80px; fill:none; stroke:var(--coral); stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; pointer-events:none; }
+.side-doodle--left { left:-96px; top:58%; }
+.side-doodle--image { left:-70px; top:22%; width:60px; height:60px; stroke:var(--navy); }
+.side-doodle--right { right:-92px; top:56%; }
+.side-plant { position:absolute; bottom:6px; width:44px; height:50px; fill:none; stroke:#78d2ce; stroke-width:2.5; stroke-linecap:round; pointer-events:none; }
+.side-plant--left { left:-34px; }
+.side-plant--right { right:-34px; }
+.spark { position:absolute; color:#ffb347; font-size:20px; pointer-events:none; }
+.spark--one { top:-14px; left:-8px; }
+.spark--two { right:-18px; top:30%; color:var(--navy); font-size:14px; }
+.reference-hero-side .side-note { margin:0; font-size:16px; line-height:1.7; color:var(--ink); }
+.cat-mascot-box::after { content:""; position:absolute; left:12%; right:12%; bottom:-6px; height:14px; border-radius:50%; background:rgba(13,43,82,.12); z-index:-1; }
+@media(max-width:480px){.side-doodle,.side-plant,.spark--two{display:none}.side-squiggle{width:140px}}
+
+/* Works section, redesigned: teal panel, navy project cards with a number badge, title and category under it, and a coral arrow */
+.work-section { width:min(1180px,calc(100% - 72px)); background:#b9e4dc; border-radius:36px; padding:70px 56px 80px; }
+.work-heading h2 span { position:relative; color:var(--coral); }
+.work-heading h2 span::after { content:""; position:absolute; left:-4%; right:-4%; bottom:-6px; height:6px; border-radius:6px; background:var(--coral); transform:rotate(-2deg); }
+.work-grid { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+.work-card { position:relative; min-height:300px; border-radius:26px; overflow:hidden; background:var(--navy); border:3px solid var(--navy); box-shadow:6px 7px 0 var(--navy); color:#fff; }
+.work-card:nth-child(1) { border-color:var(--coral); }
+.work-card:nth-child(2) { border-color:#78d2ce; }
+.work-card img, .work-card video { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+.work-card-overlay { position:absolute; inset:0; display:flex; flex-direction:row-reverse; align-items:flex-end; justify-content:space-between; gap:12px; padding:20px; background:linear-gradient(to top, rgba(13,43,82,.96) 30%, rgba(13,43,82,0) 72%); color:#fff; text-decoration:none; }
+.work-card-overlay > span:first-child { flex:none; width:52px; height:52px; border-radius:50%; background:var(--coral); color:var(--navy); display:grid; place-items:center; font-size:18px; font-weight:800; }
+.work-card-overlay > div { flex:1; min-width:0; }
+.work-card-overlay strong { display:block; font-size:24px; font-weight:800; line-height:1.3; }
+.work-card-overlay small { display:block; font-size:14px; color:rgba(255,255,255,.82); }
+.work-num { position:absolute; top:16px; right:16px; z-index:2; padding:6px 14px; border-radius:999px; background:rgba(13,43,82,.72); color:#fff; font-size:13px; font-weight:800; }
+@media(max-width:850px){.work-section{width:calc(100% - 36px);padding:44px 18px 52px;border-radius:28px}}
+@media(max-width:480px){.work-card{min-height:240px;border-radius:22px}.work-card-overlay{padding:14px}.work-card-overlay strong{font-size:17px}.work-card-overlay small{font-size:11px}.work-card-overlay > span:first-child{width:40px;height:40px;font-size:14px}.work-num{top:10px;right:10px;font-size:11px}}
+
+/* Hero side block as a poster: every piece is placed in percentages of the poster, and text and icons scale with it (cqw), so the layout holds at any width */
+.reference-hero-side { display:block; position:relative; container-type:inline-size; width:100%; max-width:440px; min-height:0; height:auto; aspect-ratio:4 / 5; margin:0 auto; padding:0; text-align:center; }
+.poster-doodles { position:absolute; inset:0; width:100%; height:100%; fill:none; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; pointer-events:none; }
+.poster-doodles path { vector-effect:non-scaling-stroke; }
+.poster-spark { position:absolute; font-size:6cqw; line-height:1; pointer-events:none; }
+.poster-spark--a { left:12%; top:4%; color:#ffb347; }
+.poster-spark--b { left:84%; top:72%; color:var(--coral); }
+.reference-hero-side .side-headline { position:absolute; top:9%; left:0; right:0; margin:0; font-size:11cqw; font-weight:800; line-height:1.35; color:var(--navy); }
+.reference-hero-side .side-headline .line-b { display:block; color:var(--coral); }
+.reference-hero-side .side-squiggle { position:absolute; top:33%; left:24%; width:52%; height:auto; fill:none; stroke:#78d2ce; stroke-width:4; stroke-linecap:round; }
+.reference-hero-side .sticker { position:absolute; width:17cqw; height:17cqw; display:grid; place-items:center; border:2px solid var(--navy); border-radius:14px; box-shadow:3px 4px 0 var(--navy); color:var(--navy); transform:none; }
+.reference-hero-side .sticker svg { width:52%; height:52%; stroke:var(--navy); stroke-width:2; }
+.reference-hero-side .sticker--bulb { left:70%; top:6%; background:#b9e4dc; transform:rotate(8deg); }
+.reference-hero-side .sticker--image { left:6%; top:46%; background:#f8c3b5; transform:rotate(-8deg); }
+.reference-hero-side .sticker--play { left:74%; top:58%; background:#bfe6ea; transform:rotate(6deg); }
+.reference-hero-side .cat-mascot-box { position:absolute; left:50%; top:44%; right:auto; bottom:auto; width:58cqw; height:auto; margin:0; transform:translateX(-50%); aspect-ratio:257 / 212; }
+.reference-hero-side .cat-mascot-box .cat-mascot { position:static; width:100%; height:100%; }
+.reference-hero-side .cat-mascot-box .zz { font-size:6cqw; left:24%; top:2%; }
+.reference-hero-side .cat-mascot-box .zz-3 { font-size:7.5cqw; }
+.reference-hero-side .cat-mascot-box::after { bottom:-4%; left:14%; right:14%; height:12%; }
+.poster-plant { position:absolute; width:14cqw; height:16cqw; fill:none; stroke:#78d2ce; stroke-width:2.5; stroke-linecap:round; pointer-events:none; }
+.poster-plant--left { left:20%; top:76%; }
+.poster-plant--right { left:72%; top:72%; }
+.reference-hero-side .side-note { position:absolute; top:84%; left:0; right:0; margin:0; font-size:6cqw; font-weight:700; line-height:1.6; color:var(--navy); }
+
+/* Hero poster, full width under the phone: sized in the poster's own units so the composition matches at every width */
+.hero-poster-wrap { width:min(1000px, calc(100% - 72px)); margin:0 auto 90px; }
+.reference-hero-side { width:100%; max-width:none; min-height:0; aspect-ratio:1000 / 730; }
+.reference-hero-side .side-headline { top:0; font-size:7.5cqw; line-height:1.2; }
+.reference-hero-side .side-squiggle { top:17%; left:42%; width:27%; }
+.reference-hero-side .sticker { width:14cqw; height:14cqw; }
+.reference-hero-side .sticker svg { width:6cqw; height:6cqw; }
+.reference-hero-side .sticker--bulb { left:78%; top:4%; }
+.reference-hero-side .sticker--image { left:8%; top:40%; }
+.reference-hero-side .sticker--play { left:76%; top:60%; }
+.reference-hero-side .cat-mascot-box { width:40cqw; top:40%; }
+.reference-hero-side .cat-mascot-box .zz { font-size:4cqw; }
+.reference-hero-side .cat-mascot-box .zz-3 { font-size:5cqw; }
+.poster-plant { width:9cqw; height:10cqw; }
+.poster-plant--left { left:26%; top:78%; }
+.poster-plant--right { left:70%; top:76%; }
+.reference-hero-side .side-note { top:84%; font-size:4.6cqw; }
+@media(max-width:850px){.hero-poster-wrap{width:calc(100% - 36px)}}
+.reference-hero-side { aspect-ratio:1000 / 860; }
+.hero-poster-wrap { margin-bottom:110px; }
+.reference-hero-side .side-note { top:86%; }
+.reference-hero-side .side-note { top:79%; }
