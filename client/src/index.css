@@ -104,7 +104,19 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
 .reference-hero::before,.reference-hero::after { content:""; position:absolute; z-index:0; pointer-events:none; }.reference-hero::before { top:15%; right:4%; width:46px; height:15px; border-top:3px solid var(--navy); border-radius:50%; transform:rotate(25deg); }.reference-hero::after { bottom:20%; left:4%; width:54px; height:28px; border-top:3px solid var(--coral); border-radius:50%; transform:rotate(-20deg); }
 .reference-hero-copy,.reference-hero-art,.reference-hero-side { z-index:1; }.reference-hero-side { position:relative; min-height:330px; }.cat-mascot { position:absolute; right:calc(50% - 36px); bottom:-8px; width:128px; height:128px; object-fit:contain; filter:drop-shadow(4px 6px 0 rgba(13,43,82,.12)); transform:rotate(-4deg); }.doodle-spark { position:absolute; color:var(--navy); font-family:cursive; font-weight:900; }.doodle-spark--one { right:12px; bottom:112px; color:var(--coral); font-size:32px; transform:rotate(12deg); }.doodle-spark--two { left:8px; bottom:68px; font-size:34px; transform:rotate(-30deg); }
 .art-badge--top { border-width:2px; }.art-badge--bottom { border-width:2px; }.reference-cta,.reference-submit,.phone-cta { border-width:2px; }.work-section { background:#b9e4dc; border-radius:32px; margin-top:35px; padding-left:35px; padding-right:35px; }.work-section::before { content:""; display:block; }.work-heading .section-kicker { color:var(--navy); }
-@media(max-width:850px){.reference-hero-side{min-height:185px}.cat-mascot{right:20px;bottom:-8px;width:92px;height:92px}.doodle-spark--one{right:2px;bottom:76px;font-size:24px}.doodle-spark--two{left:4px;bottom:45px;font-size:27px}.reference-hero-copy h1::after{right:4%;bottom:-5px;width:58px;height:4px}.work-section{border-radius:24px;padding-left:16px;padding-right:16px}}
+@media(max-width:850px){.reference-hero-side{min-height:185px}.cat-mascot-box{right:20px;bottom:-8px;width:92px;height:92px}.doodle-spark--one{right:2px;bottom:76px;font-size:24px}.doodle-spark--two{left:4px;bottom:45px;font-size:27px}.reference-hero-copy h1::after{right:4%;bottom:-5px;width:58px;height:4px}.work-section{border-radius:24px;padding-left:16px;padding-right:16px}}
+
+/* The small cat in the circle: the box holds the cat and the zzz rising from its head */
+.cat-mascot-box { position:absolute; right:calc(50% - 36px); bottom:-8px; width:128px; height:128px; }
+.cat-mascot-box .cat-mascot { position:static; width:100%; height:100%; }
+.cat-mascot-box .zz { position:absolute; left:22%; top:4%; font-family:"Noto Kufi Arabic",sans-serif; font-weight:900; font-size:18px; color:var(--navy); opacity:0; animation:zzRise 3.6s ease-in infinite; }
+.cat-mascot-box .zz-2 { animation-delay:1.2s; }
+.cat-mascot-box .zz-3 { animation-delay:2.4s; font-size:22px; }
+@keyframes zzRise { 0% { opacity:0; transform:translate(0,0) scale(.6); } 15% { opacity:1; } 100% { opacity:0; transform:translate(20px,-60px) scale(1.2); } }
+@media (prefers-reduced-motion:reduce) { .cat-mascot-box .zz { animation:none; opacity:1; } }
+
+/* On phones the two text blocks stack instead of sitting side by side */
+@media(max-width:480px){.reference-hero-side{flex-direction:column;align-items:flex-start;justify-content:center;gap:6px}}
 
 .receipt-paper { transform-origin: top center; animation: receipt-print 1100ms cubic-bezier(.22,.8,.25,1) both; }
 .receipt-scroll { animation: receipt-rise 900ms 180ms cubic-bezier(.22,.8,.25,1) both; }
@@ -289,19 +301,6 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
   .phone-only-scene .interactive-phone.is-open { top:50% !important; transform:translate(-50%,-55%) rotate(-2deg) scale(1.03) !important; }
 }
 
-/* The character sleeping under the phone (phone acts as the blanket), breathing with zzz rising from its head */
-.interactive-phone .phone-sleeper { position:absolute; left:50%; top:100%; margin-top:-36px; width:100%; transform:translateX(-50%); pointer-events:none; z-index:1; }
-.phone-sleeper img { display:block; width:100%; height:auto; transform-origin:50% 100%; animation:sleeperBreathe 3.6s ease-in-out infinite; }
-.phone-sleeper .zz { position:absolute; left:36%; top:2%; font-family:"Noto Kufi Arabic",sans-serif; font-weight:900; font-size:26px; color:var(--navy); opacity:0; animation:zzRise 3.6s ease-in infinite; }
-.phone-sleeper .zz-2 { animation-delay:1.2s; }
-.phone-sleeper .zz-3 { animation-delay:2.4s; font-size:32px; }
-@keyframes sleeperBreathe { 0%,100% { transform:scale(1); } 50% { transform:scale(1.025,.975); } }
-@keyframes zzRise { 0% { opacity:0; transform:translate(0,0) scale(.6); } 15% { opacity:1; } 100% { opacity:0; transform:translate(22px,-80px) scale(1.25); } }
-@media (prefers-reduced-motion:reduce) { .phone-sleeper img, .phone-sleeper .zz { animation:none; } .phone-sleeper .zz { opacity:1; } }
-
-/* Room for the character under the phone */
-@media (min-width: 851px) { .phone-only-scene { min-height: 880px; } }
-@media (max-width: 850px) { .phone-only-scene { min-height: 760px; } }
 
 /* Hint under the hero button: the sleeping cat points to the phone, gently breathing */
 .pick-hint { display:flex; flex-direction:column; align-items:flex-start; gap:8px; margin-top:30px; color:var(--navy); font-family:"Noto Kufi Arabic",sans-serif; font-weight:700; font-size:15px; }
