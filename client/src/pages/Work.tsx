@@ -1,6 +1,7 @@
 import { ArrowLeft, ArrowUpLeft } from "lucide-react";
 import { useRoute } from "wouter";
 import { trpc } from "@/lib/trpc";
+import { getEmbedUrl, getVideoPoster } from "@/lib/video";
 import { pickText, useLanguage } from "@/hooks/useLanguage";
 import NotFound from "@/pages/NotFound";
 
@@ -26,7 +27,10 @@ export default function Work() {
           <ArrowLeft size={17} />{isArabic ? "رجوع إلى الأعمال" : "Back to work"}
         </a>
         <article className="overflow-hidden rounded-3xl border-[1.5px] border-[#0d2b52] bg-[#b9e4dc] shadow-[6px_7px_0_rgba(13,43,82,.13)]">
-          {item.mediaType === "video" && (
+          {item.mediaType === "video" && getEmbedUrl(item.mediaUrl) && (
+            <div className="aspect-video w-full bg-[#0d2b52]"><iframe src={`${getEmbedUrl(item.mediaUrl)}?autoplay=1&rel=0`} title={title} allow="autoplay; encrypted-media; picture-in-picture" allowFullScreen className="h-full w-full border-0" /></div>
+          )}
+          {item.mediaType === "video" && !getEmbedUrl(item.mediaUrl) && (
             <video src={item.mediaUrl} poster={item.thumbnailUrl ?? undefined} controls playsInline preload="metadata" className="max-h-[80vh] w-full bg-[#0d2b52]" />
           )}
           {item.mediaType === "image" && <img src={item.mediaUrl} alt={title} className="max-h-[80vh] w-full object-contain bg-[#0d2b52]" />}
