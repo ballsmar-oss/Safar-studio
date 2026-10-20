@@ -1,0 +1,23 @@
+name: Deploy to Lightsail
+
+on:
+  push:
+    branches: [claude/new-session-shi79n]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run the update on the server
+        env:
+          SSH_KEY: ${{ secrets.LIGHTSAIL_SSH_KEY }}
+          SSH_HOST: ${{ secrets.LIGHTSAIL_HOST }}
+        run: |
+          printf '%s\n' "$SSH_KEY" > deploy_key
+          chmod 600 deploy_key
+          ssh -i deploy_key -o StrictHostKeyChecking=accept-new "ubuntu@$SSH_HOST" 'sudo /opt/safar/deploy/update.sh'
