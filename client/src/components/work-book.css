@@ -1,0 +1,174 @@
+/* Flipbook of works: pages turn around their binding edge, like paper. */
+.wb {
+  width: min(560px, 100%);
+  margin: 0 auto;
+  user-select: none;
+}
+
+.wb-stage {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  perspective: 1600px;
+}
+
+.wb-page {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #fdf5e4;
+  border: 2px solid #14305a;
+  box-shadow: 6px 6px 0 #14305a;
+}
+
+.wb-enter {
+  animation: wb-fade 0.35s ease both;
+}
+
+.wb-media {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  background: #0d2b52;
+}
+
+.wb-media img,
+.wb-media video,
+.wb-media iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border: 0;
+  display: block;
+}
+
+.wb-link-art {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fdf5e4;
+}
+
+.wb-info {
+  padding: 14px 18px 16px;
+  color: #14305a;
+  background: #fdf5e4;
+}
+
+.wb-info span {
+  font-size: 13px;
+  color: #e8836b;
+  font-weight: 700;
+}
+
+.wb-info h3 {
+  margin: 4px 0 6px;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.wb-info p {
+  margin: 0 0 8px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.wb-info a {
+  color: #14305a;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+/* The turning leaf: it swings around the binding edge and reveals the next page underneath. */
+.wb-leaf {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: 14px;
+  background: linear-gradient(90deg, #fdf5e4 0%, #fffdf6 60%, #f3e8cf 100%);
+  border: 2px solid #14305a;
+  transform-origin: var(--origin);
+  backface-visibility: hidden;
+  pointer-events: none;
+}
+
+.wb-leaf--next {
+  animation: wb-leaf-next 0.65s ease both;
+}
+
+.wb-leaf--prev {
+  animation: wb-leaf-prev 0.65s ease both;
+}
+
+.wb-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+  color: #14305a;
+  font-weight: 800;
+}
+
+.wb-controls button {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 2px solid #14305a;
+  background: #e8836b;
+  color: #14305a;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 #14305a;
+}
+
+.wb-controls button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.wb-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 22px;
+  padding: 14px 20px;
+  border-radius: 999px;
+  border: 2px solid #14305a;
+  background: #14305a;
+  color: #fdf5e4;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 4px 4px 0 #e8836b;
+}
+
+@keyframes wb-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes wb-leaf-next {
+  from { transform: rotateY(0deg); }
+  to { transform: rotateY(var(--turn)); }
+}
+
+@keyframes wb-leaf-prev {
+  from { transform: rotateY(var(--turn)); }
+  to { transform: rotateY(0deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wb-leaf--next,
+  .wb-leaf--prev,
+  .wb-enter {
+    animation: none;
+  }
+}
