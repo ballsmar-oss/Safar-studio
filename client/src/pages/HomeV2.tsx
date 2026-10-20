@@ -136,7 +136,7 @@ export default function HomeV2() {
                   >
                     <div className="thumb">
                       {project.mediaType === "video" && <video src={project.mediaUrl} poster={project.thumbnailUrl ?? undefined} muted loop playsInline autoPlay preload="metadata" />}
-                      {project.mediaType === "image" && <img src={project.mediaUrl} alt={project.title} />}
+                      {project.mediaType === "image" && <img src={project.thumbnailUrl || project.mediaUrl} alt={project.title} />}
                       {project.mediaType === "link" && <span>↗</span>}
                       {!project.mediaType && <span>{(project as { thumb?: string }).thumb}</span>}
                     </div>
