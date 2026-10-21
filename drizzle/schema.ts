@@ -75,6 +75,8 @@ export const integrationSettings = sqliteTable("integrationSettings", {
   brandName: text("brandName").notNull().default("سَفَر"),
   officialDomain: text("officialDomain"),
   businessEmail: text("businessEmail"),
+  freelanceLicenseNumber: text("freelanceLicenseNumber"),
+  businessCenterNumber: text("businessCenterNumber"),
   whatsappNumber: text("whatsappNumber"),
   instagramUrl: text("instagramUrl"),
   linkedinUrl: text("linkedinUrl"),

@@ -58,6 +58,8 @@ export function getPublicContactSettings() {
   const settings = getSettings();
   return {
     businessEmail: settings?.businessEmail ?? null,
+    freelanceLicenseNumber: settings?.freelanceLicenseNumber ?? null,
+    businessCenterNumber: settings?.businessCenterNumber ?? null,
     whatsappNumber: settings?.whatsappNumber ?? null,
     instagramUrl: settings?.instagramUrl ?? null,
     linkedinUrl: settings?.linkedinUrl ?? null,

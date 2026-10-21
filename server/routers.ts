@@ -28,7 +28,7 @@ const portfolioInput = z.object({
 const testimonialInput = z.object({ name: z.string().min(1).max(160), company: z.string().max(180).optional().nullable(), quote: z.string().min(1).max(5000), rating: z.number().int().min(1).max(5), avatarUrl: mediaUrl.optional().nullable(), isPublished: z.boolean(), sortOrder: z.number().int().default(0) });
 const optionalUrl = webUrl.optional().or(z.literal("")).nullable();
 const integrationSettingsInput = z.object({
-  brandName: z.string().min(1).max(160), officialDomain: z.string().max(255).optional().nullable(), businessEmail: z.string().email().optional().or(z.literal("")).nullable(), whatsappNumber: z.string().max(40).optional().nullable(),
+  brandName: z.string().min(1).max(160), officialDomain: z.string().max(255).optional().nullable(), businessEmail: z.string().email().optional().or(z.literal("")).nullable(), freelanceLicenseNumber: z.string().max(80).optional().nullable(), businessCenterNumber: z.string().max(80).optional().nullable(), whatsappNumber: z.string().max(40).optional().nullable(),
   instagramUrl: optionalUrl, linkedinUrl: optionalUrl, tiktokUrl: optionalUrl, senderName: z.string().max(160).optional().nullable(),
   dnsRecords: z.string().max(30000).optional().nullable(), applePayAssociation: z.string().max(30000).optional().nullable(),
   resendApiKey: z.string().max(500).optional(), moyasarPublishableKey: z.string().max(500).optional(), moyasarSecretKey: z.string().max(500).optional(), moyasarWebhookSecret: z.string().max(500).optional(), mode: z.enum(["test", "live"]),
@@ -98,7 +98,7 @@ export const appRouter = router({
     }),
     saveIntegrationSettings: adminProcedure.input(integrationSettingsInput).mutation(({ input }) => {
       const values: Partial<typeof integrationSettings.$inferInsert> = {
-        brandName: input.brandName, officialDomain: input.officialDomain || null, businessEmail: input.businessEmail || null, whatsappNumber: input.whatsappNumber?.trim() || null,
+        brandName: input.brandName, officialDomain: input.officialDomain || null, businessEmail: input.businessEmail || null, freelanceLicenseNumber: input.freelanceLicenseNumber?.trim() || null, businessCenterNumber: input.businessCenterNumber?.trim() || null, whatsappNumber: input.whatsappNumber?.trim() || null,
         instagramUrl: input.instagramUrl || null, linkedinUrl: input.linkedinUrl || null, tiktokUrl: input.tiktokUrl || null, senderName: input.senderName || null,
         dnsRecords: input.dnsRecords || null, applePayAssociation: input.applePayAssociation || null, mode: input.mode,
         smtpHost: input.smtpHost?.trim() || null, smtpPort: input.smtpPort ?? null, smtpUser: input.smtpUser?.trim() || null,
