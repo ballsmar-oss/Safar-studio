@@ -29,13 +29,6 @@
       "when": 1792546309052,
       "tag": "0003_business_documents",
       "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "6",
-      "when": 1792631187604,
-      "tag": "0004_work_labels",
-      "breakpoints": true
     }
   ]
 }

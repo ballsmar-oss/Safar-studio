@@ -1,54 +1,30 @@
-/* A stack of work cards, like folders. The top card holds the work; the cards behind peek out above it. */
+/* Flipbook of works: pages turn around their binding edge, like paper. */
 .wb {
   width: min(560px, 100%);
   margin: 0 auto;
   user-select: none;
 }
 
-.wb-deck {
+.wb-stage {
   position: relative;
   aspect-ratio: 3 / 4;
-  margin-top: 26px;
   perspective: 1600px;
 }
 
-.wb-back {
+.wb-page {
   position: absolute;
   inset: 0;
-  border-radius: 14px;
-  border: 2px solid #14305a;
-  background: #fdf5e4;
-  box-shadow: 4px 4px 0 #14305a;
-  transform: translateY(calc(var(--n) * -13px)) scale(calc(1 - var(--n) * 0.035));
-  z-index: 0;
-}
-
-.wb-card {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   border-radius: 14px;
-  border: 2px solid #14305a;
   background: #fdf5e4;
+  border: 2px solid #14305a;
   box-shadow: 6px 6px 0 #14305a;
 }
 
-.wb-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  width: 100%;
-  padding: 10px 14px;
-  border: 0;
-  background: #14305a;
-  color: #fdf5e4;
-  font-size: 13px;
-  font-weight: 800;
-  cursor: pointer;
+.wb-enter {
+  animation: wb-fade 0.35s ease both;
 }
 
 .wb-media {
@@ -70,70 +46,64 @@
   display: block;
 }
 
-.wb-labels {
+.wb-link-art {
   position: absolute;
-  top: 12px;
-  inset-inline-end: 12px;
-  z-index: 2;
+  inset: 0;
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 6px;
-  pointer-events: none;
+  align-items: center;
+  justify-content: center;
+  color: #fdf5e4;
 }
 
-.wb-labels span {
-  padding: 4px 10px;
-  border: 1.5px solid #14305a;
-  border-radius: 6px;
-  background: #fff5b8;
-  color: #14305a;
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.wb-text {
+.wb-info {
   padding: 14px 18px 16px;
   color: #14305a;
   background: #fdf5e4;
-  cursor: pointer;
 }
 
-.wb-text h3 {
-  margin: 0 0 6px;
+.wb-info span {
+  font-size: 13px;
+  color: #e8836b;
+  font-weight: 700;
+}
+
+.wb-info h3 {
+  margin: 4px 0 6px;
   font-size: 22px;
   font-weight: 800;
 }
 
-.wb-text p {
+.wb-info p {
   margin: 0 0 8px;
   font-size: 14px;
   line-height: 1.6;
 }
 
-.wb-open {
-  color: #e8836b;
-  font-size: 13px;
-  font-weight: 800;
+.wb-info a {
+  color: #14305a;
+  font-weight: 700;
   text-decoration: underline;
 }
 
-/* Turning a card: the top card leaves to the side and the next one rises into place. */
-.wb-ghost {
-  z-index: 3;
+/* The turning leaf: it swings around the binding edge and reveals the next page underneath. */
+.wb-leaf {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: 14px;
+  background: linear-gradient(90deg, #fdf5e4 0%, #fffdf6 60%, #f3e8cf 100%);
+  border: 2px solid #14305a;
+  transform-origin: var(--origin);
+  backface-visibility: hidden;
   pointer-events: none;
 }
 
-.wb-ghost--next {
-  animation: wb-out-next 0.55s ease both;
+.wb-leaf--next {
+  animation: wb-leaf-next 0.65s ease both;
 }
 
-.wb-ghost--prev {
-  animation: wb-out-prev 0.55s ease both;
-}
-
-.wb-enter {
-  animation: wb-rise 0.4s ease both;
+.wb-leaf--prev {
+  animation: wb-leaf-prev 0.65s ease both;
 }
 
 .wb-controls {
@@ -151,12 +121,12 @@
   place-items: center;
   width: 46px;
   height: 46px;
-  border: 2px solid #14305a;
   border-radius: 50%;
+  border: 2px solid #14305a;
   background: #e8836b;
   color: #14305a;
-  box-shadow: 3px 3px 0 #14305a;
   cursor: pointer;
+  box-shadow: 3px 3px 0 #14305a;
 }
 
 .wb-controls button:disabled {
@@ -171,8 +141,8 @@
   gap: 10px;
   margin-top: 22px;
   padding: 14px 20px;
-  border: 2px solid #14305a;
   border-radius: 999px;
+  border: 2px solid #14305a;
   background: #14305a;
   color: #fdf5e4;
   font-weight: 800;
@@ -180,24 +150,24 @@
   box-shadow: 4px 4px 0 #e8836b;
 }
 
-@keyframes wb-out-next {
-  from { transform: translateX(0) rotate(0deg); opacity: 1; }
-  to { transform: translateX(-115%) rotate(-7deg); opacity: 0; }
+@keyframes wb-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-@keyframes wb-out-prev {
-  from { transform: translateX(0) rotate(0deg); opacity: 1; }
-  to { transform: translateX(115%) rotate(7deg); opacity: 0; }
+@keyframes wb-leaf-next {
+  from { transform: rotateY(0deg); }
+  to { transform: rotateY(var(--turn)); }
 }
 
-@keyframes wb-rise {
-  from { transform: translateY(14px) scale(0.98); opacity: 0.4; }
-  to { transform: translateY(0) scale(1); opacity: 1; }
+@keyframes wb-leaf-prev {
+  from { transform: rotateY(var(--turn)); }
+  to { transform: rotateY(0deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .wb-ghost--next,
-  .wb-ghost--prev,
+  .wb-leaf--next,
+  .wb-leaf--prev,
   .wb-enter {
     animation: none;
   }

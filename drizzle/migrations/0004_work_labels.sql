@@ -1,1 +1,0 @@
-ALTER TABLE `portfolioItems` ADD `labels` text;
