@@ -19,6 +19,7 @@ export const portfolioItems = sqliteTable("portfolioItems", {
   descriptionEn: text("descriptionEn"),
   category: text("category").notNull().default("عام"),
   categoryEn: text("categoryEn"),
+  labels: text("labels"),
   mediaType: text("mediaType", { enum: ["image", "video", "link"] }).notNull().default("image"),
   mediaUrl: text("mediaUrl").notNull(),
   thumbnailUrl: text("thumbnailUrl"),
