@@ -18,7 +18,7 @@ export type BookWork = {
 type Props = { works: BookWork[]; isArabic: boolean; contactHref: string };
 
 // Card silhouette in the box's own units: rounded corners and a concave cutout on the left edge.
-const SHAPE_PATH = "M0.06 0 H0.94 Q1 0 1 0.06 V0.94 Q1 1 0.94 1 H0.06 Q0 1 0 0.94 V0.66 C0.27 0.6 0.27 0.4 0 0.34 V0.06 Q0 0 0.06 0 Z";
+const SHAPE_PATH = "M0.06 0 H0.94 Q1 0 1 0.06 V0.94 Q1 1 0.94 1 H0.06 Q0 1 0 0.94 V0.66 C0.13 0.6 0.13 0.4 0 0.34 V0.06 Q0 0 0.06 0 Z";
 
 // Only the top three cards in the stack are visible; the rest wait out of sight.
 const VISIBLE_RANKS = 3;
