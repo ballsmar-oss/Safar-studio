@@ -19,8 +19,26 @@
   border: 2px solid #14305a;
   background: #fdf5e4;
   box-shadow: 4px 4px 0 #14305a;
-  transform: translateY(calc(var(--n) * -13px)) scale(calc(1 - var(--n) * 0.035));
+  transform: translateY(calc(var(--n) * -18px)) scale(calc(1 - var(--n) * 0.05));
   z-index: 0;
+}
+
+/* A brand strip along the card's edge, like a folder tab. */
+.wb-card::after {
+  content: attr(data-spine);
+  position: absolute;
+  top: 50%;
+  inset-inline-start: 0;
+  z-index: 2;
+  padding: 0 4px;
+  background: #fdf5e4;
+  color: #14305a;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  writing-mode: vertical-rl;
+  transform: translateY(-50%) rotate(180deg);
+  pointer-events: none;
 }
 
 .wb-card {
@@ -182,12 +200,12 @@
 
 @keyframes wb-out-next {
   from { transform: translateX(0) rotate(0deg); opacity: 1; }
-  to { transform: translateX(-115%) rotate(-7deg); opacity: 0; }
+  to { transform: translateX(-115%) rotateY(-28deg) rotate(-7deg); opacity: 0; }
 }
 
 @keyframes wb-out-prev {
   from { transform: translateX(0) rotate(0deg); opacity: 1; }
-  to { transform: translateX(115%) rotate(7deg); opacity: 0; }
+  to { transform: translateX(115%) rotateY(28deg) rotate(7deg); opacity: 0; }
 }
 
 @keyframes wb-rise {

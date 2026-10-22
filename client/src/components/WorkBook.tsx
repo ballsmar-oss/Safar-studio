@@ -108,7 +108,7 @@ export default function WorkBook({ works, isArabic, contactHref }: Props) {
 
         {ghost && <div key={ghost.key} className={`wb-card wb-ghost wb-ghost--${ghost.dir}`} aria-hidden="true" onAnimationEnd={() => setGhost(null)} />}
 
-        <article key={current.id} className="wb-card wb-enter">
+        <article key={current.id} className="wb-card wb-enter" data-spine={isArabic ? "سَفَر" : "SAFAR"}>
           <button type="button" className="wb-head" onClick={() => step(1)} aria-label={isArabic ? "العمل التالي" : "Next work"}>
             <span>{pad(index + 1)} / {pad(count)}</span>
             <span>{isArabic ? "اضغط هنا للتالي" : "Tap here for next"}</span>
