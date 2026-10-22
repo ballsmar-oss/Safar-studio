@@ -1,4 +1,4 @@
-/* Work cards as a stack. The front card is active; the cards behind it show their tabs above their edges. */
+/* A stack of work cards, like folders. The top card holds the work; the cards behind peek out above it. */
 .wb {
   width: min(560px, 100%);
   margin: 0 auto;
@@ -8,63 +8,71 @@
 .wb-deck {
   position: relative;
   aspect-ratio: 3 / 4;
-  margin-top: 96px;
+  margin-top: 26px;
+  perspective: 1600px;
 }
 
-.wb-slot {
+.wb-back {
   position: absolute;
   inset: 0;
-  transform: translateY(calc(var(--rank, 0) * -30px)) scale(calc(1 - var(--rank, 0) * 0.05));
-  transform-origin: center bottom;
-  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s ease;
-  z-index: calc(3 - var(--rank, 0));
+  border-radius: 14px;
+  border: 2px solid #14305a;
+  background: #fdf5e4;
+  box-shadow: 4px 4px 0 #14305a;
+  transform: translateY(calc(var(--n) * -18px)) scale(calc(1 - var(--n) * 0.05));
+  z-index: 0;
 }
 
-.wb-slot:not([aria-hidden="true"]) {
-  cursor: default;
-}
-
-.wb-slot[aria-hidden="true"]:not(.wb-slot--leaving) {
-  cursor: pointer;
-}
-
-.wb-slot--hidden {
-  opacity: 0;
+/* A brand strip along the card's edge, like a folder tab. */
+.wb-card::after {
+  content: attr(data-spine);
+  position: absolute;
+  top: 50%;
+  inset-inline-start: 0;
+  z-index: 2;
+  padding: 0 4px;
+  background: #fdf5e4;
+  color: #14305a;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  writing-mode: vertical-rl;
+  transform: translateY(-50%) rotate(180deg);
   pointer-events: none;
 }
 
-/* The yellow category tab sits on the upper edge of its card and is not clipped by the card shape. */
-.wb-tab {
+.wb-card {
   position: absolute;
-  top: -30px;
-  inset-inline-start: 22px;
-  z-index: 2;
+  inset: 0;
+  z-index: 1;
   display: flex;
-  align-items: center;
-  height: 30px;
-  padding: 0 16px;
-  border-radius: 10px 10px 0 0;
-  background: #ffc83d;
-  color: #14305a;
-  font-size: 12px;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  white-space: nowrap;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 2px solid #14305a;
+  background: #fdf5e4;
+  box-shadow: 6px 6px 0 #14305a;
 }
 
-/* The card body is clipped by the custom SVG shape: rounded corners and a concave cutout on the left. */
-.wb-card {
-  position: relative;
+.wb-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
   width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background: #fdf5e4;
+  padding: 10px 14px;
+  border: 0;
+  background: #14305a;
+  color: #fdf5e4;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
 }
 
 .wb-media {
-  position: absolute;
-  inset: 0 0 32% 0;
+  position: relative;
+  flex: 1;
+  min-height: 0;
   background: #0d2b52;
 }
 
@@ -75,15 +83,15 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   border: 0;
   display: block;
 }
 
 .wb-labels {
   position: absolute;
-  top: 14px;
-  inset-inline-end: 14px;
+  top: 12px;
+  inset-inline-end: 12px;
   z-index: 2;
   display: flex;
   flex-direction: column;
@@ -94,6 +102,7 @@
 
 .wb-labels span {
   padding: 4px 10px;
+  border: 1.5px solid #14305a;
   border-radius: 6px;
   background: #fff5b8;
   color: #14305a;
@@ -102,11 +111,9 @@
 }
 
 .wb-text {
-  position: absolute;
-  inset: auto 0 0 0;
-  height: 32%;
-  padding: 16px 26px 18px 40px;
+  padding: 14px 18px 16px;
   color: #14305a;
+  background: #fdf5e4;
   cursor: pointer;
 }
 
@@ -129,18 +136,50 @@
   text-decoration: underline;
 }
 
-/* A card leaving the front: it slides away to the side while the next card comes forward. */
-.wb-slot--leaving {
-  z-index: 4;
+/* Turning a card: the top card leaves to the side and the next one rises into place. */
+.wb-ghost {
+  z-index: 3;
   pointer-events: none;
 }
 
-.wb-leave--next {
-  animation: wb-out-next 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+.wb-ghost--next {
+  animation: wb-out-next 0.55s ease both;
 }
 
-.wb-leave--prev {
-  animation: wb-out-prev 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+.wb-ghost--prev {
+  animation: wb-out-prev 0.55s ease both;
+}
+
+.wb-enter {
+  animation: wb-rise 0.4s ease both;
+}
+
+.wb-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+  color: #14305a;
+  font-weight: 800;
+}
+
+.wb-controls button {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: 2px solid #14305a;
+  border-radius: 50%;
+  background: #e8836b;
+  color: #14305a;
+  box-shadow: 3px 3px 0 #14305a;
+  cursor: pointer;
+}
+
+.wb-controls button:disabled {
+  opacity: 0.4;
+  cursor: default;
 }
 
 .wb-cta {
@@ -148,30 +187,36 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  margin-top: 26px;
+  margin-top: 22px;
   padding: 14px 20px;
+  border: 2px solid #14305a;
   border-radius: 999px;
   background: #14305a;
   color: #fdf5e4;
   font-weight: 800;
   text-decoration: none;
+  box-shadow: 4px 4px 0 #e8836b;
 }
 
 @keyframes wb-out-next {
   from { transform: translateX(0) rotate(0deg); opacity: 1; }
-  to { transform: translateX(-115%) rotate(-7deg); opacity: 0; }
+  to { transform: translateX(-115%) rotateY(-28deg) rotate(-7deg); opacity: 0; }
 }
 
 @keyframes wb-out-prev {
   from { transform: translateX(0) rotate(0deg); opacity: 1; }
-  to { transform: translateX(115%) rotate(7deg); opacity: 0; }
+  to { transform: translateX(115%) rotateY(28deg) rotate(7deg); opacity: 0; }
+}
+
+@keyframes wb-rise {
+  from { transform: translateY(14px) scale(0.98); opacity: 0.4; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .wb-slot,
-  .wb-leave--next,
-  .wb-leave--prev {
-    transition: none;
+  .wb-ghost--next,
+  .wb-ghost--prev,
+  .wb-enter {
     animation: none;
   }
 }
