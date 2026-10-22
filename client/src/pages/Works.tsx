@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
-import { ArrowLeft, Filter, MoveDown, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowUpLeft, ExternalLink, Filter, MoveDown, Sparkles } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { getEmbedUrl, getVideoPoster } from "@/lib/video";
 import { pickText, useLanguage } from "@/hooks/useLanguage";
-import WorkBook from "@/components/WorkBook";
 
 type FilterId = "all" | "motion" | "ai" | "identity" | "ui" | "web" | "social";
 
@@ -64,8 +64,8 @@ export default function Works() {
         </section>
 
         <section className="works-grid-section">
-          <div className="works-grid-heading"><div><span className="works-count">{String(filteredWorks.length).padStart(2, "0")} {isArabic ? "مشروع" : "projects"}</span><h2>{isArabic ? activeOption.ar : activeOption.en}</h2></div><p>{isArabic ? "اقلب الصفحات وشوف كل عمل، والفيديو يشتغل بصوته." : "Turn the pages to see each work. Videos play with sound."}</p></div>
-          {publicData.isLoading ? <div className="works-empty"><div className="works-empty-mark">…</div><h3>{isArabic ? "نجهز الأعمال" : "Loading the work"}</h3></div> : filteredWorks.length ? <WorkBook works={localizedWorks} isArabic={isArabic} contactHref="/#contact" /> : <div className="works-empty"><div className="works-empty-mark">✦</div><h3>{isArabic ? "ما فيه أعمال بهذا القسم حتى الآن" : "No work in this category yet"}</h3><p>{isArabic ? "جرّب قسمًا ثانيًا أو أضف مشروعًا من لوحة التحكم." : "Try another category or add a project from the admin dashboard."}</p><a href="/admin">{isArabic ? "إضافة عمل من لوحة التحكم" : "Add work from admin"} <ArrowLeft size={15} /></a></div>}
+          <div className="works-grid-heading"><div><span className="works-count">{String(filteredWorks.length).padStart(2, "0")} {isArabic ? "مشروع" : "projects"}</span><h2>{isArabic ? activeOption.ar : activeOption.en}</h2></div><p>{isArabic ? "كل بطاقة تفتح العمل أو موقعه مباشرة." : "Open any card to view the work or its live link."}</p></div>
+          {publicData.isLoading ? <div className="works-empty"><div className="works-empty-mark">…</div><h3>{isArabic ? "نجهز الأعمال" : "Loading the work"}</h3></div> : filteredWorks.length ? <div className="works-grid">{localizedWorks.map((item: any, index: number) => <article key={item.id} className={`works-card works-card--${index % 4}`}><div className="works-card-media">{item.mediaType === "video" ? ((item.thumbnailUrl || getVideoPoster(item.mediaUrl)) ? <img src={item.thumbnailUrl || getVideoPoster(item.mediaUrl) || undefined} alt={item.title} /> : <video src={item.mediaUrl} muted playsInline preload="metadata" />) : item.mediaType === "image" ? <img src={item.thumbnailUrl || item.mediaUrl} alt={item.title} /> : item.thumbnailUrl ? <img src={item.thumbnailUrl} alt={item.title} /> : <div className="works-link-art"><ExternalLink size={45} /><span>{isArabic ? "تجربة رقمية" : "Digital experience"}</span></div>}<div className="works-card-shape" /></div><div className="works-card-info"><div><span>{item.category || (isArabic ? "مشروع مختار" : "Selected project")}</span><h3>{item.title}</h3></div><a href={item.mediaType === "link" ? (item.projectUrl || item.mediaUrl) : `/works/${item.id}`} {...(item.mediaType === "link" ? { target: "_blank", rel: "noreferrer" } : {})} aria-label={`${isArabic ? "فتح" : "Open"} ${item.title}`}><ArrowUpLeft size={21} /></a></div>{item.description && <p>{item.description}</p>}</article>)}</div> : <div className="works-empty"><div className="works-empty-mark">✦</div><h3>{isArabic ? "ما فيه أعمال بهذا القسم حتى الآن" : "No work in this category yet"}</h3><p>{isArabic ? "جرّب قسمًا ثانيًا أو أضف مشروعًا من لوحة التحكم." : "Try another category or add a project from the admin dashboard."}</p><a href="/admin">{isArabic ? "إضافة عمل من لوحة التحكم" : "Add work from admin"} <ArrowLeft size={15} /></a></div>}
         </section>
       </main>
       <footer className="works-footer"><a href="/">سَفَر</a><p>{isArabic ? "أفكار جيدة. تصاميم أفضل. أثر يدوم." : "Good ideas. Better design. Lasting impact."}</p><a href="/#contact">{isArabic ? "خلّنا نبدأ" : "Let’s start"} <ArrowLeft size={15} /></a></footer>
