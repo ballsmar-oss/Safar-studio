@@ -23,6 +23,12 @@ export const portfolioItems = sqliteTable("portfolioItems", {
   mediaUrl: text("mediaUrl").notNull(),
   thumbnailUrl: text("thumbnailUrl"),
   projectUrl: text("projectUrl"),
+  // Works deck on the homepage: yellow labels on the card, the vertical side label, and extra images shown around the deck on desktop.
+  tags: text("tags", { mode: "json" }).$type<string[]>(),
+  tagsEn: text("tagsEn", { mode: "json" }).$type<string[]>(),
+  sideLabel: text("sideLabel"),
+  sideLabelEn: text("sideLabelEn"),
+  gallery: text("gallery", { mode: "json" }).$type<string[]>(),
   isPublished: integer("isPublished", { mode: "boolean" }).notNull().default(true),
   sortOrder: integer("sortOrder").notNull().default(0),
   createdAt: createdAt(),
