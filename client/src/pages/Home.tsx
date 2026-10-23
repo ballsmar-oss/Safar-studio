@@ -17,6 +17,7 @@ import {
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { getEmbedUrl, getVideoPoster } from "@/lib/video";
+import WorksStack, { placeholderWorks, type StackWork } from "@/components/WorksStack";
 
 const heroImage = "/brand/hero.png"; // hidden by the stylesheet; kept for the layout
 
@@ -130,6 +131,19 @@ export default function Home() {
   const moveTestimonial = (direction: 1 | -1) => setActiveTestimonial((current) => liveTestimonials.length ? (current + direction + liveTestimonials.length) % liveTestimonials.length : 0);
   const text = (key: string, fallback: string, english = fallback) => (isArabic ? contentMap[key] || fallback : english);
   const isArabic = language === "ar";
+  // Dashboard projects fill the deck once they have descriptions; until then it shows placeholder projects.
+  const stackWorks: StackWork[] = livePortfolio.some((item) => pickText(language, item.description, item.descriptionEn))
+    ? livePortfolio.map((item) => ({
+        id: item.id,
+        title: pickText(language, item.title, item.titleEn),
+        description: pickText(language, item.description, item.descriptionEn),
+        tags: (!isArabic && item.tagsEn?.length ? item.tagsEn : item.tags?.length ? item.tags : [pickText(language, item.category, item.categoryEn)]).filter(Boolean),
+        sideLabel: pickText(language, item.sideLabel, item.sideLabelEn) || undefined,
+        gallery: item.gallery ?? [],
+        image: item.thumbnailUrl || (item.mediaType === "image" ? item.mediaUrl : getVideoPoster(item.mediaUrl)) || "/media/placeholders/work-1.svg",
+        href: item.mediaType === "link" ? item.projectUrl || item.mediaUrl : `/works/${item.id}`,
+      }))
+    : placeholderWorks(isArabic);
   const copy = isArabic ? {
     home: "الرئيسية", services: "الخدمات", work: "أعمالنا", contact: "تواصل", topbar: "نحوّل الأفكار إلى تجارب تُحرّك الأثر", places: "الرياض · جدة · عن بُعد", heroA: "أفكارك", heroB: "نصممها", heroC: "تنفّذ.", heroLead: "تحويل أفكارك إلى تصاميم وتجارب رقمية تترك أثرًا.", heroCta: "اختر ما يلهمك", sideA: "كل ما تحتاجه", sideB: "في مكان واحد", sideC: "واختيارك يحدد", sideD: "ما يظهر لك", phoneTitle: "اختر ما يهمك", more: "اعرف المزيد", start: "لنبدأ مشروعك الآن", proofKicker: "من الفكرة إلى التأثير", proofTitleA: "نصمّم لك", proofTitleB: "المساحة", proofTitleC: "لتكبر.", proofLead: "نشتغل معك من أول سؤال إلى آخر تفصيلة، حتى تكون النتيجة واضحة لك ولجمهورك.", reviewKicker: "قالوا عن التجربة", review: "سَفَر فهم فكرتنا من أول جلسة، وحوّلها إلى هوية وتجربة تشبهنا فعلًا.", contactKicker: "خلّنا نبدأ", contactTitleA: "جاهز تخلي", contactTitleB: "فكرتك تُرى؟", contactLead: "أرسل لنا تفاصيل بسيطة عن مشروعك، وسنعود لك باقتراح يناسب مرحلتك.", formTitle: "لنبنِ الشيء الصحيح", name: "الاسم الكامل", email: "البريد الإلكتروني", choose: "اختر خدمة", message: "نبذة عن المشروع", submit: "أرسل الطلب", thanks: "وصلنا طلبك.", thanksLead: "شكرًا لثقتك. سنعود إليك قريبًا لنبدأ الحديث.", newRequest: "إرسال طلب جديد", footer: "أفكار جيدة. تصاميم أفضل. أثر يدوم."
   } : {
@@ -185,9 +199,9 @@ export default function Home() {
         <div className="hero-poster-wrap"><div className="reference-hero-side"><img className="hero-art" src={isArabic ? "/brand/hero-poster.png" : "/brand/hero-poster-en.png"} alt={isArabic ? "كل ما تحتاجه في مكان واحد: ملصقات ورسومات وقطة نايمة" : "Everything you need in one place: stickers, doodles and a sleeping cat"} />{!isArabic && <p className="side-headline-en"><span>Everything you need</span><em>in one place ...</em></p>}<span className="zz zz-1" aria-hidden="true">z</span><span className="zz zz-2" aria-hidden="true">z</span><span className="zz zz-3" aria-hidden="true">Z</span></div></div>
 
 
-        <section id="work" className="work-section">
+        <section id="work" className="work-section work-section--stack">
           <div className="work-heading"><SectionKicker>{copy.work}</SectionKicker><h2>{text("work.titleA", "مشاريع تعبّر عن", "Projects that speak to")}<br /><span>{text("work.titleB", "فكرتنا.", "our idea.")}</span></h2><a className="work-page-link" href={whatsappHref ? `${whatsappHref}?text=${encodeURIComponent(isArabic ? "أبغى أشوف أعمالكم كاملة" : "I would like to see your full work")}` : "/works"} target={whatsappHref ? "_blank" : undefined} rel={whatsappHref ? "noreferrer" : undefined}>{whatsappHref ? (isArabic ? "راسلنا لرؤية أعمالنا كاملة" : "Message us for our full work") : (isArabic ? "شاهد أعمالنا كاملة" : "View all our work")}<ArrowLeft size={16} /></a></div>
-          <div className="work-grid">{livePortfolio.length ? livePortfolio.map((item, index) => <article key={item.id} className={`work-card work-card--${item.mediaType === "video" ? "video" : item.mediaType === "image" ? "coral" : "mint"}`}>{item.mediaType === "video" ? ((item.thumbnailUrl || getVideoPoster(item.mediaUrl)) ? <img src={item.thumbnailUrl || getVideoPoster(item.mediaUrl) || undefined} alt={pickText(language, item.title, item.titleEn)} /> : <video src={item.mediaUrl} muted playsInline preload="metadata" />) : item.mediaType === "image" ? <img src={item.thumbnailUrl || item.mediaUrl} alt={pickText(language, item.title, item.titleEn)} /> : item.thumbnailUrl ? <img src={item.thumbnailUrl} alt={pickText(language, item.title, item.titleEn)} /> : <div className="work-link-card">↗</div>}<span className="work-num" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span><a className="work-card-overlay" href={item.mediaType === "link" ? (item.projectUrl || item.mediaUrl) : `/works/${item.id}`} {...(item.mediaType === "link" ? { target: "_blank", rel: "noreferrer" } : {})} aria-label={isArabic ? `فتح ${item.title}` : `Open ${item.titleEn || item.title}`}><span>{item.mediaType === "video" ? "▶" : "↗"}</span><div><strong>{pickText(language, item.title, item.titleEn)}</strong><small>{pickText(language, item.category, item.categoryEn)} · {isArabic ? "فتح العمل" : "Open project"}</small></div></a></article>) : <><article className="work-card work-card--video"><video src="/media/video1.mp4" muted playsInline preload="metadata" /><div className="work-card-overlay"><span>▶</span><div><strong>{isArabic ? "موشن إعلاني" : "Motion ad"}</strong><small>{isArabic ? "فكرة تتحرك" : "An idea in motion"}</small></div></div></article><article className="work-card work-card--coral"><div className="work-emoji">✦</div><strong>{isArabic ? "هوية بصرية" : "Brand identity"}</strong><small>{isArabic ? "علامة لها حضور" : "A brand with presence"}</small><span className="work-arrow">↗</span></article><article className="work-card work-card--mint"><div className="work-ui"><span>▰</span><span>▱</span><span>▰</span></div><strong>{isArabic ? "تصميم واجهة" : "Interface design"}</strong><small>{isArabic ? "تجربة أوضح وأسهل" : "A clearer, easier experience"}</small><span className="work-arrow">↗</span></article><article className="work-card work-card--yellow"><div className="work-emoji">◉</div><strong>{isArabic ? "فيديو للعلامة" : "Brand video"}</strong><small>{isArabic ? "قصة بصريّة مختصرة" : "A short visual story"}</small><span className="work-arrow">↗</span></article></>}</div>
+          <WorksStack items={stackWorks} brandLabel={isArabic ? "سَفَر" : "SAFAR"} isArabic={isArabic} />
         </section>
 
           <div className="reviews-intro" aria-hidden="true"><span className="reviews-intro-line reviews-intro-line--left" /><div className="reviews-intro-copy"><span>{isArabic ? "مساحة للتجربة" : "A space for experience"}</span><h2>{isArabic ? "تقييمات عملائنا" : "Client reviews"}</h2><p>{isArabic ? "نترك الأثر… ويكمل العملاء الحكاية" : "The work leaves a mark. Our clients tell the story."}</p></div><span className="reviews-intro-line reviews-intro-line--right" /><img className="reviews-intro-illustration" src="/brand/reviews-girl-stars.png" alt="" /></div>

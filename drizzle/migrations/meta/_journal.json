@@ -29,6 +29,13 @@
       "when": 1792546309052,
       "tag": "0003_business_documents",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1792715532544,
+      "tag": "0004_works_stack_cards",
+      "breakpoints": true
     }
   ]
 }

@@ -13,7 +13,7 @@ body { margin:0; background:var(--turquoise); color:var(--navy); font-family:"IB
 button,a,input,textarea,select { font:inherit; }
 button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),select:not(:disabled) { cursor:pointer; }
 ::selection { background:var(--coral); color:var(--navy); }
-.reference-site { min-height:100vh; overflow:hidden; background:var(--turquoise); color:var(--navy); }
+.reference-site { min-height:100vh; overflow-x:clip; background:var(--turquoise); color:var(--navy); }
 .reference-topbar { height:28px; padding:0 5vw; display:flex; justify-content:center; align-items:center; gap:45px; background:var(--navy); color:var(--cream); font-size: 13px; letter-spacing:.03em; }
 .reference-header { width:min(1180px,calc(100% - 72px)); height:88px; margin:auto; display:flex; align-items:center; justify-content:space-between; position:relative; z-index:10; }
 .reference-brand { display:grid; grid-template-columns:auto auto; align-items:center; column-gap:9px; color:var(--navy); text-decoration:none; line-height:1; }.reference-brand-en { font-family:cursive; font-size:22px; font-weight:700; }.reference-brand > span:not(.reference-brand-en) { font-family:"Noto Kufi Arabic"; font-size:21px; font-weight:900; }.reference-brand small { grid-column:1/-1; margin-top:6px; direction:ltr; font-size: 13px; letter-spacing:1px; }
