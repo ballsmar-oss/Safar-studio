@@ -68,16 +68,15 @@ export default function Home() {
   });
 
   const [menuOpen, setMenuOpen] = useState(false);
-  // First visit only: a translucent pointer taps three services so visitors know they can choose.
+  // Every load: a small cat taps three services so visitors know they can choose.
   useEffect(() => {
     const phone = phoneRef.current;
     if (!phone || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    try { if (sessionStorage.getItem("safar-pointer-intro")) return; sessionStorage.setItem("safar-pointer-intro", "1"); } catch { /* storage unavailable: play anyway */ }
     const rows = Array.from(phone.querySelectorAll<HTMLElement>(".phone-service"));
     if (!rows.length) return;
     const ghost = document.createElement("div");
     ghost.className = "ghost-pointer";
-    ghost.innerHTML = '<svg viewBox="0 0 28 28" width="28" height="28"><path d="M5 3 L5 22 L10 17 L13.5 25 L16.5 23.8 L13 16 L20 16 Z" fill="rgba(13,43,82,.55)" stroke="rgba(255,245,223,.85)" stroke-width="1.4" stroke-linejoin="round"/></svg>';
+    ghost.innerHTML = '<img src="/brand/cat.png" alt="" width="44" height="44" />';
     phone.appendChild(ghost);
     const at = (el: HTMLElement) => {
       const p = phone.getBoundingClientRect(), r = el.getBoundingClientRect();
@@ -185,7 +184,7 @@ export default function Home() {
             <a className="reference-cta" href="#services">{copy.heroCta} <ArrowLeft size={17} /></a>
             <div className="pick-hint" aria-hidden="true">
               <div className="pick-cat-box"><img className="pick-cat" src="/brand/cat.png" alt="" /><span className="zz zz-1">z</span><span className="zz zz-2">z</span><span className="zz zz-3">Z</span></div>
-              <span className="ph-text">{isArabic ? "اختر من الجوال ↓" : "Pick from the phone ↓"}</span>
+              <span className="ph-text">{isArabic ? "اختر من الجوال" : "Pick from the phone"}</span> <img className="ph-cat" src="/brand/cat.png" alt="" width="34" height="34" />
             </div>
           </div>
           <div className="reference-hero-art phone-only-scene">

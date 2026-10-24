@@ -320,7 +320,7 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
 .pick-hint .ph-text { display:block; }
 @keyframes catBreathe { 0%,100% { transform:scale(1) translateY(0); } 50% { transform:scale(1.035,.97) translateY(-2px); } }
 /* translucent pointer used on the first visit */
-.ghost-pointer { position:absolute; left:0; top:0; width:28px; height:28px; pointer-events:none; z-index:8; opacity:0; filter:drop-shadow(0 2px 4px rgba(13,43,82,.25)); }
+.ghost-pointer { position:absolute; left:0; top:0; width:44px; height:44px; pointer-events:none; z-index:8; opacity:0; filter:drop-shadow(0 2px 4px rgba(13,43,82,.25)); }
 .phone-service.ghost-tap { background:rgba(244,119,99,.18) !important; transition:background .25s; }
 @media (prefers-reduced-motion:reduce) { .pick-hint .pick-cat { animation:none; } }
 
@@ -434,3 +434,8 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
 @media(min-width:851px){.interactive-phone{width:300px;height:700px}.phone-service-list{max-height:none;overflow:visible}}
 @media(min-width:851px){.phone-service{padding:6px 4px}.phone-service-list{gap:0}}
 @media(min-width:851px){.interactive-phone{width:340px;height:840px}.phone-service b{font-size:16px}.phone-service small{font-size:12px;white-space:normal}.phone-header{font-size:19px}}
+
+/* A small cat bobs downward where the arrow used to be, inviting a tap on the phone. */
+.ph-cat { display:inline-block; vertical-align:middle; animation:ph-cat-down 1.2s ease-in-out infinite; }
+@keyframes ph-cat-down { 0%,100% { transform:translateY(-4px); } 50% { transform:translateY(6px); } }
+@media (prefers-reduced-motion: reduce) { .ph-cat { animation:none; } }
