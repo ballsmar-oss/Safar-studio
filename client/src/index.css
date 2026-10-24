@@ -320,7 +320,7 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
 .pick-hint .ph-text { display:block; }
 @keyframes catBreathe { 0%,100% { transform:scale(1) translateY(0); } 50% { transform:scale(1.035,.97) translateY(-2px); } }
 /* translucent pointer used on the first visit */
-.ghost-pointer { position:absolute; left:0; top:0; width:44px; height:44px; pointer-events:none; z-index:8; opacity:0; filter:drop-shadow(0 2px 4px rgba(13,43,82,.25)); }
+.ghost-pointer { position:absolute; left:0; top:0; width:56px; height:56px; pointer-events:none; z-index:8; opacity:0; filter:drop-shadow(0 2px 4px rgba(13,43,82,.25)); }
 .phone-service.ghost-tap { background:rgba(244,119,99,.18) !important; transition:background .25s; }
 @media (prefers-reduced-motion:reduce) { .pick-hint .pick-cat { animation:none; } }
 
@@ -439,3 +439,10 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
 .ph-cat { display:inline-block; vertical-align:middle; animation:ph-cat-down 1.2s ease-in-out infinite; }
 @keyframes ph-cat-down { 0%,100% { transform:translateY(-4px); } 50% { transform:translateY(6px); } }
 @media (prefers-reduced-motion: reduce) { .ph-cat { animation:none; } }
+
+/* The same cat artwork moves: the big one hops gently, the pointer hops while it taps. */
+.pick-cat { animation:pick-cat-move 2.4s ease-in-out infinite; transform-origin:50% 100%; }
+@keyframes pick-cat-move { 0%,100% { transform:translateY(0) rotate(0deg); } 25% { transform:translateY(-10px) rotate(-3deg); } 50% { transform:translateY(0) rotate(0deg); } 75% { transform:translateY(-5px) rotate(3deg); } }
+.ghost-pointer img { width:56px; height:56px; display:block; animation:ghost-hop .42s ease-in-out infinite alternate; }
+@keyframes ghost-hop { from { transform:translateY(0) rotate(-3deg); } to { transform:translateY(-7px) rotate(3deg); } }
+@media (prefers-reduced-motion: reduce) { .pick-cat,.ghost-pointer img { animation:none; } }

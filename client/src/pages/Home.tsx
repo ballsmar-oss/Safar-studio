@@ -76,7 +76,7 @@ export default function Home() {
     if (!rows.length) return;
     const ghost = document.createElement("div");
     ghost.className = "ghost-pointer";
-    ghost.innerHTML = '<img src="/brand/cat.png" alt="" width="44" height="44" />';
+    ghost.innerHTML = '<img src="/brand/cat.png" alt="" width="56" height="56" />';
     phone.appendChild(ghost);
     const at = (el: HTMLElement) => {
       const p = phone.getBoundingClientRect(), r = el.getBoundingClientRect();
