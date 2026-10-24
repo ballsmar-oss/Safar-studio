@@ -12,25 +12,25 @@
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@500;600;700;800;900&display=swap" rel="stylesheet" />
   </head>
   <body>
-    <div id="site-loader" role="status" aria-live="polite" aria-label="جاري تحميل الصفحة" style="position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:#fdf5e4;transition:opacity .45s ease,visibility .45s ease">
-      <div style="position:relative;width:min(240px,62vw);height:70px">
-        <img src="/brand/cat.png" alt="" width="64" height="64" style="position:absolute;bottom:4px;left:0;animation:loader-walk 2.4s ease-in-out infinite alternate;transform-origin:center" />
+    <div id="site-loader" role="status" aria-live="polite" aria-label="جاري تحميل الصفحة" style="position:fixed;top:0;left:0;right:0;height:64px;z-index:9999;pointer-events:none;transition:opacity .45s ease,visibility .45s ease">
+      <div style="position:absolute;left:0;right:0;bottom:0;height:4px;background:rgba(13,43,82,.12)">
+        <span id="site-loader-bar" style="position:absolute;top:0;bottom:0;left:0;width:0;background:#e8836b;transition:width .4s ease"></span>
       </div>
-      <div style="position:relative;width:min(240px,62vw);height:6px;border-radius:99px;background:rgba(13,43,82,.14);overflow:hidden">
-        <span id="site-loader-bar" style="position:absolute;inset:0 auto 0 0;width:0;border-radius:99px;background:#e8836b;transition:width .4s ease"></span>
-      </div>
+      <img id="site-loader-cat" src="/brand/cat.png" alt="" width="40" height="40" style="position:absolute;bottom:4px;left:0;transform:translateX(-50%);transition:left .4s ease;animation:loader-walk .5s ease-in-out infinite alternate" />
     </div>
-    <style>@keyframes loader-walk{from{transform:translateX(0) scaleX(1)}to{transform:translateX(176px) scaleX(1)}}</style>
+    <style>@keyframes loader-walk{from{transform:translateX(-50%) translateY(0)}to{transform:translateX(-50%) translateY(-5px)}}</style>
     <script>
       (function () {
         var bar = document.getElementById("site-loader-bar");
+        var cat = document.getElementById("site-loader-cat");
         var loader = document.getElementById("site-loader");
         var width = 0;
-        var timer = setInterval(function () { width = Math.min(90, width + (90 - width) * 0.08 + 1); bar.style.width = width + "%"; }, 120);
+        function set(value) { width = value; bar.style.width = value + "%"; cat.style.left = value + "%"; }
+        var timer = setInterval(function () { set(Math.min(90, width + (90 - width) * 0.08 + 1)); }, 120);
         function done() {
           clearInterval(timer);
-          bar.style.width = "100%";
-          setTimeout(function () { loader.style.opacity = "0"; loader.style.visibility = "hidden"; }, 250);
+          set(100);
+          setTimeout(function () { loader.style.opacity = "0"; loader.style.visibility = "hidden"; }, 350);
         }
         window.addEventListener("load", done);
         setTimeout(done, 8000);
