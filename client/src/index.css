@@ -429,3 +429,7 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
 
 /* Desktop: the contact copy is centered beside the form instead of hanging at the top. */
 @media(min-width:851px){.reference-contact{align-items:center}}
+
+/* Desktop: the phone mockup is taller and its options show in full, without scrolling inside it. */
+@media(min-width:851px){.interactive-phone{width:300px;height:700px}.phone-service-list{max-height:none;overflow:visible}}
+@media(min-width:851px){.phone-service{padding:6px 4px}.phone-service-list{gap:0}}
