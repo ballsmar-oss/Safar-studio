@@ -423,3 +423,9 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
 
 /* Desktop: the works heading sits above a full-width grid instead of a narrow column. */
 @media(min-width:851px){.work-section{grid-template-columns:1fr;gap:36px}.work-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}.work-heading p{max-width:520px}}
+
+/* Desktop: the phone sits a little left of the middle so the hero balances with its copy. */
+@media(min-width:851px){.reference-hero-art{transform:translateX(-64px)}}
+
+/* Desktop: the contact copy is centered beside the form instead of hanging at the top. */
+@media(min-width:851px){.reference-contact{align-items:center}}

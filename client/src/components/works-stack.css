@@ -181,3 +181,6 @@
 @media (prefers-reduced-motion: reduce) {
   .wstack-card, .wstack-pill, .wstack-tags li, .wstack-float { transition: none; animation: none !important; }
 }
+
+/* Desktop: the works deck is larger so it fills the wide section instead of a narrow column. */
+@media(min-width:900px){.wstack{--wstack-w:min(34rem,40vw,calc((100svh - 14rem) * 0.74))}}
