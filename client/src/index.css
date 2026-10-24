@@ -443,6 +443,6 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
 /* The same cat artwork moves: the big one hops gently, the pointer hops while it taps. */
 .pick-cat { animation:pick-cat-move 2.4s ease-in-out infinite; transform-origin:50% 100%; }
 @keyframes pick-cat-move { 0%,100% { transform:translateY(0) rotate(0deg); } 25% { transform:translateY(-10px) rotate(-3deg); } 50% { transform:translateY(0) rotate(0deg); } 75% { transform:translateY(-5px) rotate(3deg); } }
-.ghost-pointer img { width:56px; height:56px; display:block; animation:ghost-hop .42s ease-in-out infinite alternate; }
+.ghost-pointer img { width:56px; height:auto; display:block; animation:ghost-hop .42s ease-in-out infinite alternate; }
 @keyframes ghost-hop { from { transform:translateY(0) rotate(-3deg); } to { transform:translateY(-7px) rotate(3deg); } }
 @media (prefers-reduced-motion: reduce) { .pick-cat,.ghost-pointer img { animation:none; } }

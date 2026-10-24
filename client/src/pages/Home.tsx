@@ -76,7 +76,7 @@ export default function Home() {
     if (!rows.length) return;
     const ghost = document.createElement("div");
     ghost.className = "ghost-pointer";
-    ghost.innerHTML = '<img src="/brand/cat.png" alt="" width="56" height="56" />';
+    ghost.innerHTML = '<img src="/brand/cat-sitting.png" alt="" width="56" height="62" />';
     phone.appendChild(ghost);
     const at = (el: HTMLElement) => {
       const p = phone.getBoundingClientRect(), r = el.getBoundingClientRect();
@@ -184,7 +184,7 @@ export default function Home() {
             <a className="reference-cta" href="#services">{copy.heroCta} <ArrowLeft size={17} /></a>
             <div className="pick-hint" aria-hidden="true">
               <div className="pick-cat-box"><img className="pick-cat" src="/brand/cat.png" alt="" /><span className="zz zz-1">z</span><span className="zz zz-2">z</span><span className="zz zz-3">Z</span></div>
-              <span className="ph-text">{isArabic ? "اختر من الجوال" : "Pick from the phone"}</span> <img className="ph-cat" src="/brand/cat.png" alt="" width="34" height="34" />
+              <span className="ph-text">{isArabic ? "اختر من الجوال" : "Pick from the phone"}</span> <img className="ph-cat" src="/brand/cat-sitting.png" alt="" width="30" height="33" />
             </div>
           </div>
           <div className="reference-hero-art phone-only-scene">
