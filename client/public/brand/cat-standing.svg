@@ -1,28 +1,26 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <g fill="#fdf5e4" stroke="#0d2b52" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round">
-    <!-- tail rising from the back, curled at the tip -->
-    <path d="M45 46 C56 44 58 34 52 28 C50 26 47 28 49 31 C52 35 50 41 42 42 Z" fill="#f2a24a"/>
-    <!-- body, upright -->
-    <path d="M22 26 C18 34 18 46 20 52 L44 52 C46 46 46 34 42 26 Z" fill="#fdf5e4"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 150" width="120" height="150">
+  <g stroke="#0a1a36" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <!-- tail: rises from the back and curls at the top -->
+    <path d="M84 118 C104 116 110 96 104 78 C101 68 92 66 92 74 C96 84 94 100 80 104 Z" fill="#fdae4d"/>
+    <!-- body: upright, a little wider at the base -->
+    <path d="M40 60 C30 78 30 104 34 128 L80 128 C84 104 84 78 74 60 Z" fill="#fdf4dd"/>
+    <!-- orange patch on the back -->
+    <path d="M44 74 C52 68 66 70 70 80 C72 90 62 96 56 92 C48 88 40 84 44 74 Z" fill="#fdae4d" stroke="none"/>
     <!-- front legs -->
-    <path d="M24 50 L24 58 L30 58 L30 50" fill="#fdf5e4"/>
-    <path d="M34 50 L34 58 L40 58 L40 50" fill="#fdf5e4"/>
+    <path d="M46 124 L46 142 L58 142 L58 124" fill="#fdf4dd"/>
+    <path d="M64 124 L64 142 L76 142 L76 124" fill="#fdf4dd"/>
     <!-- head -->
-    <circle cx="32" cy="18" r="11" fill="#fdf5e4"/>
+    <path d="M30 38 C30 24 40 18 54 18 C68 18 78 24 78 38 C78 52 68 60 54 60 C40 60 30 52 30 38 Z" fill="#fdf4dd"/>
     <!-- ears -->
-    <path d="M22.5 13 L21 3 L29 9 Z" fill="#fdf5e4"/>
-    <path d="M41.5 13 L43 3 L35 9 Z" fill="#fdf5e4"/>
+    <path d="M32 30 L30 8 L48 20 Z" fill="#fdf4dd"/>
+    <path d="M76 30 L78 8 L60 20 Z" fill="#fdf4dd"/>
+    <!-- head patch -->
+    <path d="M40 30 C44 22 52 24 52 30 C52 36 42 38 40 30 Z" fill="#fdae4d" stroke="none"/>
   </g>
-  <!-- orange patches -->
-  <g fill="#f2a24a">
-    <path d="M22 22 C24 18 27 19 27 22 C27 25 23 26 22 22 Z"/>
-    <path d="M36 14 C40 13 42 16 40 19 C38 21 35 18 36 14 Z"/>
-    <path d="M26 36 C28 33 33 33 35 36 C33 40 28 40 26 36 Z"/>
+  <!-- closed eyes and nose -->
+  <g stroke="#0a1a36" stroke-width="3" fill="none" stroke-linecap="round">
+    <path d="M42 40 Q46 44 50 40"/>
+    <path d="M58 40 Q62 44 66 40"/>
   </g>
-  <!-- eyes and nose -->
-  <g fill="#0d2b52">
-    <circle cx="27.5" cy="18" r="1.6"/>
-    <circle cx="36.5" cy="18" r="1.6"/>
-    <path d="M30.5 22 L33.5 22 L32 23.6 Z"/>
-  </g>
+  <path d="M53 46 L57 46 L55 48.5 Z" fill="#f08a8a" stroke="#0a1a36" stroke-width="1.2" stroke-linejoin="round"/>
 </svg>
