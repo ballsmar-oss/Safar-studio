@@ -19,3 +19,6 @@ createRoot(document.getElementById("root")!).render(
     </QueryClientProvider>
   </trpc.Provider>
 );
+
+// The page is ready once React has rendered: hide the loader from index.html.
+window.requestAnimationFrame(() => (window as unknown as { __siteLoaderDone?: () => void }).__siteLoaderDone?.());
