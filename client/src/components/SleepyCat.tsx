@@ -56,8 +56,8 @@ export default function SleepyCat({ width, height, eyes, hit, label }: Props) {
           <g key={i}>
             <ellipse cx={eye.x} cy={eye.y} rx={eye.rx} ry={eye.ry} className="sleepy-white" />
             <g className="sleepy-pupil" style={{ transform: `translateY(${look * eye.ry * 0.45}px)` }}>
-              <circle cx={eye.x} cy={eye.y} r={eye.ry * 0.55} className="sleepy-iris" />
-              <circle cx={eye.x + eye.rx * 0.22} cy={eye.y - eye.ry * 0.3} r={eye.ry * 0.2} className="sleepy-shine" />
+              <circle cx={eye.x} cy={eye.y} r={eye.ry * 0.64} className="sleepy-iris" />
+              <circle cx={eye.x + eye.rx * 0.22} cy={eye.y - eye.ry * 0.3} r={eye.ry * 0.26} className="sleepy-shine" />
             </g>
           </g>
         ))}

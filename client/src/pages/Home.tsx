@@ -21,8 +21,8 @@ import WorksStack, { placeholderWorks, toStackWork, type StackWork } from "@/com
 import SleepyCat from "@/components/SleepyCat";
 
 // Where the open eyes sit on each cat image (in the image's pixels).
-const PICK_CAT_EYES = [{ x: 81, y: 128, rx: 11, ry: 7.5 }, { x: 104, y: 128, rx: 11, ry: 7.5 }];
-const POSTER_CAT_EYES = [{ x: 433, y: 748, rx: 14, ry: 9.5 }, { x: 489, y: 728, rx: 14, ry: 9.5 }];
+const PICK_CAT_EYES = [{ x: 81, y: 128, rx: 13, ry: 9.5 }, { x: 104, y: 128, rx: 13, ry: 9.5 }];
+const POSTER_CAT_EYES = [{ x: 433, y: 748, rx: 16, ry: 12 }, { x: 489, y: 728, rx: 16, ry: 12 }];
 const heroImage = "/brand/hero.png"; // hidden by the stylesheet; kept for the layout
 
 type Service = {
