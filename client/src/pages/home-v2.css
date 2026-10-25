@@ -21,7 +21,7 @@
 .home-v2 { --cream:#fff5dc;--navy:#0b2946;--coral:#fa7468;--mint:#b7e4df }
 .home-v2 * { box-sizing:border-box }
 .home-v2 { scroll-behavior:smooth }
-.home-v2 { margin:0;background:var(--cream);color:var(--navy);font-family:"Thmanyah Sans",Tahoma,sans-serif }
+.home-v2 { margin:0;background:var(--cream);color:var(--navy);font-family:"Paxalah 8-Bit","Thmanyah Sans",Tahoma,sans-serif }
 .home-v2 button, .home-v2 input, .home-v2 textarea { font:inherit }
 .home-v2 header { position:sticky;top:0;z-index:10;background:#fff5dce9;backdrop-filter:blur(10px);border-bottom:1px solid #e7ddc7 }
 .home-v2 .nav { max-width:1120px;margin:auto;padding:12px 24px;display:flex;justify-content:space-between;align-items:center }
