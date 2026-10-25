@@ -492,14 +492,11 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
 .phone-preview-play::after { content:""; position:absolute; left:9px; top:7px; border-left:9px solid var(--navy); border-top:5px solid transparent; border-bottom:5px solid transparent; }
 @media (max-width:480px){ .phone-only-scene { min-height:640px; } .phone-only-scene .interactive-phone { top:calc(50% + 110px); height:400px; transform:translate(-50%,-50%); } .phone-only-scene .interactive-phone.is-open { transform:translate(-50%,-50%); } .phone-only-scene .hero-character { position:absolute; z-index:5; top:-6px; left:50%; transform:translateX(-50%); width:min(200px,56%); } }
 
-/* Hero on phones: the phone stays straight, fits inside the column, and its screen is only as tall as its content.
-   The badges stay inside the column edges. */
+/* Hero on phones: the phone keeps its frame, the badges stay inside the column, and the options scroll inside the screen. */
 @media (max-width:480px) {
-  .phone-only-scene .interactive-phone,
-  .phone-only-scene .interactive-phone.is-open { transform:translate(-50%,-50%) !important; height:auto !important; width:232px !important; top:calc(50% + 40px) !important; }
-  .phone-only-scene .phone-screen { height:auto !important; }
-  .phone-only-scene .phone-service-list { flex:0 0 auto !important; max-height:none !important; overflow:visible !important; }
-  .phone-only-scene .hero-character { top:70px !important; }
+  .phone-only-scene .interactive-phone { top:calc(50% + 40px) !important; }
+  .phone-only-scene .phone-service-list { flex:1 1 auto !important; min-height:0 !important; max-height:none !important; overflow-y:auto !important; }
+  .phone-only-scene .hero-character { top:30px !important; }
   .phone-only-scene .art-badge--top { right:6px !important; top:auto !important; bottom:300px !important; left:auto !important; }
   .phone-only-scene .art-badge--bottom { left:6px !important; right:auto !important; top:auto !important; bottom:70px !important; }
 }
