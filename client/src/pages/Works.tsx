@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
-import { ArrowLeft, ArrowUpLeft, ExternalLink, Filter, MoveDown, Sparkles } from "lucide-react";
+import { ArrowLeft, Filter, MoveDown, Sparkles } from "lucide-react";
 import { trpc } from "@/lib/trpc";
-import { getEmbedUrl, getVideoPoster } from "@/lib/video";
-import { pickText, useLanguage } from "@/hooks/useLanguage";
+import { useLanguage } from "@/hooks/useLanguage";
+import { StackCardBody, toStackWork } from "@/components/WorksStack";
 
 type FilterId = "all" | "motion" | "ai" | "identity" | "ui" | "web" | "social";
 
@@ -18,11 +18,6 @@ const filters: FilterOption[] = [
   { id: "social", ar: "محتوى اجتماعي", en: "Social content", aliases: ["سوشال", "اجتماعي", "social", "محتوى"] },
 ];
 
-// Shows each work in the viewer's language, falling back to Arabic when the English field is empty.
-function localizeWork(language: "ar" | "en", item: any) {
-  return { ...item, title: pickText(language, item.title, item.titleEn), category: pickText(language, item.category, item.categoryEn), description: pickText(language, item.description, item.descriptionEn) };
-}
-
 function matchesFilter(item: any, option: FilterOption) {
   if (option.id === "all") return true;
   const haystack = `${item.category ?? ""} ${item.categoryEn ?? ""} ${item.title ?? ""} ${item.titleEn ?? ""} ${item.description ?? ""} ${item.descriptionEn ?? ""}`.toLowerCase();
@@ -37,7 +32,7 @@ export default function Works() {
   const works = publicData.data?.portfolio ?? [];
   const activeOption = filters.find((item) => item.id === activeFilter) ?? filters[0];
   const filteredWorks = useMemo(() => works.filter((item) => matchesFilter(item, activeOption)), [works, activeOption]);
-  const localizedWorks = useMemo(() => filteredWorks.map((item) => localizeWork(language, item)), [filteredWorks, language]);
+  const cards = useMemo(() => filteredWorks.map((item) => toStackWork(item, language)), [filteredWorks, language]);
 
   return (
     <div className={`works-page ${isArabic ? "is-arabic" : "is-english"}`} dir={isArabic ? "rtl" : "ltr"}>
@@ -65,7 +60,10 @@ export default function Works() {
 
         <section className="works-grid-section">
           <div className="works-grid-heading"><div><span className="works-count">{String(filteredWorks.length).padStart(2, "0")} {isArabic ? "مشروع" : "projects"}</span><h2>{isArabic ? activeOption.ar : activeOption.en}</h2></div><p>{isArabic ? "كل بطاقة تفتح العمل أو موقعه مباشرة." : "Open any card to view the work or its live link."}</p></div>
-          {publicData.isLoading ? <div className="works-empty"><div className="works-empty-mark">…</div><h3>{isArabic ? "نجهز الأعمال" : "Loading the work"}</h3></div> : filteredWorks.length ? <div className="works-grid">{localizedWorks.map((item: any, index: number) => <article key={item.id} className={`works-card works-card--${index % 4}`}><div className="works-card-media">{item.mediaType === "video" ? ((item.thumbnailUrl || getVideoPoster(item.mediaUrl)) ? <img src={item.thumbnailUrl || getVideoPoster(item.mediaUrl) || undefined} alt={item.title} /> : <video src={item.mediaUrl} muted playsInline preload="metadata" />) : item.mediaType === "image" ? <img src={item.thumbnailUrl || item.mediaUrl} alt={item.title} /> : item.thumbnailUrl ? <img src={item.thumbnailUrl} alt={item.title} /> : <div className="works-link-art"><ExternalLink size={45} /><span>{isArabic ? "تجربة رقمية" : "Digital experience"}</span></div>}<div className="works-card-shape" /></div><div className="works-card-info"><div><span>{item.category || (isArabic ? "مشروع مختار" : "Selected project")}</span><h3>{item.title}</h3></div><a href={item.mediaType === "link" ? (item.projectUrl || item.mediaUrl) : `/works/${item.id}`} {...(item.mediaType === "link" ? { target: "_blank", rel: "noreferrer" } : {})} aria-label={`${isArabic ? "فتح" : "Open"} ${item.title}`}><ArrowUpLeft size={21} /></a></div>{item.description && <p>{item.description}</p>}</article>)}</div> : <div className="works-empty"><div className="works-empty-mark">✦</div><h3>{isArabic ? "ما فيه أعمال بهذا القسم حتى الآن" : "No work in this category yet"}</h3><p>{isArabic ? "جرّب قسمًا ثانيًا أو أضف مشروعًا من لوحة التحكم." : "Try another category or add a project from the admin dashboard."}</p></div>}
+          {publicData.isLoading ? <div className="works-empty"><div className="works-empty-mark">…</div><h3>{isArabic ? "نجهز الأعمال" : "Loading the work"}</h3></div> : cards.length ? <div className="works-cards">{cards.map((item, index) => {
+            const external = !(item.href ?? "").startsWith("/");
+            return <a key={item.id} className="wstack-card is-front" href={item.href} {...(external ? { target: "_blank", rel: "noreferrer" } : {})}><StackCardBody item={item} brandLabel={isArabic ? "سَفَر" : "SAFAR"} isFront eager={index < 2} /></a>;
+          })}</div> : <div className="works-empty"><div className="works-empty-mark">✦</div><h3>{isArabic ? "ما فيه أعمال بهذا القسم حتى الآن" : "No work in this category yet"}</h3><p>{isArabic ? "جرّب قسمًا ثانيًا أو أضف مشروعًا من لوحة التحكم." : "Try another category or add a project from the admin dashboard."}</p></div>}
         </section>
       </main>
       <footer className="works-footer"><a href="/">سَفَر</a><p>{isArabic ? "أفكار جيدة. تصاميم أفضل. أثر يدوم." : "Good ideas. Better design. Lasting impact."}</p><a href="/#contact">{isArabic ? "خلّنا نبدأ" : "Let’s start"} <ArrowLeft size={15} /></a></footer>

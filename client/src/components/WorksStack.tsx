@@ -1,4 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { pickText } from "@/hooks/useLanguage";
+import { getVideoPoster } from "@/lib/video";
 import "./works-stack.css";
 
 export type StackWork = { id: string | number; title: string; description: string; tags: string[]; image: string; href?: string; sideLabel?: string; gallery?: string[] };
@@ -25,6 +27,43 @@ export function placeholderWorks(isArabic: boolean): StackWork[] {
     { title: "Abaq perfume store", tags: ["E-commerce", "Interface design", "Product imagery"], description: "A perfume storefront that gives every product a clear image and a short story, with fast checkout on mobile." },
   ];
   return ar.map((item, i) => ({ ...item, ...en[i] }));
+}
+
+// Turns a dashboard project into a card, in the viewer's language. Used by the home deck and the works page.
+export function toStackWork(item: any, language: Parameters<typeof pickText>[0]): StackWork {
+  const isArabic = language === "ar";
+  return {
+    id: item.id,
+    title: pickText(language, item.title, item.titleEn),
+    description: pickText(language, item.description, item.descriptionEn),
+    tags: (!isArabic && item.tagsEn?.length ? item.tagsEn : item.tags?.length ? item.tags : [pickText(language, item.category, item.categoryEn)]).filter(Boolean),
+    sideLabel: pickText(language, item.sideLabel, item.sideLabelEn) || undefined,
+    gallery: item.gallery ?? [],
+    image: item.thumbnailUrl || (item.mediaType === "image" ? item.mediaUrl : getVideoPoster(item.mediaUrl)) || "/media/placeholders/work-1.svg",
+    href: item.mediaType === "link" ? item.projectUrl || item.mediaUrl : `/works/${item.id}`,
+  };
+}
+
+// The inside of one card: the image with its side notch and yellow tags, then the title and description.
+export function StackCardBody({ item, brandLabel, isFront, eager = false }: { item: StackWork; brandLabel: string; isFront: boolean; eager?: boolean }) {
+  return (
+    <>
+      <div className="wstack-media">
+        <img src={item.image} alt={item.title} loading={eager ? "eager" : "lazy"} />
+        <div className="wstack-notch" aria-hidden="true">
+          <svg viewBox="0 0 23 178"><path d="M0 178V0c0 7.57.939 15.1 2.789 22.44 1.84 7.344 4.598 14.497 8.226 21.334 15.346 28.928 15.346 61.53 0 90.452C3.762 147.895 0 162.849 0 178" /></svg>
+          <span>{item.sideLabel || brandLabel}</span>
+        </div>
+        <ul className="wstack-tags">
+          {item.tags.map((tag, t) => <li key={tag} style={{ transitionDelay: isFront ? `${260 + t * 90}ms` : "0ms" }}>{tag}</li>)}
+        </ul>
+      </div>
+      <div className="wstack-copy">
+        <h3>{item.title}</h3>
+        <p>{item.description}</p>
+      </div>
+    </>
+  );
 }
 
 const DEPTH = 4; // cards visible behind the front one
@@ -148,24 +187,7 @@ export default function WorksStack({ items, brandLabel, isArabic }: { items: Sta
           {items.map((item, i) => {
             const depth = (i - active + count) % count;
             const isFront = depth === 0;
-            const card = (
-              <>
-                <div className="wstack-media">
-                  <img src={item.image} alt={item.title} loading={i < 2 ? "eager" : "lazy"} />
-                  <div className="wstack-notch" aria-hidden="true">
-                    <svg viewBox="0 0 23 178"><path d="M0 178V0c0 7.57.939 15.1 2.789 22.44 1.84 7.344 4.598 14.497 8.226 21.334 15.346 28.928 15.346 61.53 0 90.452C3.762 147.895 0 162.849 0 178" /></svg>
-                    <span>{item.sideLabel || brandLabel}</span>
-                  </div>
-                  <ul className="wstack-tags">
-                    {item.tags.map((tag, t) => <li key={tag} style={{ transitionDelay: isFront ? `${260 + t * 90}ms` : "0ms" }}>{tag}</li>)}
-                  </ul>
-                </div>
-                <div className="wstack-copy">
-                  <h3>{item.title}</h3>
-                  <p>{item.description}</p>
-                </div>
-              </>
-            );
+            const card = <StackCardBody item={item} brandLabel={brandLabel} isFront={isFront} eager={i < 2} />;
             const common = {
               ref: (el: HTMLElement | null) => { cardRefs.current[i] = el; },
               className: `wstack-card${isFront ? " is-front" : ""}${depth > DEPTH ? " is-hidden" : ""}`,

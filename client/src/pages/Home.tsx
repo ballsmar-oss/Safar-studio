@@ -16,8 +16,8 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
-import { getEmbedUrl, getVideoPoster } from "@/lib/video";
-import WorksStack, { placeholderWorks, type StackWork } from "@/components/WorksStack";
+import { getEmbedUrl } from "@/lib/video";
+import WorksStack, { placeholderWorks, toStackWork, type StackWork } from "@/components/WorksStack";
 
 const heroImage = "/brand/hero.png"; // hidden by the stylesheet; kept for the layout
 
@@ -140,16 +140,7 @@ export default function Home() {
   const isArabic = language === "ar";
   // Dashboard projects fill the deck once they have descriptions; until then it shows placeholder projects.
   const stackWorks: StackWork[] = livePortfolio.some((item) => pickText(language, item.description, item.descriptionEn))
-    ? livePortfolio.map((item) => ({
-        id: item.id,
-        title: pickText(language, item.title, item.titleEn),
-        description: pickText(language, item.description, item.descriptionEn),
-        tags: (!isArabic && item.tagsEn?.length ? item.tagsEn : item.tags?.length ? item.tags : [pickText(language, item.category, item.categoryEn)]).filter(Boolean),
-        sideLabel: pickText(language, item.sideLabel, item.sideLabelEn) || undefined,
-        gallery: item.gallery ?? [],
-        image: item.thumbnailUrl || (item.mediaType === "image" ? item.mediaUrl : getVideoPoster(item.mediaUrl)) || "/media/placeholders/work-1.svg",
-        href: item.mediaType === "link" ? item.projectUrl || item.mediaUrl : `/works/${item.id}`,
-      }))
+    ? livePortfolio.map((item) => toStackWork(item, language))
     : placeholderWorks(isArabic);
   const copy = isArabic ? {
     home: "الرئيسية", services: "الخدمات", work: "أعمالنا", contact: "تواصل", topbar: "نحوّل الأفكار إلى تجارب تُحرّك الأثر", places: "الرياض · جدة · عن بُعد", heroA: "أفكارك", heroB: "نصممها", heroC: "تنفّذ.", heroLead: "تحويل أفكارك إلى تصاميم وتجارب رقمية تترك أثرًا.", heroCta: "اختر ما يلهمك", sideA: "كل ما تحتاجه", sideB: "في مكان واحد", sideC: "واختيارك يحدد", sideD: "ما يظهر لك", phoneTitle: "اختر ما يهمك", more: "اعرف المزيد", start: "لنبدأ مشروعك الآن", proofKicker: "من الفكرة إلى التأثير", proofTitleA: "نصمّم لك", proofTitleB: "المساحة", proofTitleC: "لتكبر.", proofLead: "نشتغل معك من أول سؤال إلى آخر تفصيلة، حتى تكون النتيجة واضحة لك ولجمهورك.", reviewKicker: "قالوا عن التجربة", review: "سَفَر فهم فكرتنا من أول جلسة، وحوّلها إلى هوية وتجربة تشبهنا فعلًا.", contactKicker: "خلّنا نبدأ", contactTitleA: "جاهز تخلي", contactTitleB: "فكرتك تُرى؟", contactLead: "أرسل لنا تفاصيل بسيطة عن مشروعك، وسنعود لك باقتراح يناسب مرحلتك.", formTitle: "لنبنِ الشيء الصحيح", name: "الاسم الكامل", email: "البريد الإلكتروني", choose: "اختر خدمة", message: "نبذة عن المشروع", submit: "أرسل الطلب", thanks: "وصلنا طلبك.", thanksLead: "شكرًا لثقتك. سنعود إليك قريبًا لنبدأ الحديث.", newRequest: "إرسال طلب جديد", footer: "أفكار جيدة. تصاميم أفضل. أثر يدوم."
