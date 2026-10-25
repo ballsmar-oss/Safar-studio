@@ -74,7 +74,7 @@
   top: 50%;
   left: 9px; /* the notch is thickest about 9px in from the edge */
   transform: translate(-50%, -50%) rotate(270deg);
-  font: 700 11px/1 "Paxalah 8-Bit","Thmanyah Sans", sans-serif;
+  font: 700 11px/1 "Thmanyah Sans", sans-serif;
   letter-spacing: 0.08em;
   color: var(--navy);
   white-space: nowrap;
@@ -103,7 +103,7 @@
   border-radius: 3px;
   background: var(--wstack-yellow);
   color: var(--navy);
-  font: 600 12px/1.4 "Paxalah 8-Bit","Thmanyah Sans", sans-serif;
+  font: 600 12px/1.4 "Thmanyah Sans", sans-serif;
   opacity: 0;
   transform: translateY(-4px);
   transition: opacity 0.35s ease, transform 0.35s ease;
@@ -112,7 +112,7 @@
 
 /* Under the image: the project name and a short description. */
 .wstack-copy { display: grid; gap: 6px; margin-top: 14px; padding-inline: 6px; text-align: start; }
-.wstack-copy h3 { margin: 0; font: 800 clamp(20px, 5.4vw, 26px)/1.35 "Paxalah 8-Bit","Thmanyah Sans", sans-serif; color: var(--navy); }
+.wstack-copy h3 { margin: 0; font: 800 clamp(20px, 5.4vw, 26px)/1.35 "Thmanyah Sans", sans-serif; color: var(--navy); }
 .wstack-copy p { margin: 0; font-size: 14px; line-height: 1.75; color: #385a73; }
 
 /* Tab rail under the deck with a sliding coral pill. */
@@ -142,7 +142,7 @@
   border: 0;
   background: none;
   color: var(--navy);
-  font: 600 14px/1.2 "Paxalah 8-Bit","Thmanyah Sans", sans-serif;
+  font: 600 14px/1.2 "Thmanyah Sans", sans-serif;
   white-space: nowrap;
   cursor: pointer;
   transition: color 0.3s ease 0.1s;
