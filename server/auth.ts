@@ -17,11 +17,14 @@ const MAX_AGE_MS = 400 * 24 * 60 * 60 * 1000; // the longest lifetime browsers a
 const sha256 = (value: string) => createHash("sha256").update(value).digest();
 
 // A registered browser also needs the owner's email code once; the verification then lasts a while.
+// Temporarily off: set to true to bring the email code back.
+const EMAIL_CODE_REQUIRED = false;
 const VERIFY_DAYS = 30;
 const CODE_TTL_MS = 10 * 60 * 1000;
 const codes = new Map<number, { hash: string; expiresAt: number; tries: number; sentAt: number }>();
 
 export function isEmailVerified(device: AdminDevice) {
+  if (!EMAIL_CODE_REQUIRED) return true;
   return Boolean(device.verifiedAt && Date.now() - device.verifiedAt.getTime() < VERIFY_DAYS * 24 * 60 * 60 * 1000);
 }
 
