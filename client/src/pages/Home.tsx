@@ -112,14 +112,14 @@ export default function Home() {
 
   const phoneRef = useRef<HTMLDivElement>(null);
   const [language, setLanguage] = useLanguage();
-  const [activeId, setActiveId] = useState("motion");
+  const [activeId, setActiveId] = useState<string | null>(null);
   // A tap works like the cat's demo: the service lights up, the details open, then the phone returns to its normal state.
   const restTimer = useRef<number | undefined>(undefined);
   const tapService = (id: string) => {
     window.clearTimeout(restTimer.current);
     setActiveId(id);
     setPhoneOpen(true);
-    restTimer.current = window.setTimeout(() => { setActiveId("motion"); setPhoneOpen(false); }, 1800);
+    restTimer.current = window.setTimeout(() => { setActiveId(null); setPhoneOpen(false); }, 1800);
   };
   const [phoneOpen, setPhoneOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
