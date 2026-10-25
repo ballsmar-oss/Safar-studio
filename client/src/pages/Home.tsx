@@ -22,6 +22,8 @@ import SleepyCat from "@/components/SleepyCat";
 
 // Where the open eyes sit on each cat image (in the image's pixels).
 const PICK_CAT_EYES = [{ x: 42, y: 140, rx: 12, ry: 9 }, { x: 82, y: 128, rx: 12, ry: 9 }];
+// The character's open eyes sit inside its existing eye rings.
+const CHARACTER_EYES = [{ x: 158, y: 127, rx: 15, ry: 15 }, { x: 219, y: 123, rx: 15, ry: 15 }];
 const POSTER_CAT_EYES = [{ x: 433, y: 748, rx: 16, ry: 12 }, { x: 489, y: 728, rx: 16, ry: 12 }];
 const heroImage = "/brand/hero.png"; // hidden by the stylesheet; kept for the layout
 
@@ -191,7 +193,7 @@ export default function Home() {
             </div>
           </div>
           <div className="reference-hero-art phone-only-scene">
-            <img className="hero-character" src="/brand/hero-character.png" alt="" />
+            <div className="hero-character"><img src="/brand/hero-character.png" alt="" /><SleepyCat width={430} height={320} eyes={CHARACTER_EYES} hit={{ left: "0%", top: "0%", width: "100%", height: "100%" }} label={isArabic ? "الشخصية تصحى" : "Wake the character"} /></div>
             <img className="hero-illustration" src={heroImage} alt={isArabic ? "رسم توضيحي لخدمات سَفَر الرقمية" : "Illustration of SAFAR digital services"} />
             <div ref={phoneRef} className={`interactive-phone ${phoneOpen ? "is-open" : ""}`} onClick={() => setPhoneOpen((open) => !open)} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") setPhoneOpen((open) => !open); }} aria-label={isArabic ? "شاشة خدمات سَفَر" : "SAFAR services screen"}>
               <div className="phone-speaker" /><div className="phone-screen"><div className="phone-header"><strong>{copy.phoneTitle}</strong><span>+</span></div><div className="phone-service-list">{services.map((service) => <Fragment key={service.id}><button key={service.id} className={`phone-service ${service.id === activeId ? "is-active" : ""}`} onClick={(event) => { event.stopPropagation(); tapService(service.id); }} aria-pressed={service.id === activeId}><span className="phone-service-icon">{service.icon}</span><span><b>{isArabic ? service.title : service.enTitle}</b><small>{isArabic ? service.subtitle : service.enSubtitle}</small></span><i className={service.id === activeId ? "is-on" : ""}><em /></i></button>{service.id === activeId && (<div className="phone-active-details"><div className="phone-detail-title"><span>{isArabic ? activeService.title : activeService.enTitle}</span><small>{isArabic ? activeService.image : activeService.enImage}</small></div><div className="phone-preview-row"><div className={`phone-preview phone-preview--${activeService.id}`} aria-hidden="true">{activeService.id === "motion" ? <i className="phone-preview-play" /> : <><i /><i /><i /></>}</div><ul>{(isArabic ? activeService.details : activeService.enDetails).slice(0, 3).map((detail) => <li key={detail}><Check size={12} />{detail}</li>)}</ul></div><a href="#contact" className="phone-more" onClick={(event) => event.stopPropagation()}>{copy.more} <ArrowLeft size={13} /></a></div>)}</Fragment>)}</div><a className="phone-cta" href="#contact" onClick={(event) => event.stopPropagation()}>{copy.start} <ArrowLeft size={14} /></a></div>
