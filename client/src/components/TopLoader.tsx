@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
-import { WalkingCat } from "./WalkingCat";
 
 // A thin striped line across the top of the page on every page change, with the cat walking on its edge.
 const MIN_VISIBLE_MS = 700;
@@ -51,7 +50,7 @@ export function TopLoader() {
       aria-valuenow={Math.round(progress * 100)}
     >
       <div className="top-loader-bar" style={{ width: `${progress * 100}%` }}>
-        <WalkingCat className="top-loader-cat" />
+        <img className="top-loader-cat" src="/brand/cat-open.png" alt="" width="40" />
       </div>
     </div>
   );

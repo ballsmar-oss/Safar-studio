@@ -447,16 +447,11 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
 @keyframes ghost-hop { from { transform:translateY(0) rotate(-3deg); } to { transform:translateY(-7px) rotate(3deg); } }
 @media (prefers-reduced-motion: reduce) { .pick-cat,.ghost-pointer img { animation:none; } }
 
-/* ---------- Page-load line with walking cat ---------- */
-.top-loader { position:fixed; inset:0 0 auto 0; height:4px; z-index:80; pointer-events:none; transition:opacity 400ms ease-out 120ms; }
+/* ---------- Page-load line with a running cat ---------- */
+.top-loader { position:fixed; inset:0 0 auto 0; height:48px; z-index:80; pointer-events:none; transition:opacity 400ms ease-out 120ms; }
 .top-loader.is-done { opacity:0; }
-.top-loader-bar { position:absolute; top:0; right:0; height:100%; background:repeating-linear-gradient(-45deg,#eb9aad 0 4.5px,#f7c6cf 4.5px 9px); background-size:12.7px 100%; animation:stripes 600ms linear infinite; transition:width 320ms cubic-bezier(.2,.8,.2,1); }
-.top-loader-cat { position:absolute; left:-30px; top:-3px; width:38px; height:24px; animation:cat-bounce 360ms ease-in-out infinite; }
+.top-loader-bar { position:absolute; bottom:0; right:0; height:4px; background:repeating-linear-gradient(-45deg,#eb9aad 0 4.5px,#f7c6cf 4.5px 9px); background-size:12.7px 100%; animation:stripes 600ms linear infinite; transition:width 320ms cubic-bezier(.2,.8,.2,1); }
+.top-loader-cat { position:absolute; left:-30px; bottom:3px; width:40px; height:auto; transform-origin:50% 90%; animation:cat-run 300ms ease-in-out infinite alternate; }
 @keyframes stripes { to { background-position:-12.7px 0; } }
-@keyframes cat-bounce { 50% { transform:translateY(-1.5px); } }
-.walk-legs-a, .walk-legs-b { transform-box:fill-box; transform-origin:50% 0; animation:legs 360ms ease-in-out infinite alternate; }
-.walk-legs-b { animation-direction:alternate-reverse; }
-@keyframes legs { from { transform:rotate(-22deg); } to { transform:rotate(22deg); } }
-.walk-tail { transform-box:fill-box; transform-origin:0 100%; animation:tail 720ms ease-in-out infinite alternate; }
-@keyframes tail { to { transform:rotate(-14deg); } }
-@media (prefers-reduced-motion: reduce) { .top-loader *, .top-loader-bar, .top-loader-cat, .walk-legs-a, .walk-legs-b, .walk-tail { animation:none !important; } }
+@keyframes cat-run { from { transform:translateY(0) rotate(-5deg) scaleY(.96); } to { transform:translateY(-5px) rotate(4deg) scaleY(1.04); } }
+@media (prefers-reduced-motion: reduce) { .top-loader-bar, .top-loader-cat { animation:none !important; } }
