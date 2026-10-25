@@ -468,3 +468,20 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
 @media (prefers-reduced-motion: reduce) { .sleepy-pupil, .sleepy-eyes { transition:none; } }
 .cat-frame { position:relative; width:100%; }
 .cat-frame .sleepy-eyes { display:block; left:0; top:0; width:100% !important; height:100% !important; max-width:none; margin:0; transform:none; }
+
+/* Hero: the sleeping character sits on the phone, and each service shows a small preview beside its details. */
+.phone-only-scene .hero-character { position:absolute; z-index:3; left:50%; top:-120px; width:min(300px,80%); transform:translateX(-50%); pointer-events:none; }
+.phone-preview-row { display:grid; grid-template-columns:86px 1fr; gap:8px; align-items:center; }
+.phone-preview { position:relative; height:62px; border-radius:8px; overflow:hidden; background:linear-gradient(160deg,#d8a57c,#8a5a46 60%,#2d3a4b); }
+.phone-preview--systems { background:#fff; border:1.5px solid rgba(13,43,82,.2); display:flex; align-items:flex-end; justify-content:center; gap:6px; padding:8px 10px; }
+.phone-preview--systems i { width:10px; border-radius:3px; background:#7fb8c2; }
+.phone-preview--systems i:nth-child(1) { height:20px; }
+.phone-preview--systems i:nth-child(2) { height:34px; }
+.phone-preview--systems i:nth-child(3) { height:26px; }
+.phone-preview--branding,.phone-preview--ui,.phone-preview--consulting { background:linear-gradient(135deg,#ffe49d,#ef7b66 55%,#9bd6d3); }
+.phone-preview--branding i,.phone-preview--ui i,.phone-preview--consulting i { position:absolute; left:50%; top:50%; width:18px; height:18px; border-radius:50%; background:rgba(255,255,255,.7); transform:translate(-50%,-50%); }
+.phone-preview--branding i:nth-child(2),.phone-preview--ui i:nth-child(2),.phone-preview--consulting i:nth-child(2) { width:40px; height:6px; border-radius:6px; top:auto; bottom:14px; }
+.phone-preview--branding i:nth-child(3),.phone-preview--ui i:nth-child(3),.phone-preview--consulting i:nth-child(3) { display:none; }
+.phone-preview-play { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:24px; height:24px; border-radius:50%; background:rgba(255,255,255,.92); }
+.phone-preview-play::after { content:""; position:absolute; left:9px; top:7px; border-left:9px solid var(--navy); border-top:5px solid transparent; border-bottom:5px solid transparent; }
+@media (max-width:480px){ .phone-only-scene .hero-character { top:-70px; width:min(240px,70%); } }
