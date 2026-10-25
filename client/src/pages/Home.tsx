@@ -18,7 +18,11 @@ import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { getEmbedUrl } from "@/lib/video";
 import WorksStack, { placeholderWorks, toStackWork, type StackWork } from "@/components/WorksStack";
+import SleepyCat from "@/components/SleepyCat";
 
+// Where the open eyes sit on each cat image (in the image's pixels).
+const PICK_CAT_EYES = [{ x: 81, y: 128, rx: 11, ry: 7.5 }, { x: 104, y: 128, rx: 11, ry: 7.5 }];
+const POSTER_CAT_EYES = [{ x: 433, y: 748, rx: 14, ry: 9.5 }, { x: 489, y: 728, rx: 14, ry: 9.5 }];
 const heroImage = "/brand/hero.png"; // hidden by the stylesheet; kept for the layout
 
 type Service = {
@@ -182,7 +186,7 @@ export default function Home() {
             <p>{text("hero.lead", copy.heroLead)}</p>
             <a className="reference-cta" href="#services">{copy.heroCta} <ArrowLeft size={17} /></a>
             <div className="pick-hint" aria-hidden="true">
-              <div className="pick-cat-box"><img className="pick-cat" src="/brand/cat.png" alt="" /><span className="zz zz-1">z</span><span className="zz zz-2">z</span><span className="zz zz-3">Z</span></div>
+              <div className="pick-cat-box"><img className="pick-cat" src="/brand/cat.png" alt="" /><SleepyCat width={257} height={212} eyes={PICK_CAT_EYES} hit={{ left: "0%", top: "0%", width: "100%", height: "100%" }} label={isArabic ? "القطة تصحى" : "Wake the cat"} /><span className="zz zz-1">z</span><span className="zz zz-2">z</span><span className="zz zz-3">Z</span></div>
               <span className="ph-text">{isArabic ? "اختر من الجوال" : "Pick from the phone"}</span> <img className="ph-cat" src="/brand/cat-sitting.png" alt="" width="30" height="33" />
             </div>
           </div>
@@ -194,7 +198,7 @@ export default function Home() {
             <div className="art-badge art-badge--top">{isArabic ? <>فكرة<br />تتبيّن</> : <>Ideas<br />made clear</>}</div><div className="art-badge art-badge--bottom">{isArabic ? <>تصميم<br />يتحرك</> : <>Design<br />in motion</>}</div>
           </div>
                   </section>
-        <div className="hero-poster-wrap"><div className="reference-hero-side"><img className="hero-art" src={isArabic ? "/brand/hero-poster.png" : "/brand/hero-poster-en.png"} alt={isArabic ? "كل ما تحتاجه في مكان واحد: ملصقات ورسومات وقطة نايمة" : "Everything you need in one place: stickers, doodles and a sleeping cat"} />{!isArabic && <p className="side-headline-en"><span>Everything you need</span><em>in one place ...</em></p>}<span className="zz zz-1" aria-hidden="true">z</span><span className="zz zz-2" aria-hidden="true">z</span><span className="zz zz-3" aria-hidden="true">Z</span></div></div>
+        <div className="hero-poster-wrap"><div className="reference-hero-side"><div className="cat-frame"><img className="hero-art" src={isArabic ? "/brand/hero-poster.png" : "/brand/hero-poster-en.png"} alt={isArabic ? "كل ما تحتاجه في مكان واحد: ملصقات ورسومات وقطة نايمة" : "Everything you need in one place: stickers, doodles and a sleeping cat"} /><SleepyCat width={1002} height={930} eyes={POSTER_CAT_EYES} hit={{ left: "37.5%", top: "67%", width: "17.5%", height: "16%" }} label={isArabic ? "القطة تصحى" : "Wake the cat"} /></div>{!isArabic && <p className="side-headline-en"><span>Everything you need</span><em>in one place ...</em></p>}<span className="zz zz-1" aria-hidden="true">z</span><span className="zz zz-2" aria-hidden="true">z</span><span className="zz zz-3" aria-hidden="true">Z</span></div></div>
 
 
         <section id="work" className="work-section work-section--stack">

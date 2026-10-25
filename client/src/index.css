@@ -316,7 +316,8 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
 
 /* Hint under the hero button: the sleeping cat points to the phone, gently breathing */
 .pick-hint { display:flex; flex-direction:column; align-items:flex-start; gap:8px; margin-top:30px; color:var(--navy); font-family:"Noto Kufi Arabic",sans-serif; font-weight:700; font-size:15px; }
-.pick-hint .pick-cat { width:120px; height:auto; transform-origin:50% 100%; animation:catBreathe 4.2s ease-in-out infinite; }
+.pick-hint .pick-cat-box { width:120px; height:auto; transform-origin:50% 100%; animation:catBreathe 4.2s ease-in-out infinite; }
+.pick-hint .pick-cat { display:block; width:100%; height:auto; }
 .pick-hint .ph-text { display:block; }
 @keyframes catBreathe { 0%,100% { transform:scale(1) translateY(0); } 50% { transform:scale(1.035,.97) translateY(-2px); } }
 /* translucent pointer used on the first visit */
@@ -441,7 +442,6 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
 @media (prefers-reduced-motion: reduce) { .ph-cat { animation:none; } }
 
 /* The same cat artwork moves: the big one hops gently, the pointer hops while it taps. */
-.pick-cat { animation:pick-cat-move 2.4s ease-in-out infinite; transform-origin:50% 100%; }
 @keyframes pick-cat-move { 0%,100% { transform:translateY(0) rotate(0deg); } 25% { transform:translateY(-10px) rotate(-3deg); } 50% { transform:translateY(0) rotate(0deg); } 75% { transform:translateY(-5px) rotate(3deg); } }
 .ghost-pointer img { width:56px; height:auto; display:block; animation:ghost-hop .42s ease-in-out infinite alternate; }
 @keyframes ghost-hop { from { transform:translateY(0) rotate(-3deg); } to { transform:translateY(-7px) rotate(3deg); } }
@@ -455,3 +455,16 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
 @keyframes stripes { to { background-position:-12.7px 0; } }
 @keyframes cat-run { from { transform:translateY(0) rotate(-5deg) scaleY(.96); } to { transform:translateY(-5px) rotate(4deg) scaleY(1.04); } }
 @media (prefers-reduced-motion: reduce) { .top-loader-bar, .top-loader-cat { animation:none !important; } }
+
+/* Sleeping cats: the open-eye layer and tap area drawn over the cat image (see SleepyCat.tsx). */
+.sleepy-eyes { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; opacity:0; transition:opacity .2s ease; overflow:visible; }
+.sleepy-eyes.is-open { opacity:1; }
+.sleepy-white { fill:#fffdf7; stroke:#0d2b52; stroke-width:1.6px; vector-effect:non-scaling-stroke; }
+.sleepy-iris { fill:#0d2b52; }
+.sleepy-shine { fill:#fffdf7; }
+.sleepy-pupil { transition:transform .35s cubic-bezier(.3,.7,.2,1); }
+.sleepy-hit { position:absolute; margin:0; padding:0; border:0; border-radius:50%; background:transparent; cursor:pointer; }
+.sleepy-hit:focus-visible { outline:2px solid var(--navy); outline-offset:2px; }
+@media (prefers-reduced-motion: reduce) { .sleepy-pupil, .sleepy-eyes { transition:none; } }
+.cat-frame { position:relative; width:100%; }
+.cat-frame .sleepy-eyes { left:0; top:0; width:100% !important; height:100% !important; max-width:none; margin:0; transform:none; }
