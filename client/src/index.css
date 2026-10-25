@@ -467,4 +467,4 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
 .sleepy-hit:focus-visible { outline:2px solid var(--navy); outline-offset:2px; }
 @media (prefers-reduced-motion: reduce) { .sleepy-pupil, .sleepy-eyes { transition:none; } }
 .cat-frame { position:relative; width:100%; }
-.cat-frame .sleepy-eyes { left:0; top:0; width:100% !important; height:100% !important; max-width:none; margin:0; transform:none; }
+.cat-frame .sleepy-eyes { display:block; left:0; top:0; width:100% !important; height:100% !important; max-width:none; margin:0; transform:none; }
