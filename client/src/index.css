@@ -496,7 +496,7 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
 @media (max-width:480px) {
   .phone-only-scene .interactive-phone { top:calc(50% + 40px) !important; }
   .phone-only-scene .phone-service-list { flex:1 1 auto !important; min-height:0 !important; max-height:none !important; overflow-y:auto !important; }
-  .phone-only-scene .hero-character { top:30px !important; }
+  .phone-only-scene .hero-character { display:none !important; }
   .phone-only-scene .art-badge--top { right:6px !important; top:auto !important; bottom:300px !important; left:auto !important; }
   .phone-only-scene .art-badge--bottom { left:6px !important; right:auto !important; top:auto !important; bottom:70px !important; }
 }
