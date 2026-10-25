@@ -110,6 +110,7 @@ export const adminDevices = sqliteTable("adminDevices", {
   createdAt: createdAt(),
   lastSeenAt: integer("lastSeenAt", { mode: "timestamp" }).notNull().$defaultFn(() => new Date()),
   revokedAt: integer("revokedAt", { mode: "timestamp" }),
+  verifiedAt: integer("verifiedAt", { mode: "timestamp" }),
 });
 
 export type SiteContent = typeof siteContent.$inferSelect;

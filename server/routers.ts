@@ -4,6 +4,7 @@ import { randomBytes } from "node:crypto";
 import { z } from "zod";
 import { adminDevices, integrationSettings, leads, paymentRequests, portfolioItems, siteContent, testimonials } from "../drizzle/schema";
 import { adminProcedure, publicProcedure, router } from "./_core/trpc";
+import { isEmailVerified } from "./auth";
 import { db, getPaymentRequestByToken, getPublishedPortfolioItem, getPublicContactSettings, getSettings, listContent, listLeads, listPaymentRequests, listPortfolio, listPublishedPortfolio, listPublishedTestimonials, listTestimonials } from "./db";
 import { notifyOwner, sendEmail } from "./mail";
 import { createInvoice } from "./moyasar";
@@ -44,7 +45,7 @@ const fillTemplate = (template: string, values: Record<string, string>) =>
 
 export const appRouter = router({
   auth: router({
-    me: publicProcedure.query(({ ctx }) => ({ isAdmin: Boolean(ctx.device) })),
+    me: publicProcedure.query(({ ctx }) => ({ isAdmin: Boolean(ctx.device && isEmailVerified(ctx.device)), deviceRegistered: Boolean(ctx.device) })),
   }),
   publicContent: router({
     all: publicProcedure.query(() => ({ content: listContent(), portfolio: listPublishedPortfolio(), testimonials: listPublishedTestimonials(), settings: getPublicContactSettings() })),

@@ -1,0 +1,1 @@
+ALTER TABLE `adminDevices` ADD `verifiedAt` integer;

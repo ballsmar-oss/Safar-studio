@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useAdmin } from "@/hooks/useAdmin";
 import NotFound from "@/pages/NotFound";
+import AdminEmailLogin from "@/components/AdminEmailLogin";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -13,7 +14,7 @@ const emptyWork = { title: "", titleEn: "", description: "", descriptionEn: "", 
 const emptyTestimonial = { name: "", company: "", quote: "", rating: 5, avatarUrl: "", isPublished: true, sortOrder: 0 };
 
 export default function Admin() {
-  const { isAdmin: isApprovedAdmin, loading } = useAdmin();
+  const { isAdmin: isApprovedAdmin, deviceRegistered, loading } = useAdmin();
   const [tab, setTab] = useState<Tab>("overview");
   const [workForm, setWorkForm] = useState<any>(emptyWork);
   const [testimonialForm, setTestimonialForm] = useState<any>(emptyTestimonial);
@@ -58,7 +59,7 @@ export default function Admin() {
   const newLeads = useMemo(() => leads.filter((lead: any) => lead.status === "new").length, [leads]);
 
   if (loading) return <div className="min-h-screen bg-[#fff5df]" />;
-  if (!isApprovedAdmin) return <NotFound />;
+  if (!isApprovedAdmin) return deviceRegistered ? <AdminEmailLogin /> : <NotFound />;
 
   const nav = [{ id: "overview", label: "نظرة عامة", icon: LayoutDashboard }, { id: "content", label: "نصوص الصفحة", icon: Pencil }, { id: "work", label: "الأعمال", icon: ImagePlus }, { id: "testimonials", label: "التقييمات", icon: MessageSquareQuote }, { id: "leads", label: `طلبات التواصل${newLeads ? ` (${newLeads})` : ""}`, icon: MessageSquareQuote }, { id: "payments", label: "طلبات الدفع", icon: CreditCard }, { id: "settings", label: "الإعدادات والتكاملات", icon: Settings }];
   const submitWork = (event: React.FormEvent) => { event.preventDefault(); const payload = { ...workForm, thumbnailUrl: workForm.thumbnailUrl || null, projectUrl: workForm.projectUrl || null, description: workForm.description || null, tags: workForm.tags ?? [], tagsEn: workForm.tagsEn ?? [], sideLabel: workForm.sideLabel || null, sideLabelEn: workForm.sideLabelEn || null, gallery: workForm.gallery ?? [] }; if (workForm.id) updateWork.mutate(payload); else createWork.mutate(payload); };

@@ -36,6 +36,13 @@
       "when": 1792715532544,
       "tag": "0004_works_stack_cards",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1792893154417,
+      "tag": "0005_admin_email_verify",
+      "breakpoints": true
     }
   ]
 }

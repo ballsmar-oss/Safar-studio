@@ -18,6 +18,8 @@ export const ENV = {
   dataDir: path.resolve(process.env.DATA_DIR || "data"),
   // Opening /admin/connect/<this key> once marks the browser as an admin device.
   adminSetupKey: required("ADMIN_SETUP_KEY", "dev-setup-key"),
+  // The owner email that receives the sign-in code for /admin.
+  adminEmail: process.env.ADMIN_EMAIL?.trim() || undefined,
   // Encrypts API keys saved from the dashboard. Changing it makes saved keys unreadable.
   settingsSecret: required("SETTINGS_SECRET", "dev-settings-secret"),
 };
