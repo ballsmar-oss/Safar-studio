@@ -472,7 +472,7 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
 .cat-frame .sleepy-eyes { display:block; left:0; top:0; width:100% !important; height:100% !important; max-width:none; margin:0; transform:none; }
 
 /* Hero: the sleeping character sits on the phone, and each service shows a small preview beside its details. */
-.phone-only-scene .hero-character { position:absolute; z-index:3; left:50%; top:-120px; width:min(300px,80%); transform:translateX(-50%); }
+.phone-only-scene .hero-character { position:absolute; z-index:3; left:50%; top:-160px; width:min(300px,80%); transform:translateX(-50%); }
 .phone-only-scene .hero-character img { display:block; width:100%; height:auto; }
 .phone-only-scene .hero-character img { pointer-events:none; z-index:0; }
 .phone-only-scene .hero-character .sleepy-eyes { z-index:1; }
