@@ -52,10 +52,8 @@ export default function WalkingCat() {
             <g key={i} className="walk-cat-eye">
               <circle cx={eye.x} cy={eye.y} r={eye.r} className="walk-cat-white" />
               <g className="walk-cat-pupil" style={{ transform: `translate(${gaze.x * 4}px, ${gaze.y * 3}px)` }}>
-                <circle cx={eye.x} cy={eye.y} r={eye.r * 0.5} className="walk-cat-iris" />
-                <circle cx={eye.x} cy={eye.y} r={eye.r * 0.26} className="walk-cat-pupil-dot" />
-                <circle cx={eye.x + eye.r * 0.2} cy={eye.y - eye.r * 0.22} r={eye.r * 0.17} className="walk-cat-shine" />
-                <circle cx={eye.x - eye.r * 0.18} cy={eye.y + eye.r * 0.2} r={eye.r * 0.08} className="walk-cat-shine" />
+                <circle cx={eye.x} cy={eye.y} r={eye.r * 0.64} className="walk-cat-iris" />
+                <circle cx={eye.x + eye.r * 0.22} cy={eye.y - eye.r * 0.3} r={eye.r * 0.26} className="walk-cat-shine" />
               </g>
             </g>
           ))}

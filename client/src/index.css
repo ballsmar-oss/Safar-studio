@@ -513,9 +513,8 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
 .cat-frame .walk-cat svg.walk-cat-eyes { display:block !important; position:absolute; left:0; top:0; width:100% !important; height:100% !important; transform:none !important; max-width:none; margin:0; overflow:visible; }
 .walk-cat-eye { transform-box:fill-box; transform-origin:center; animation:walk-cat-blink 4.8s infinite; }
 @keyframes walk-cat-blink { 0%,93%,100% { transform:scaleY(1); } 96% { transform:scaleY(.1); } }
-.walk-cat-white { fill:#ffffff; stroke:#0d2b52; stroke-width:1.6px; vector-effect:non-scaling-stroke; }
-.walk-cat-iris { fill:#7fd3f0; }
-.walk-cat-pupil-dot { fill:#1b2a44; }
-.walk-cat-shine { fill:#ffffff; }
+.walk-cat-white { fill:#fffdf7; stroke:#0d2b52; stroke-width:1.6px; vector-effect:non-scaling-stroke; }
+.walk-cat-iris { fill:#0d2b52; }
+.walk-cat-shine { fill:#fffdf7; }
 .walk-cat-pupil { transition:transform .45s cubic-bezier(.3,.7,.2,1); }
 @media (prefers-reduced-motion: reduce) { .walk-cat, .walk-cat-inner, .walk-cat-pupil, .walk-cat-eye { transition:none !important; animation:none !important; } }
