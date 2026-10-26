@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
+import { useWalkFrame, walkFrameSrc } from "@/lib/walkFrames";
 
 // A thin striped line across the top of the page on every page change, with the cat walking on its edge.
 const MIN_VISIBLE_MS = 700;
@@ -14,18 +15,11 @@ const nextPaint = () => new Promise<void>((r) => requestAnimationFrame(() => req
 const wait = (ms: number) => new Promise<void>((r) => window.setTimeout(r, ms));
 
 // The same calico walk cycle as the poster cat, played faster and small so it runs along the loading line.
-const RUN_FRAMES = 75;
 const RUN_FPS = 14;
-const runFrameSrc = (index: number) => `/brand/walk-frames/f${String(index).padStart(2, "0")}.webp`;
 
 function RunningCat() {
-  const [frame, setFrame] = useState(0);
-  useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const id = window.setInterval(() => setFrame((current) => (current + 1) % RUN_FRAMES), 1000 / RUN_FPS);
-    return () => window.clearInterval(id);
-  }, []);
-  return <img className="top-loader-cat" src={runFrameSrc(frame)} alt="" width="40" height="24" draggable={false} />;
+  const frame = useWalkFrame(RUN_FPS);
+  return <img className="top-loader-cat" src={walkFrameSrc(frame)} alt="" width="40" height="24" draggable={false} />;
 }
 
 export function TopLoader() {
