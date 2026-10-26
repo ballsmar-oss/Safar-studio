@@ -32,6 +32,11 @@ export function registerVisitRoute(app: Express) {
 
 export function getVisitStats() {
   const today = dayOf();
-  const days = db.select().from(dailyStats).orderBy(desc(dailyStats.day)).limit(14).all();
-  return { today: days.find((row) => row.day === today) ?? { day: today, views: 0, visitors: 0 }, days };
+  const month = today.slice(0, 7);
+  const all = db.select().from(dailyStats).orderBy(desc(dailyStats.day)).all();
+  const days = all.slice(0, 14);
+  // Monthly visitors add up each day's count, so a person who visits on two days is counted twice.
+  const thisMonth = all.filter((row) => row.day.startsWith(month));
+  const monthVisitors = thisMonth.reduce((sum, row) => sum + row.visitors, 0);
+  return { today: all.find((row) => row.day === today) ?? { day: today, views: 0, visitors: 0 }, monthVisitors, days };
 }

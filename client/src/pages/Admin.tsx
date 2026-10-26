@@ -197,6 +197,7 @@ function VisitsMeter() {
       <div className="mb-4 grid gap-3 sm:grid-cols-2">
         <div className="rounded-2xl bg-[#ffe49d] p-4"><p className="text-sm text-[#557087]">زوار اليوم</p><p className="text-3xl font-black">{data.today.visitors}</p></div>
         <div className="rounded-2xl bg-[#9bd6d3] p-4"><p className="text-sm text-[#557087]">مشاهدات اليوم</p><p className="text-3xl font-black">{data.today.views}</p></div>
+        <div className="rounded-2xl bg-[#ffd0c4] p-4 sm:col-span-2"><p className="text-sm text-[#557087]">مجموع الزوار هذا الشهر</p><p className="text-3xl font-black">{data.monthVisitors}</p></div>
       </div>
       <div className="grid gap-2">
         {data.days.map((row) => (
