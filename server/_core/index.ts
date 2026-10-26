@@ -8,6 +8,7 @@ import { appRouter } from "../routers";
 import { seedIfEmpty } from "../seed";
 import { registerMoyasarWebhook } from "../moyasar-webhook";
 import { registerUploads } from "../uploads";
+import { registerVisitRoute } from "../visits";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 
@@ -29,6 +30,7 @@ async function startServer() {
   app.use(express.json({ limit: "2mb" }));
 
   registerUploads(app);
+  registerVisitRoute(app);
   registerAdminRoutes(app);
   registerMoyasarWebhook(app);
   app.use("/api/trpc", createExpressMiddleware({ router: appRouter, createContext }));

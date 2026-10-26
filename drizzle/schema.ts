@@ -1,4 +1,4 @@
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 const createdAt = () => integer("createdAt", { mode: "timestamp" }).notNull().$defaultFn(() => new Date());
 const updatedAt = () => integer("updatedAt", { mode: "timestamp" }).notNull().$defaultFn(() => new Date()).$onUpdateFn(() => new Date());
@@ -120,3 +120,16 @@ export type Lead = typeof leads.$inferSelect;
 export type PaymentRequest = typeof paymentRequests.$inferSelect;
 export type IntegrationSettings = typeof integrationSettings.$inferSelect;
 export type AdminDevice = typeof adminDevices.$inferSelect;
+
+// Daily visit counts. day is YYYY-MM-DD (Riyadh time). Visitors are counted once per day from a salted hash of IP and browser,
+// so no IP address or name is stored.
+export const dailyStats = sqliteTable("dailyStats", {
+  day: text("day").primaryKey(),
+  views: integer("views").notNull().default(0),
+  visitors: integer("visitors").notNull().default(0),
+});
+
+export const dailyVisitors = sqliteTable("dailyVisitors", {
+  day: text("day").notNull(),
+  hash: text("hash").notNull(),
+}, (table) => [primaryKey({ columns: [table.day, table.hash] })]);

@@ -43,6 +43,13 @@
       "when": 1792893154417,
       "tag": "0005_admin_email_verify",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1793044831552,
+      "tag": "0006_heavy_loki",
+      "breakpoints": true
     }
   ]
 }

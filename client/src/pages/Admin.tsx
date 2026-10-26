@@ -70,7 +70,7 @@ export default function Admin() {
   return <div dir="rtl" className="min-h-screen bg-[#fff5df] text-[#0d2b52]">
     <div className="mx-auto flex min-h-screen max-w-[1500px]">
       <aside className="hidden w-72 shrink-0 border-l border-[#0d2b52]/10 bg-[#0d2b52] p-5 text-[#fff5df] lg:block"><div className="mb-10 flex items-center justify-between"><div><div className="text-2xl font-black">سَفَر</div><div className="text-xs opacity-60">لوحة إدارة المحتوى</div></div><LayoutDashboard /></div><nav className="space-y-2">{nav.map((item) => <button key={item.id} onClick={() => setTab(item.id as Tab)} className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-right transition ${tab === item.id ? "bg-[#f47763] text-[#0d2b52]" : "hover:bg-white/10"}`}><item.icon size={18} />{item.label}</button>)}</nav><a href="/" className="mt-3 flex w-full items-center gap-3 rounded-2xl px-4 py-3 opacity-80 hover:bg-white/10">← الذهاب للموقع الرئيسي</a></aside>
-      <main className="min-w-0 flex-1 p-4 sm:p-8"><header className="mb-8 flex flex-wrap items-center justify-between gap-4"><div><p className="mb-1 text-sm text-[#f47763]">مرحبًا بك</p><h1 className="text-3xl font-black">إدارة موقع سَفَر</h1></div><div className="flex gap-2 lg:hidden"><a href="/" className="rounded-xl border bg-white px-3 py-2 text-sm font-bold">الموقع ←</a><select value={tab} onChange={(e) => setTab(e.target.value as Tab)} className="rounded-xl border bg-white px-3 py-2">{nav.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}</select></div></header><StorageMeter />
+      <main className="min-w-0 flex-1 p-4 sm:p-8"><header className="mb-8 flex flex-wrap items-center justify-between gap-4"><div><p className="mb-1 text-sm text-[#f47763]">مرحبًا بك</p><h1 className="text-3xl font-black">إدارة موقع سَفَر</h1></div><div className="flex gap-2 lg:hidden"><a href="/" className="rounded-xl border bg-white px-3 py-2 text-sm font-bold">الموقع ←</a><select value={tab} onChange={(e) => setTab(e.target.value as Tab)} className="rounded-xl border bg-white px-3 py-2">{nav.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}</select></div></header><CountersSection />
         {tab === "overview" && <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"><Stat label="الأعمال المنشورة" value={work.filter((item: any) => item.isPublished).length} color="bg-[#b9e4dc]" /><Stat label="كل الأعمال" value={work.length} color="bg-[#ffe49d]" /><Stat label="التقييمات" value={testimonials.length} color="bg-[#ff927f]" /><Stat label="طلبات جديدة" value={newLeads} color="bg-[#d8d0f4]" /><div className="col-span-full mt-3 rounded-3xl bg-white p-6 shadow-sm"><h2 className="mb-2 text-xl font-black">من هنا تتحكم بكل شيء</h2><p className="max-w-2xl leading-8 text-slate-500">عدّل النصوص، أضف أعمالك مع الصور والفيديوهات والروابط، أضف تقييمات العملاء، وتابع بيانات كل شخص عبّأ نموذج التواصل.</p></div></section>}
         {tab === "content" && <ContentPanel content={content} form={contentForm} setForm={setContentForm} onSave={(e: React.FormEvent<HTMLFormElement>) => { e.preventDefault(); saveContent.mutate(contentForm); }} onEdit={(item: any) => setContentForm({ contentKey: item.contentKey, label: item.label, contentValue: item.contentValue })} />}
         {tab === "work" && <WorkPanel work={work} form={workForm} setForm={setWorkForm} onSubmit={submitWork} onEdit={(item: any) => setWorkForm(item)} onDelete={(id: number) => deleteWork.mutate({ id })} onUpload={handleUpload} onUploadThumbnail={handleThumbnailUpload} onUploadGallery={(event: React.ChangeEvent<HTMLInputElement>) => { const files = Array.from(event.target.files ?? []).slice(0, 4 - (workForm.gallery?.length ?? 0)); files.reduce((chain, file) => chain.then(() => uploadGallery.upload(file)), Promise.resolve()); event.target.value = ""; }} uploading={uploadMedia.uploading} uploadingThumbnail={uploadThumbnail.uploading} uploadingGallery={uploadGallery.uploading} />}
@@ -173,6 +173,43 @@ function DevicesPanel() {
   const revoke = trpc.admin.revokeDevice.useMutation({ onSuccess: () => { toast.success("تم إلغاء الجهاز"); devices.refetch(); }, onError: (e) => toast.error(e.message) });
   const format = (date: Date) => new Date(date).toLocaleDateString("ar-SA", { year: "numeric", month: "short", day: "numeric" });
   return <section className="mt-5 rounded-3xl bg-white p-6 shadow-sm"><div className="mb-2 flex items-center gap-2 text-xl font-black"><Laptop size={20} />الأجهزة المسموح لها بالدخول</div><p className="mb-5 text-sm leading-7 text-slate-500">لوحة التحكم تفتح من هذه الأجهزة فقط. لإضافة جهاز جديد افتح رابط الدخول السري منه مرة وحدة. إذا ضاع جهاز ألغه من هنا.</p><div className="space-y-3">{(devices.data ?? []).map((device) => <div key={device.id} className="flex flex-wrap items-center gap-3 rounded-2xl bg-[#fff5df] p-4"><div className="min-w-0 flex-1"><b className="block">{device.label}{device.isCurrent && <span className="mr-2 rounded-full bg-[#b9e4dc] px-2 py-0.5 text-xs">هذا الجهاز</span>}</b><small className="text-slate-500">أُضيف {format(device.createdAt)} · آخر دخول {format(device.lastSeenAt)}</small></div><button onClick={() => { if (device.isCurrent && !window.confirm("بتلغي هذا الجهاز وما راح تقدر تفتح لوحة التحكم منه إلا برابط الدخول السري. متأكد؟")) return; revoke.mutate({ id: device.id }); }} className="rounded-xl border border-red-200 px-3 py-2 text-xs font-bold text-red-600 hover:bg-red-50">إلغاء الجهاز</button></div>)}</div></section>;
+}
+
+// The counters section: the site size meter and the daily visits.
+function CountersSection() {
+  return (
+    <div className="mb-8 grid gap-5">
+      <h2 className="text-xl font-black">العدادات</h2>
+      <StorageMeter />
+      <VisitsMeter />
+    </div>
+  );
+}
+
+function VisitsMeter() {
+  const { isAdmin } = useAdmin();
+  const stats = trpc.admin.visitStats.useQuery(undefined, { enabled: Boolean(isAdmin), refetchInterval: 30000 });
+  const data = stats.data;
+  if (!data) return null;
+  const maxVisitors = Math.max(1, ...data.days.map((row) => row.visitors));
+  return (
+    <section className="rounded-3xl bg-white p-5 shadow-sm" aria-label="الزيارات">
+      <div className="mb-4 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-2xl bg-[#ffe49d] p-4"><p className="text-sm text-[#557087]">زوار اليوم</p><p className="text-3xl font-black">{data.today.visitors}</p></div>
+        <div className="rounded-2xl bg-[#9bd6d3] p-4"><p className="text-sm text-[#557087]">مشاهدات اليوم</p><p className="text-3xl font-black">{data.today.views}</p></div>
+      </div>
+      <div className="grid gap-2">
+        {data.days.map((row) => (
+          <div key={row.day} className="grid grid-cols-[6.5rem_1fr_3rem] items-center gap-3 text-sm">
+            <span className="text-[#557087]">{row.day}</span>
+            <div className="h-3 overflow-hidden rounded-full bg-[#e9efef]"><div className="h-full rounded-full bg-[#ef7b66]" style={{ width: `${(row.visitors / maxVisitors) * 100}%` }} /></div>
+            <span className="text-left font-bold">{row.visitors}</span>
+          </div>
+        ))}
+        {data.days.length === 0 && <p className="text-sm text-[#557087]">ما فيه زيارات مسجلة بعد.</p>}
+      </div>
+    </section>
+  );
 }
 
 // Live meter: how much of the server's disk the site uses, refreshed every 30 seconds.
