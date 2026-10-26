@@ -25,7 +25,7 @@ function RunningCat() {
     const id = window.setInterval(() => setFrame((current) => (current + 1) % RUN_FRAMES), 1000 / RUN_FPS);
     return () => window.clearInterval(id);
   }, []);
-  return <img className="top-loader-cat" src={runFrameSrc(frame)} alt="" width="60" height="36" draggable={false} />;
+  return <img className="top-loader-cat" src={runFrameSrc(frame)} alt="" width="40" height="24" draggable={false} />;
 }
 
 export function TopLoader() {
