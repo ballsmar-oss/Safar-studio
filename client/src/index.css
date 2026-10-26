@@ -512,3 +512,12 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
   .phone-only-scene .art-badge--bottom { bottom:-72px !important; left:-14px !important; top:auto !important; right:auto !important; }
 }
 
+
+/* Hero phone list: rows and the open card stack in a plain column, with room under the card so the next row never overlaps it. */
+.phone-only-scene .phone-service-list { display:flex !important; flex-direction:column !important; gap:0 !important; grid-auto-rows:auto !important; }
+.phone-only-scene .phone-service-list > * { flex:0 0 auto !important; width:100%; }
+.phone-only-scene .phone-active-details { position:relative; height:auto !important; min-height:0 !important; margin:8px 0 16px !important; }
+
+/* The small cat by the phone hops sideways when the page demo taps a service. */
+.ph-cat.is-hop { animation:ph-cat-hop .6s ease-in-out 1; }
+@keyframes ph-cat-hop { 0%,100% { transform:translate(0,0) rotate(0deg); } 50% { transform:translate(-10px,-10px) rotate(-8deg); } }
