@@ -12,6 +12,7 @@ import { decryptSecret, encryptSecret, secretMeta } from "./secrets";
 import { allowRequest } from "./rate-limit";
 import { ENV } from "./env";
 import { uploadsDir } from "./uploads";
+import { getStorageUsage } from "./storage";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -94,6 +95,7 @@ export const appRouter = router({
     }),
   }),
   admin: router({
+    storageUsage: adminProcedure.query(() => getStorageUsage()),
     dashboard: adminProcedure.query(() => ({ portfolio: listPortfolio(), testimonials: listTestimonials(), content: listContent(), leads: listLeads(), payments: listPaymentRequests() })),
     integrationSettings: adminProcedure.query(() => {
       const row = getSettings();

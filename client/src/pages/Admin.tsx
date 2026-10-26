@@ -70,7 +70,7 @@ export default function Admin() {
   return <div dir="rtl" className="min-h-screen bg-[#fff5df] text-[#0d2b52]">
     <div className="mx-auto flex min-h-screen max-w-[1500px]">
       <aside className="hidden w-72 shrink-0 border-l border-[#0d2b52]/10 bg-[#0d2b52] p-5 text-[#fff5df] lg:block"><div className="mb-10 flex items-center justify-between"><div><div className="text-2xl font-black">سَفَر</div><div className="text-xs opacity-60">لوحة إدارة المحتوى</div></div><LayoutDashboard /></div><nav className="space-y-2">{nav.map((item) => <button key={item.id} onClick={() => setTab(item.id as Tab)} className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-right transition ${tab === item.id ? "bg-[#f47763] text-[#0d2b52]" : "hover:bg-white/10"}`}><item.icon size={18} />{item.label}</button>)}</nav><a href="/" className="mt-3 flex w-full items-center gap-3 rounded-2xl px-4 py-3 opacity-80 hover:bg-white/10">← الذهاب للموقع الرئيسي</a></aside>
-      <main className="min-w-0 flex-1 p-4 sm:p-8"><header className="mb-8 flex flex-wrap items-center justify-between gap-4"><div><p className="mb-1 text-sm text-[#f47763]">مرحبًا بك</p><h1 className="text-3xl font-black">إدارة موقع سَفَر</h1></div><div className="flex gap-2 lg:hidden"><a href="/" className="rounded-xl border bg-white px-3 py-2 text-sm font-bold">الموقع ←</a><select value={tab} onChange={(e) => setTab(e.target.value as Tab)} className="rounded-xl border bg-white px-3 py-2">{nav.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}</select></div></header>
+      <main className="min-w-0 flex-1 p-4 sm:p-8"><header className="mb-8 flex flex-wrap items-center justify-between gap-4"><div><p className="mb-1 text-sm text-[#f47763]">مرحبًا بك</p><h1 className="text-3xl font-black">إدارة موقع سَفَر</h1></div><div className="flex gap-2 lg:hidden"><a href="/" className="rounded-xl border bg-white px-3 py-2 text-sm font-bold">الموقع ←</a><select value={tab} onChange={(e) => setTab(e.target.value as Tab)} className="rounded-xl border bg-white px-3 py-2">{nav.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}</select></div></header><StorageMeter />
         {tab === "overview" && <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"><Stat label="الأعمال المنشورة" value={work.filter((item: any) => item.isPublished).length} color="bg-[#b9e4dc]" /><Stat label="كل الأعمال" value={work.length} color="bg-[#ffe49d]" /><Stat label="التقييمات" value={testimonials.length} color="bg-[#ff927f]" /><Stat label="طلبات جديدة" value={newLeads} color="bg-[#d8d0f4]" /><div className="col-span-full mt-3 rounded-3xl bg-white p-6 shadow-sm"><h2 className="mb-2 text-xl font-black">من هنا تتحكم بكل شيء</h2><p className="max-w-2xl leading-8 text-slate-500">عدّل النصوص، أضف أعمالك مع الصور والفيديوهات والروابط، أضف تقييمات العملاء، وتابع بيانات كل شخص عبّأ نموذج التواصل.</p></div></section>}
         {tab === "content" && <ContentPanel content={content} form={contentForm} setForm={setContentForm} onSave={(e: React.FormEvent<HTMLFormElement>) => { e.preventDefault(); saveContent.mutate(contentForm); }} onEdit={(item: any) => setContentForm({ contentKey: item.contentKey, label: item.label, contentValue: item.contentValue })} />}
         {tab === "work" && <WorkPanel work={work} form={workForm} setForm={setWorkForm} onSubmit={submitWork} onEdit={(item: any) => setWorkForm(item)} onDelete={(id: number) => deleteWork.mutate({ id })} onUpload={handleUpload} onUploadThumbnail={handleThumbnailUpload} onUploadGallery={(event: React.ChangeEvent<HTMLInputElement>) => { const files = Array.from(event.target.files ?? []).slice(0, 4 - (workForm.gallery?.length ?? 0)); files.reduce((chain, file) => chain.then(() => uploadGallery.upload(file)), Promise.resolve()); event.target.value = ""; }} uploading={uploadMedia.uploading} uploadingThumbnail={uploadThumbnail.uploading} uploadingGallery={uploadGallery.uploading} />}
@@ -173,4 +173,37 @@ function DevicesPanel() {
   const revoke = trpc.admin.revokeDevice.useMutation({ onSuccess: () => { toast.success("تم إلغاء الجهاز"); devices.refetch(); }, onError: (e) => toast.error(e.message) });
   const format = (date: Date) => new Date(date).toLocaleDateString("ar-SA", { year: "numeric", month: "short", day: "numeric" });
   return <section className="mt-5 rounded-3xl bg-white p-6 shadow-sm"><div className="mb-2 flex items-center gap-2 text-xl font-black"><Laptop size={20} />الأجهزة المسموح لها بالدخول</div><p className="mb-5 text-sm leading-7 text-slate-500">لوحة التحكم تفتح من هذه الأجهزة فقط. لإضافة جهاز جديد افتح رابط الدخول السري منه مرة وحدة. إذا ضاع جهاز ألغه من هنا.</p><div className="space-y-3">{(devices.data ?? []).map((device) => <div key={device.id} className="flex flex-wrap items-center gap-3 rounded-2xl bg-[#fff5df] p-4"><div className="min-w-0 flex-1"><b className="block">{device.label}{device.isCurrent && <span className="mr-2 rounded-full bg-[#b9e4dc] px-2 py-0.5 text-xs">هذا الجهاز</span>}</b><small className="text-slate-500">أُضيف {format(device.createdAt)} · آخر دخول {format(device.lastSeenAt)}</small></div><button onClick={() => { if (device.isCurrent && !window.confirm("بتلغي هذا الجهاز وما راح تقدر تفتح لوحة التحكم منه إلا برابط الدخول السري. متأكد؟")) return; revoke.mutate({ id: device.id }); }} className="rounded-xl border border-red-200 px-3 py-2 text-xs font-bold text-red-600 hover:bg-red-50">إلغاء الجهاز</button></div>)}</div></section>;
+}
+
+// Live meter: how much of the server's disk the site uses, refreshed every 30 seconds.
+function formatBytes(bytes: number) {
+  if (bytes >= 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+  if (bytes >= 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+}
+
+function StorageMeter() {
+  const { isAdmin } = useAdmin();
+  const usage = trpc.admin.storageUsage.useQuery(undefined, { enabled: Boolean(isAdmin), refetchInterval: 30000 });
+  const data = usage.data;
+  if (!data) return null;
+  const percent = data.limitBytes ? Math.min(100, (data.dataBytes / data.limitBytes) * 100) : 0;
+  const tone = percent >= 90 ? "#c0392b" : percent >= 70 ? "#e0a100" : "#2e7d5b";
+  return (
+    <section className="mb-8 rounded-3xl bg-white p-5 shadow-sm" aria-label="حجم البيانات">
+      <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2">
+        <h2 className="text-lg font-black">حجم الموقع والبيانات</h2>
+        <span className="text-sm font-bold" style={{ color: tone }}>{formatBytes(data.dataBytes)} من {formatBytes(data.limitBytes)} ({percent.toFixed(1)}%)</span>
+      </div>
+      <div className="h-3 w-full overflow-hidden rounded-full bg-[#e9efef]" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(percent)}>
+        <div className="h-full rounded-full transition-all duration-500" style={{ width: `${percent}%`, background: tone }} />
+      </div>
+      <dl className="mt-4 grid gap-2 text-sm sm:grid-cols-4">
+        <div><dt className="text-[#557087]">قاعدة البيانات</dt><dd className="font-bold">{formatBytes(data.databaseBytes)}</dd></div>
+        <div><dt className="text-[#557087]">الملفات المرفوعة</dt><dd className="font-bold">{formatBytes(data.uploadsBytes)} ({data.uploadsCount})</dd></div>
+        <div><dt className="text-[#557087]">مساحة السيرفر المتبقية</dt><dd className="font-bold">{formatBytes(data.diskFreeBytes)}</dd></div>
+        <div><dt className="text-[#557087]">آخر تحديث</dt><dd className="font-bold">{new Date(data.checkedAt).toLocaleTimeString("ar-SA")}</dd></div>
+      </dl>
+    </section>
+  );
 }

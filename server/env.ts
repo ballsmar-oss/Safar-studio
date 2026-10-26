@@ -16,6 +16,8 @@ export const ENV = {
   // The public address of the site, e.g. https://safarstudio.sa. Used in payment links.
   publicUrl: process.env.PUBLIC_URL?.trim().replace(/\/$/, "") || undefined,
   dataDir: path.resolve(process.env.DATA_DIR || "data"),
+  // The storage plan size in GB, shown on the admin dashboard meter (default 1 GB).
+  storageLimitBytes: Math.round(Number(process.env.STORAGE_LIMIT_GB || 1) * 1024 * 1024 * 1024),
   // Opening /admin/connect/<this key> once marks the browser as an admin device.
   adminSetupKey: required("ADMIN_SETUP_KEY", "dev-setup-key"),
   // The owner email that receives the sign-in code for /admin.
