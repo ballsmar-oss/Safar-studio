@@ -501,41 +501,14 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
   .phone-only-scene .art-badge--bottom { left:6px !important; right:auto !important; top:auto !important; bottom:70px !important; }
 }
 
-/* Walking cat on the poster: it replaces the sleeping cat that is drawn into the poster image. */
+/* Walking cat on the poster: the reference walk cycle plays in place of the sleeping cat drawn into the poster. */
 .poster-cat-cover { position:absolute; left:37%; top:67%; width:32.5%; height:24%; background:#fff5df; pointer-events:none; }
 .poster-cat-cover::after { content:""; position:absolute; left:-12.3%; top:54%; width:15.4%; height:37.5%; background:#fff5df; }
-.walk-cat { position:absolute; top:70%; width:24%; transition:left var(--walk-duration,0s) cubic-bezier(.45,.05,.55,.95), transform .25s ease; pointer-events:none; z-index:2; }
-.walk-cat-inner { position:relative; }
+.walk-cat { position:absolute; left:29%; top:38%; width:42%; pointer-events:none; z-index:2; }
 .walk-cat img { display:block; width:100%; height:auto; }
-/* A step: the body rises and rolls a little on each stride. */
-.walk-cat.is-walking .walk-cat-inner { animation:walk-cat-gait .5s ease-in-out infinite; }
-@keyframes walk-cat-gait { 0%,100% { transform:translateY(0) rotate(-1.2deg); } 50% { transform:translateY(-4px) rotate(1.2deg); } }
-.cat-frame .walk-cat svg.walk-cat-eyes { display:block !important; position:absolute; left:0; top:0; width:100% !important; height:100% !important; transform:none !important; max-width:none; margin:0; overflow:visible; }
-.walk-cat-eye { transform-box:fill-box; transform-origin:center; animation:walk-cat-blink 4.8s infinite; }
-@keyframes walk-cat-blink { 0%,93%,100% { transform:scaleY(1); } 96% { transform:scaleY(.1); } }
-.walk-cat-white { fill:#fffdf7; stroke:#0d2b52; stroke-width:1.6px; vector-effect:non-scaling-stroke; }
-.walk-cat-iris { fill:#0d2b52; }
-.walk-cat-shine { fill:#fffdf7; }
-.walk-cat-pupil { transition:transform .45s cubic-bezier(.3,.7,.2,1); }
-@media (prefers-reduced-motion: reduce) { .walk-cat, .walk-cat-inner, .walk-cat-pupil, .walk-cat-eye { transition:none !important; animation:none !important; } }
-
-/* Hero phone list: rows and the open card stack in a plain column, so nothing overlaps at any width. */
-.phone-only-scene .phone-service-list { display:flex !important; flex-direction:column !important; gap:0 !important; grid-auto-rows:auto !important; }
-.phone-only-scene .phone-service-list > * { flex:0 0 auto !important; width:100%; }
-.phone-only-scene .phone-active-details { margin:6px 0 !important; }
-
 /* Hero badges sit beside the phone on desktop, so they never cover the phone's rows or buttons. */
 @media (min-width:481px) {
   .phone-only-scene .art-badge--top { top:-64px !important; right:-12px !important; bottom:auto !important; left:auto !important; }
   .phone-only-scene .art-badge--bottom { bottom:-72px !important; left:-14px !important; top:auto !important; right:auto !important; }
 }
 
-/* Walking cat: legs swing in a walk cycle while it moves, and the tail sways. */
-.walk-part { position:absolute; left:0; top:0; width:100%; height:auto; display:block; }
-.walk-cat.is-walking .walk-leg-a { animation:walk-leg-a .5s ease-in-out infinite alternate; }
-.walk-cat.is-walking .walk-leg-b { animation:walk-leg-b .5s ease-in-out infinite alternate; }
-.walk-cat.is-walking .walk-tail { animation:walk-tail 1s ease-in-out infinite alternate; }
-@keyframes walk-leg-a { from { transform:rotate(-9deg); } to { transform:rotate(9deg); } }
-@keyframes walk-leg-b { from { transform:rotate(9deg); } to { transform:rotate(-9deg); } }
-@keyframes walk-tail { from { transform:rotate(-7deg); } to { transform:rotate(7deg); } }
-@media (prefers-reduced-motion: reduce) { .walk-cat .walk-part { animation:none !important; } }
