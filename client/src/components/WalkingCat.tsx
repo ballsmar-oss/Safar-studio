@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 
-// A calico cat that walks back and forth along the poster, pausing now and then to look up or to the left.
+// A calico cat that walks back and forth along the poster with big, gentle eyes. It pauses now and then to look up or to the left, and blinks.
 // The eyes sit over the cat's own eyes (image pixels, cat-walk.png is 646 x 440).
-const EYES = [{ x: 523, y: 96, rx: 16, ry: 14 }, { x: 596, y: 93, rx: 15, ry: 14 }];
+const EYES = [{ x: 523, y: 96, r: 19 }, { x: 596, y: 93, r: 18 }];
 const GAZES = [
   { x: 0, y: -1 },
   { x: -1, y: 0 },
@@ -49,11 +49,13 @@ export default function WalkingCat() {
         <img src="/brand/cat-walk.png" alt="" draggable={false} />
         <svg className="walk-cat-eyes" viewBox="0 0 646 440">
           {EYES.map((eye, i) => (
-            <g key={i}>
-              <ellipse cx={eye.x} cy={eye.y} rx={eye.rx} ry={eye.ry} className="walk-cat-white" />
+            <g key={i} className="walk-cat-eye">
+              <circle cx={eye.x} cy={eye.y} r={eye.r} className="walk-cat-white" />
               <g className="walk-cat-pupil" style={{ transform: `translate(${gaze.x * 4}px, ${gaze.y * 3}px)` }}>
-                <circle cx={eye.x} cy={eye.y} r={7.5} className="walk-cat-iris" />
-                <circle cx={eye.x + 2.5} cy={eye.y - 2.5} r={2.4} className="walk-cat-shine" />
+                <circle cx={eye.x} cy={eye.y} r={eye.r * 0.5} className="walk-cat-iris" />
+                <circle cx={eye.x} cy={eye.y} r={eye.r * 0.26} className="walk-cat-pupil-dot" />
+                <circle cx={eye.x + eye.r * 0.2} cy={eye.y - eye.r * 0.22} r={eye.r * 0.17} className="walk-cat-shine" />
+                <circle cx={eye.x - eye.r * 0.18} cy={eye.y + eye.r * 0.2} r={eye.r * 0.08} className="walk-cat-shine" />
               </g>
             </g>
           ))}

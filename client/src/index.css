@@ -504,25 +504,18 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
 /* Walking cat on the poster: it replaces the sleeping cat that is drawn into the poster image. */
 .poster-cat-cover { position:absolute; left:37%; top:67%; width:32.5%; height:24%; background:#fff5df; pointer-events:none; }
 .poster-cat-cover::after { content:""; position:absolute; left:-12.3%; top:54%; width:15.4%; height:37.5%; background:#fff5df; }
-.walk-cat { position:absolute; top:70%; width:24%; transition:left var(--walk-duration,0s) linear, transform .25s ease; pointer-events:none; z-index:2; }
+.walk-cat { position:absolute; top:70%; width:24%; transition:left var(--walk-duration,0s) cubic-bezier(.45,.05,.55,.95), transform .25s ease; pointer-events:none; z-index:2; }
 .walk-cat-inner { position:relative; }
 .walk-cat img { display:block; width:100%; height:auto; }
-.walk-cat.is-walking .walk-cat-inner { animation:walk-cat-bob .42s ease-in-out infinite alternate; }
-@keyframes walk-cat-bob { from { transform:translateY(0); } to { transform:translateY(-4px); } }
+/* A step: the body rises and rolls a little on each stride. */
+.walk-cat.is-walking .walk-cat-inner { animation:walk-cat-gait .5s ease-in-out infinite; }
+@keyframes walk-cat-gait { 0%,100% { transform:translateY(0) rotate(-1.2deg); } 50% { transform:translateY(-4px) rotate(1.2deg); } }
 .cat-frame .walk-cat svg.walk-cat-eyes { display:block !important; position:absolute; left:0; top:0; width:100% !important; height:100% !important; transform:none !important; max-width:none; margin:0; overflow:visible; }
-.walk-cat-white { fill:#f4f9fb; stroke:#0d2b52; stroke-width:1.4px; vector-effect:non-scaling-stroke; }
-.walk-cat-iris { fill:#0d2b52; }
-.walk-cat-shine { fill:#f4f9fb; }
+.walk-cat-eye { transform-box:fill-box; transform-origin:center; animation:walk-cat-blink 4.8s infinite; }
+@keyframes walk-cat-blink { 0%,93%,100% { transform:scaleY(1); } 96% { transform:scaleY(.1); } }
+.walk-cat-white { fill:#ffffff; stroke:#0d2b52; stroke-width:1.6px; vector-effect:non-scaling-stroke; }
+.walk-cat-iris { fill:#7fd3f0; }
+.walk-cat-pupil-dot { fill:#1b2a44; }
+.walk-cat-shine { fill:#ffffff; }
 .walk-cat-pupil { transition:transform .45s cubic-bezier(.3,.7,.2,1); }
-@media (prefers-reduced-motion: reduce) { .walk-cat, .walk-cat-inner, .walk-cat-pupil { transition:none !important; animation:none !important; } }
-
-/* Hero phone: an open service's card sits in the list without overlapping the rows below, and the phone is larger on phones. */
-.phone-only-scene .phone-service-list { grid-auto-rows:auto; align-content:start; }
-.phone-only-scene .phone-active-details { position:relative; height:auto !important; min-height:0 !important; grid-column:1 / -1; margin:6px 0; }
-@media (max-width:480px) {
-  .phone-only-scene .interactive-phone { width:244px !important; height:560px !important; }
-}
-
-/* The small cat by the phone hops sideways when the page demo taps a service. */
-.ph-cat.is-hop { animation:ph-cat-hop .6s ease-in-out 1; }
-@keyframes ph-cat-hop { 0%,100% { transform:translate(0,0) rotate(0deg); } 50% { transform:translate(-10px,-10px) rotate(-8deg); } }
+@media (prefers-reduced-motion: reduce) { .walk-cat, .walk-cat-inner, .walk-cat-pupil, .walk-cat-eye { transition:none !important; animation:none !important; } }

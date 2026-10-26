@@ -81,26 +81,31 @@ export default function Home() {
   const [activeId, setActiveId] = useState<string | null>(null);
   // A tap works like the cat's demo: the service lights up, the details open, then the phone returns to its normal state.
   const restTimer = useRef<number | undefined>(undefined);
-  const tapService = (id: string) => {
+  // A visitor's choice stays selected until the page reloads. The page demo passes temporary = true, so its taps close again.
+  const tapService = (id: string, temporary = false) => {
     window.clearTimeout(restTimer.current);
     setActiveId(id);
     setPhoneOpen(true);
-    restTimer.current = window.setTimeout(() => { setActiveId(null); setPhoneOpen(false); }, 1800);
+    if (temporary) restTimer.current = window.setTimeout(() => { setActiveId(null); setPhoneOpen(false); }, 1800);
   };
   const [phoneOpen, setPhoneOpen] = useState(false);
   // On every load the first two services open and close twice, so visitors see they can be tapped. Then it stops.
+  const demoTimers = useRef<number[]>([]);
+  const stopDemo = () => {
+    demoTimers.current.forEach(window.clearTimeout);
+    demoTimers.current = [];
+  };
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const timers: number[] = [];
     [0, 1, 0, 1].forEach((index, step) => {
-      timers.push(window.setTimeout(() => {
-        tapService(services[index].id);
+      demoTimers.current.push(window.setTimeout(() => {
+        tapService(services[index].id, true);
         const cat = document.querySelector<HTMLElement>(".ph-cat");
         cat?.classList.add("is-hop");
-        timers.push(window.setTimeout(() => cat?.classList.remove("is-hop"), 600));
+        demoTimers.current.push(window.setTimeout(() => cat?.classList.remove("is-hop"), 600));
       }, 1200 + step * 2600));
     });
-    return () => timers.forEach(clearTimeout);
+    return stopDemo;
   }, []);
 
   const [submitted, setSubmitted] = useState(false);
@@ -174,7 +179,7 @@ export default function Home() {
           <div className="reference-hero-art phone-only-scene">
             <div className="hero-character"><img src="/brand/hero-character.png" alt="" /><SleepyCat width={430} height={320} eyes={CHARACTER_EYES} hit={{ left: "0%", top: "0%", width: "100%", height: "100%" }} label={isArabic ? "الشخصية تصحى" : "Wake the character"} /></div>
             <img className="hero-illustration" src={heroImage} alt={isArabic ? "رسم توضيحي لخدمات سَفَر الرقمية" : "Illustration of SAFAR digital services"} />
-            <div ref={phoneRef} className={`interactive-phone ${phoneOpen ? "is-open" : ""}`} onClick={() => setPhoneOpen((open) => !open)} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") setPhoneOpen((open) => !open); }} aria-label={isArabic ? "شاشة خدمات سَفَر" : "SAFAR services screen"}>
+            <div ref={phoneRef} className={`interactive-phone ${phoneOpen ? "is-open" : ""}`} onPointerDown={stopDemo} onClick={() => setPhoneOpen((open) => !open)} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") setPhoneOpen((open) => !open); }} aria-label={isArabic ? "شاشة خدمات سَفَر" : "SAFAR services screen"}>
               <div className="phone-speaker" /><div className="phone-screen"><div className="phone-header"><strong>{copy.phoneTitle}</strong><span>+</span></div><div className="phone-service-list">{services.map((service) => <Fragment key={service.id}><button key={service.id} className={`phone-service ${service.id === activeId ? "is-active" : ""}`} onClick={(event) => { event.stopPropagation(); tapService(service.id); }} aria-pressed={service.id === activeId}><span className="phone-service-icon">{service.icon}</span><span><b>{isArabic ? service.title : service.enTitle}</b><small>{isArabic ? service.subtitle : service.enSubtitle}</small></span><i className={service.id === activeId ? "is-on" : ""}><em /></i></button>{service.id === activeId && (<div className="phone-active-details"><div className="phone-detail-title"><span>{isArabic ? activeService.title : activeService.enTitle}</span><small>{isArabic ? activeService.image : activeService.enImage}</small></div><div className="phone-preview-row"><div className={`phone-preview phone-preview--${activeService.id}`} aria-hidden="true">{activeService.id === "motion" ? <i className="phone-preview-play" /> : <><i /><i /><i /></>}</div><ul>{(isArabic ? activeService.details : activeService.enDetails).slice(0, 3).map((detail) => <li key={detail}><Check size={12} />{detail}</li>)}</ul></div><a href="#contact" className="phone-more" onClick={(event) => event.stopPropagation()}>{copy.more} <ArrowLeft size={13} /></a></div>)}</Fragment>)}</div><a className="phone-cta" href="#contact" onClick={(event) => event.stopPropagation()}>{copy.start} <ArrowLeft size={14} /></a></div>
             </div>
             <div className="art-badge art-badge--top">{isArabic ? <>فكرة<br />تتبيّن</> : <>Ideas<br />made clear</>}</div><div className="art-badge art-badge--bottom">{isArabic ? <>تصميم<br />يتحرك</> : <>Design<br />in motion</>}</div>
