@@ -500,3 +500,17 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
   .phone-only-scene .art-badge--top { right:6px !important; top:auto !important; bottom:300px !important; left:auto !important; }
   .phone-only-scene .art-badge--bottom { left:6px !important; right:auto !important; top:auto !important; bottom:70px !important; }
 }
+
+/* Walking cat on the poster: it replaces the sleeping cat that is drawn into the poster image. */
+.poster-cat-cover { position:absolute; left:33%; top:64%; width:37%; height:27%; background:#fff5df; pointer-events:none; }
+.walk-cat { position:absolute; top:70%; width:24%; transition-property:left,transform; transition-timing-function:linear; pointer-events:none; z-index:2; }
+.walk-cat-inner { position:relative; }
+.walk-cat img { display:block; width:100%; height:auto; }
+.walk-cat.is-walking .walk-cat-inner { animation:walk-cat-bob .42s ease-in-out infinite alternate; }
+@keyframes walk-cat-bob { from { transform:translateY(0); } to { transform:translateY(-4px); } }
+.cat-frame .walk-cat svg.walk-cat-eyes { display:block !important; position:absolute; left:0; top:0; width:100% !important; height:100% !important; transform:none !important; max-width:none; margin:0; overflow:visible; }
+.walk-cat-white { fill:#f4f9fb; stroke:#0d2b52; stroke-width:1.4px; vector-effect:non-scaling-stroke; }
+.walk-cat-iris { fill:#0d2b52; }
+.walk-cat-shine { fill:#f4f9fb; }
+.walk-cat-pupil { transition:transform .45s cubic-bezier(.3,.7,.2,1); }
+@media (prefers-reduced-motion: reduce) { .walk-cat, .walk-cat-inner, .walk-cat-pupil { transition:none !important; animation:none !important; } }

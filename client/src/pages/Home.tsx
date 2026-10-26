@@ -19,12 +19,12 @@ import { trpc } from "@/lib/trpc";
 import { getEmbedUrl } from "@/lib/video";
 import WorksStack, { placeholderWorks, toStackWork, type StackWork } from "@/components/WorksStack";
 import SleepyCat from "@/components/SleepyCat";
+import WalkingCat from "@/components/WalkingCat";
 
 // Where the open eyes sit on each cat image (in the image's pixels).
 const PICK_CAT_EYES = [{ x: 42, y: 140, rx: 12, ry: 9 }, { x: 82, y: 128, rx: 12, ry: 9 }];
 // The character's open eyes sit inside its existing eye rings.
 const CHARACTER_EYES = [{ x: 158, y: 127, rx: 15, ry: 15 }, { x: 219, y: 123, rx: 15, ry: 15 }];
-const POSTER_CAT_EYES = [{ x: 433, y: 748, rx: 16, ry: 12 }, { x: 489, y: 728, rx: 16, ry: 12 }];
 const heroImage = "/brand/hero.png"; // hidden by the stylesheet; kept for the layout
 
 type Service = {
@@ -201,7 +201,7 @@ export default function Home() {
             <div className="art-badge art-badge--top">{isArabic ? <>فكرة<br />تتبيّن</> : <>Ideas<br />made clear</>}</div><div className="art-badge art-badge--bottom">{isArabic ? <>تصميم<br />يتحرك</> : <>Design<br />in motion</>}</div>
           </div>
                   </section>
-        <div className="hero-poster-wrap"><div className="reference-hero-side"><div className="cat-frame"><img className="hero-art" src={isArabic ? "/brand/hero-poster.png" : "/brand/hero-poster-en.png"} alt={isArabic ? "كل ما تحتاجه في مكان واحد: ملصقات ورسومات وقطة نايمة" : "Everything you need in one place: stickers, doodles and a sleeping cat"} /><SleepyCat width={1002} height={930} eyes={POSTER_CAT_EYES} hit={{ left: "37.5%", top: "67%", width: "17.5%", height: "16%" }} label={isArabic ? "القطة تصحى" : "Wake the cat"} /></div>{!isArabic && <p className="side-headline-en"><span>Everything you need</span><em>in one place ...</em></p>}<span className="zz zz-1" aria-hidden="true">z</span><span className="zz zz-2" aria-hidden="true">z</span><span className="zz zz-3" aria-hidden="true">Z</span></div></div>
+        <div className="hero-poster-wrap"><div className="reference-hero-side"><div className="cat-frame"><img className="hero-art" src={isArabic ? "/brand/hero-poster.png" : "/brand/hero-poster-en.png"} alt={isArabic ? "كل ما تحتاجه في مكان واحد: ملصقات ورسومات وقطة نايمة" : "Everything you need in one place: stickers, doodles and a sleeping cat"} /><div className="poster-cat-cover" aria-hidden="true" /><WalkingCat /></div>{!isArabic && <p className="side-headline-en"><span>Everything you need</span><em>in one place ...</em></p>}</div></div>
 
 
         <section id="work" className="work-section work-section--stack">
