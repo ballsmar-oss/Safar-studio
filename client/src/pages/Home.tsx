@@ -172,8 +172,9 @@ export default function Home() {
             <p>{text("hero.lead", copy.heroLead)}</p>
             <a className="reference-cta" href="#services">{copy.heroCta} <ArrowLeft size={17} /></a>
             <div className="pick-hint" aria-hidden="true">
+              <div className="pick-cat-box"><img className="pick-cat" src="/brand/cat.png" alt="" /><SleepyCat width={257} height={212} eyes={PICK_CAT_EYES} hit={{ left: "0%", top: "0%", width: "100%", height: "100%" }} label={isArabic ? "القطة تصحى" : "Wake the cat"} /><span className="zz zz-1">z</span><span className="zz zz-2">z</span><span className="zz zz-3">Z</span></div>
               
-              <span className="ph-text ph-text--mobile">{isArabic ? "اختر من الجوال" : "Pick from the phone"}</span><span className="ph-text ph-text--desktop">{isArabic ? "اختر من اللابتوب" : "Pick from the laptop"}</span> <img className="ph-cat" src="/brand/cat-sitting.png" alt="" width="30" height="33" />
+              <span className="ph-text ph-text--mobile">{isArabic ? "اختر من الجوال" : "Pick from the phone"}</span><span className="ph-text ph-text--desktop">{isArabic ? "اختر من اللابتوب" : "Pick from the laptop"}</span>
             </div>
           </div>
           <div className="reference-hero-art phone-only-scene">
