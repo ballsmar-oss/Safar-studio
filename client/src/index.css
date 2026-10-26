@@ -518,3 +518,24 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
 .walk-cat-shine { fill:#fffdf7; }
 .walk-cat-pupil { transition:transform .45s cubic-bezier(.3,.7,.2,1); }
 @media (prefers-reduced-motion: reduce) { .walk-cat, .walk-cat-inner, .walk-cat-pupil, .walk-cat-eye { transition:none !important; animation:none !important; } }
+
+/* Hero phone list: rows and the open card stack in a plain column, so nothing overlaps at any width. */
+.phone-only-scene .phone-service-list { display:flex !important; flex-direction:column !important; gap:0 !important; grid-auto-rows:auto !important; }
+.phone-only-scene .phone-service-list > * { flex:0 0 auto !important; width:100%; }
+.phone-only-scene .phone-active-details { margin:6px 0 !important; }
+
+/* Hero badges sit beside the phone on desktop, so they never cover the phone's rows or buttons. */
+@media (min-width:481px) {
+  .phone-only-scene .art-badge--top { top:-64px !important; right:-12px !important; bottom:auto !important; left:auto !important; }
+  .phone-only-scene .art-badge--bottom { bottom:-72px !important; left:-14px !important; top:auto !important; right:auto !important; }
+}
+
+/* Walking cat: legs swing in a walk cycle while it moves, and the tail sways. */
+.walk-part { position:absolute; left:0; top:0; width:100%; height:auto; display:block; }
+.walk-cat.is-walking .walk-leg-a { animation:walk-leg-a .5s ease-in-out infinite alternate; }
+.walk-cat.is-walking .walk-leg-b { animation:walk-leg-b .5s ease-in-out infinite alternate; }
+.walk-cat.is-walking .walk-tail { animation:walk-tail 1s ease-in-out infinite alternate; }
+@keyframes walk-leg-a { from { transform:rotate(-9deg); } to { transform:rotate(9deg); } }
+@keyframes walk-leg-b { from { transform:rotate(9deg); } to { transform:rotate(-9deg); } }
+@keyframes walk-tail { from { transform:rotate(-7deg); } to { transform:rotate(7deg); } }
+@media (prefers-reduced-motion: reduce) { .walk-cat .walk-part { animation:none !important; } }

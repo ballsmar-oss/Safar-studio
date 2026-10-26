@@ -9,6 +9,15 @@ const GAZES = [
   { x: -1, y: -1 },
   { x: 0, y: 0 },
 ];
+// Legs and tail are separate pieces, each rotating around the point where it joins the body (image pixels).
+// Diagonal legs move together: leg1 with leg3, leg2 with leg4.
+const PARTS = [
+  { name: "leg1", className: "walk-leg-a", pivot: [100, 290] },
+  { name: "leg3", className: "walk-leg-a", pivot: [430, 285] },
+  { name: "leg2", className: "walk-leg-b", pivot: [240, 290] },
+  { name: "leg4", className: "walk-leg-b", pivot: [500, 270] },
+  { name: "tail", className: "walk-tail", pivot: [112, 200] },
+];
 const TRACK_START = 4; // percent of the poster width
 const TRACK_END = 70; // the cat's left edge stops here (its width is 24%)
 const SPEED = 7; // percent per second
@@ -46,7 +55,17 @@ export default function WalkingCat() {
   return (
     <div className={`walk-cat${walking ? " is-walking" : ""}`} style={{ left: `${left}%`, transform: `scaleX(${facing})`, ["--walk-duration" as string]: `${duration}s` }} aria-hidden="true">
       <div className="walk-cat-inner">
-        <img src="/brand/cat-walk.png" alt="" draggable={false} />
+        <img src="/brand/cat-body.png" alt="" draggable={false} />
+        {PARTS.map((part) => (
+          <img
+            key={part.name}
+            src={`/brand/cat-${part.name}.png`}
+            alt=""
+            draggable={false}
+            className={`walk-part ${part.className}`}
+            style={{ transformOrigin: `${(part.pivot[0] / 646) * 100}% ${(part.pivot[1] / 440) * 100}%` }}
+          />
+        ))}
         <svg className="walk-cat-eyes" viewBox="0 0 646 440">
           {EYES.map((eye, i) => (
             <g key={i} className="walk-cat-eye">
