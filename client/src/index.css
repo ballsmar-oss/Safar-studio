@@ -497,7 +497,7 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
   .phone-only-scene .interactive-phone { top:calc(50% - 30px) !important; height:500px !important; }
   .phone-only-scene .phone-service-list { flex:1 1 auto !important; min-height:0 !important; max-height:none !important; overflow-y:auto !important; }
   .phone-only-scene .hero-character { display:none !important; }
-  .phone-only-scene .art-badge--top { right:6px !important; top:auto !important; bottom:300px !important; left:auto !important; }
+  .phone-only-scene .art-badge--top { right:0 !important; top:-40px !important; bottom:auto !important; left:auto !important; }
   .phone-only-scene .art-badge--bottom { left:6px !important; right:auto !important; top:auto !important; bottom:70px !important; }
 }
 
@@ -515,3 +515,14 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
 .walk-cat-shine { fill:#f4f9fb; }
 .walk-cat-pupil { transition:transform .45s cubic-bezier(.3,.7,.2,1); }
 @media (prefers-reduced-motion: reduce) { .walk-cat, .walk-cat-inner, .walk-cat-pupil { transition:none !important; animation:none !important; } }
+
+/* Hero phone: an open service's card sits in the list without overlapping the rows below, and the phone is larger on phones. */
+.phone-only-scene .phone-service-list { grid-auto-rows:auto; align-content:start; }
+.phone-only-scene .phone-active-details { position:relative; height:auto !important; min-height:0 !important; grid-column:1 / -1; margin:6px 0; }
+@media (max-width:480px) {
+  .phone-only-scene .interactive-phone { width:244px !important; height:560px !important; }
+}
+
+/* The small cat by the phone hops sideways when the page demo taps a service. */
+.ph-cat.is-hop { animation:ph-cat-hop .6s ease-in-out 1; }
+@keyframes ph-cat-hop { 0%,100% { transform:translate(0,0) rotate(0deg); } 50% { transform:translate(-10px,-10px) rotate(-8deg); } }

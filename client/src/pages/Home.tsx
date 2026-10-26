@@ -74,43 +74,7 @@ export default function Home() {
   });
 
   const [menuOpen, setMenuOpen] = useState(false);
-  // Every load: a small cat taps three services so visitors know they can choose.
-  useEffect(() => {
-    const phone = phoneRef.current;
-    if (!phone || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const rows = Array.from(phone.querySelectorAll<HTMLElement>(".phone-service"));
-    if (!rows.length) return;
-    const ghost = document.createElement("div");
-    ghost.className = "ghost-pointer";
-    ghost.innerHTML = '<img src="/brand/cat-sitting.png" alt="" width="56" height="62" />';
-    phone.appendChild(ghost);
-    const at = (el: HTMLElement) => {
-      const p = phone.getBoundingClientRect(), r = el.getBoundingClientRect();
-      return { x: r.left - p.left + r.width * 0.72, y: r.top - p.top + r.height * 0.5 };
-    };
-    const start = { x: phone.clientWidth * 0.5, y: 6 };
-    const timers: number[] = [];
-    let t = 900;
-    const move = (to: { x: number; y: number }, from: { x: number; y: number }, dur: number) =>
-      ghost.animate([{ transform: `translate(${from.x}px, ${from.y}px)` }, { transform: `translate(${to.x}px, ${to.y}px)` }], { duration: dur, easing: "cubic-bezier(.3,.7,.2,1)", fill: "forwards" });
-    ghost.animate([{ opacity: 0 }, { opacity: 0.9 }], { duration: 500, delay: t, fill: "forwards" });
-    let from = start;
-    for (let i = 0; i < 3; i++) {
-      const row = rows[i % rows.length];
-      const to = at(row);
-      const when = t + 500 + i * 1100;
-      timers.push(window.setTimeout(() => {
-        move(to, from, 700);
-      }, when - 500 + (i === 0 ? 0 : 0)));
-      timers.push(window.setTimeout(() => row.classList.add("ghost-tap"), when + 700));
-      timers.push(window.setTimeout(() => row.classList.remove("ghost-tap"), when + 1000));
-      from = to;
-    }
-    const end = t + 500 + 3 * 1100 + 300;
-    ghost.animate([{ opacity: 0.9 }, { opacity: 0 }], { duration: 600, delay: end, fill: "forwards" });
-    timers.push(window.setTimeout(() => ghost.remove(), end + 700));
-    return () => { timers.forEach(clearTimeout); ghost.remove(); };
-  }, []);
+
 
   const phoneRef = useRef<HTMLDivElement>(null);
   const [language, setLanguage] = useLanguage();
@@ -124,6 +88,21 @@ export default function Home() {
     restTimer.current = window.setTimeout(() => { setActiveId(null); setPhoneOpen(false); }, 1800);
   };
   const [phoneOpen, setPhoneOpen] = useState(false);
+  // On every load the first two services open and close twice, so visitors see they can be tapped. Then it stops.
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const timers: number[] = [];
+    [0, 1, 0, 1].forEach((index, step) => {
+      timers.push(window.setTimeout(() => {
+        tapService(services[index].id);
+        const cat = document.querySelector<HTMLElement>(".ph-cat");
+        cat?.classList.add("is-hop");
+        timers.push(window.setTimeout(() => cat?.classList.remove("is-hop"), 600));
+      }, 1200 + step * 2600));
+    });
+    return () => timers.forEach(clearTimeout);
+  }, []);
+
   const [submitted, setSubmitted] = useState(false);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const testimonialTouchStart = useRef<number | null>(null);
@@ -188,7 +167,7 @@ export default function Home() {
             <p>{text("hero.lead", copy.heroLead)}</p>
             <a className="reference-cta" href="#services">{copy.heroCta} <ArrowLeft size={17} /></a>
             <div className="pick-hint" aria-hidden="true">
-              <div className="pick-cat-box"><img className="pick-cat" src="/brand/cat.png" alt="" /><SleepyCat width={257} height={212} eyes={PICK_CAT_EYES} hit={{ left: "0%", top: "0%", width: "100%", height: "100%" }} label={isArabic ? "القطة تصحى" : "Wake the cat"} /><span className="zz zz-1">z</span><span className="zz zz-2">z</span><span className="zz zz-3">Z</span></div>
+              
               <span className="ph-text">{isArabic ? "اختر من الجوال" : "Pick from the phone"}</span> <img className="ph-cat" src="/brand/cat-sitting.png" alt="" width="30" height="33" />
             </div>
           </div>
