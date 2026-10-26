@@ -44,7 +44,7 @@ export default function WalkingCat() {
   }, []);
 
   return (
-    <div className={`walk-cat${walking ? " is-walking" : ""}`} style={{ left: `${left}%`, transitionDuration: `${duration}s`, transform: `scaleX(${facing})` }} aria-hidden="true">
+    <div className={`walk-cat${walking ? " is-walking" : ""}`} style={{ left: `${left}%`, transform: `scaleX(${facing})`, ["--walk-duration" as string]: `${duration}s` }} aria-hidden="true">
       <div className="walk-cat-inner">
         <img src="/brand/cat-walk.png" alt="" draggable={false} />
         <svg className="walk-cat-eyes" viewBox="0 0 646 440">

@@ -502,8 +502,9 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
 }
 
 /* Walking cat on the poster: it replaces the sleeping cat that is drawn into the poster image. */
-.poster-cat-cover { position:absolute; left:33%; top:64%; width:37%; height:27%; background:#fff5df; pointer-events:none; }
-.walk-cat { position:absolute; top:70%; width:24%; transition-property:left,transform; transition-timing-function:linear; pointer-events:none; z-index:2; }
+.poster-cat-cover { position:absolute; left:37%; top:67%; width:32.5%; height:24%; background:#fff5df; pointer-events:none; }
+.poster-cat-cover::after { content:""; position:absolute; left:-12.3%; top:54%; width:15.4%; height:37.5%; background:#fff5df; }
+.walk-cat { position:absolute; top:70%; width:24%; transition:left var(--walk-duration,0s) linear, transform .25s ease; pointer-events:none; z-index:2; }
 .walk-cat-inner { position:relative; }
 .walk-cat img { display:block; width:100%; height:auto; }
 .walk-cat.is-walking .walk-cat-inner { animation:walk-cat-bob .42s ease-in-out infinite alternate; }
