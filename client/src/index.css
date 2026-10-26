@@ -453,7 +453,7 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
 .top-loader { position:fixed; inset:0 0 auto 0; height:48px; z-index:80; pointer-events:none; transition:opacity 400ms ease-out 120ms; }
 .top-loader.is-done { opacity:0; }
 .top-loader-bar { position:absolute; top:0; right:0; height:4px; background:repeating-linear-gradient(-45deg,#eb9aad 0 4.5px,#f7c6cf 4.5px 9px); background-size:12.7px 100%; animation:stripes 600ms linear infinite; transition:width 320ms cubic-bezier(.2,.8,.2,1); }
-.top-loader-cat { position:absolute; left:-30px; top:4px; width:40px; height:auto; transform-origin:50% 90%; animation:cat-run 300ms ease-in-out infinite alternate; }
+.top-loader-cat { position:absolute; left:-44px; top:2px; width:60px; height:36px; }
 @keyframes stripes { to { background-position:-12.7px 0; } }
 @keyframes cat-run { from { transform:translateY(0) rotate(-5deg) scaleY(.96); } to { transform:translateY(-5px) rotate(4deg) scaleY(1.04); } }
 @media (prefers-reduced-motion: reduce) { .top-loader-bar, .top-loader-cat { animation:none !important; } }

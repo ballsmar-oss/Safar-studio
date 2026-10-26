@@ -13,6 +13,21 @@ function pageLoaded() {
 const nextPaint = () => new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r())));
 const wait = (ms: number) => new Promise<void>((r) => window.setTimeout(r, ms));
 
+// The same calico walk cycle as the poster cat, played faster and small so it runs along the loading line.
+const RUN_FRAMES = 75;
+const RUN_FPS = 14;
+const runFrameSrc = (index: number) => `/brand/walk-frames/f${String(index).padStart(2, "0")}.webp`;
+
+function RunningCat() {
+  const [frame, setFrame] = useState(0);
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const id = window.setInterval(() => setFrame((current) => (current + 1) % RUN_FRAMES), 1000 / RUN_FPS);
+    return () => window.clearInterval(id);
+  }, []);
+  return <img className="top-loader-cat" src={runFrameSrc(frame)} alt="" width="60" height="36" draggable={false} />;
+}
+
 export function TopLoader() {
   const [route] = useLocation();
   const [progress, setProgress] = useState(0.06);
@@ -50,7 +65,7 @@ export function TopLoader() {
       aria-valuenow={Math.round(progress * 100)}
     >
       <div className="top-loader-bar" style={{ width: `${progress * 100}%` }}>
-        <img className="top-loader-cat" src="/brand/cat-open.png" alt="" width="40" />
+        <RunningCat />
       </div>
     </div>
   );
