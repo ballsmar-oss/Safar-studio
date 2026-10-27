@@ -643,3 +643,6 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
   .phone-only-scene .art-badge--top { top:-6px !important; right:-8px !important; bottom:auto !important; left:auto !important; }
   .phone-only-scene .art-badge--bottom { bottom:-6px !important; left:-10px !important; top:auto !important; right:auto !important; }
 }
+
+/* Service card cover set from the admin "صور الخدمات" panel. */
+.phone-preview-cover { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }

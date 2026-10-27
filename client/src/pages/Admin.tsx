@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Apple, CreditCard, Globe2, ImagePlus, KeyRound, LayoutDashboard, Laptop, Mail, MessageSquareQuote, Pencil, Save, Settings, ShieldCheck, Trash2, Upload, Video, X } from "lucide-react";
 
-type Tab = "overview" | "content" | "work" | "testimonials" | "leads" | "payments" | "settings";
+type Tab = "overview" | "content" | "covers" | "work" | "testimonials" | "leads" | "payments" | "settings";
 type SettingsForm = { brandName: string; officialDomain: string; businessEmail: string; freelanceLicenseNumber: string; businessCenterNumber: string; whatsappNumber: string; instagramUrl: string; linkedinUrl: string; tiktokUrl: string; senderName: string; dnsRecords: string; applePayAssociation: string; resendApiKey: string; moyasarPublishableKey: string; moyasarSecretKey: string; moyasarWebhookSecret: string; mode: "test" | "live"; smtpHost: string; smtpPort: string; smtpUser: string; smtpPassword: string };
 const emptySettings: SettingsForm = { brandName: "سَفَر", officialDomain: "", businessEmail: "", freelanceLicenseNumber: "", businessCenterNumber: "", whatsappNumber: "", instagramUrl: "", linkedinUrl: "", tiktokUrl: "", senderName: "", dnsRecords: "", applePayAssociation: "", resendApiKey: "", moyasarPublishableKey: "", moyasarSecretKey: "", moyasarWebhookSecret: "", mode: "test", smtpHost: "", smtpPort: "", smtpUser: "", smtpPassword: "" };
 const emptyWork = { title: "", titleEn: "", description: "", descriptionEn: "", category: "موشن", categoryEn: "", mediaType: "video" as "image" | "video" | "link", mediaUrl: "", thumbnailUrl: "", projectUrl: "", tags: [] as string[], tagsEn: [] as string[], sideLabel: "", sideLabelEn: "", gallery: [] as string[], isPublished: true, sortOrder: 0 };
@@ -61,7 +61,7 @@ export default function Admin() {
   if (loading) return <div className="min-h-screen bg-[#fff5df]" />;
   if (!isApprovedAdmin) return deviceRegistered ? <AdminEmailLogin /> : <NotFound />;
 
-  const nav = [{ id: "overview", label: "نظرة عامة", icon: LayoutDashboard }, { id: "content", label: "نصوص الصفحة", icon: Pencil }, { id: "work", label: "الأعمال", icon: ImagePlus }, { id: "testimonials", label: "التقييمات", icon: MessageSquareQuote }, { id: "leads", label: `طلبات التواصل${newLeads ? ` (${newLeads})` : ""}`, icon: MessageSquareQuote }, { id: "payments", label: "طلبات الدفع", icon: CreditCard }, { id: "settings", label: "الإعدادات والتكاملات", icon: Settings }];
+  const nav = [{ id: "overview", label: "نظرة عامة", icon: LayoutDashboard }, { id: "content", label: "نصوص الصفحة", icon: Pencil }, { id: "covers", label: "صور الخدمات", icon: Pencil }, { id: "work", label: "الأعمال", icon: ImagePlus }, { id: "testimonials", label: "التقييمات", icon: MessageSquareQuote }, { id: "leads", label: `طلبات التواصل${newLeads ? ` (${newLeads})` : ""}`, icon: MessageSquareQuote }, { id: "payments", label: "طلبات الدفع", icon: CreditCard }, { id: "settings", label: "الإعدادات والتكاملات", icon: Settings }];
   const submitWork = (event: React.FormEvent) => { event.preventDefault(); const payload = { ...workForm, thumbnailUrl: workForm.thumbnailUrl || null, projectUrl: workForm.projectUrl || null, description: workForm.description || null, tags: workForm.tags ?? [], tagsEn: workForm.tagsEn ?? [], sideLabel: workForm.sideLabel || null, sideLabelEn: workForm.sideLabelEn || null, gallery: workForm.gallery ?? [] }; if (workForm.id) updateWork.mutate(payload); else createWork.mutate(payload); };
   const submitTestimonial = (event: React.FormEvent) => { event.preventDefault(); const payload = { ...testimonialForm, company: testimonialForm.company || null, avatarUrl: testimonialForm.avatarUrl || null }; if (testimonialForm.id) updateTestimonial.mutate(payload); else createTestimonial.mutate(payload); };
   const handleUpload = (event: React.ChangeEvent<HTMLInputElement>) => { const file = event.target.files?.[0]; if (file) uploadMedia.upload(file); event.target.value = ""; };
@@ -72,6 +72,7 @@ export default function Admin() {
       <aside className="hidden w-72 shrink-0 border-l border-[#0d2b52]/10 bg-[#0d2b52] p-5 text-[#fff5df] lg:block"><div className="mb-10 flex items-center justify-between"><div><div className="text-2xl font-black">سَفَر</div><div className="text-xs opacity-60">لوحة إدارة المحتوى</div></div><LayoutDashboard /></div><nav className="space-y-2">{nav.map((item) => <button key={item.id} onClick={() => setTab(item.id as Tab)} className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-right transition ${tab === item.id ? "bg-[#f47763] text-[#0d2b52]" : "hover:bg-white/10"}`}><item.icon size={18} />{item.label}</button>)}</nav><a href="/" className="mt-3 flex w-full items-center gap-3 rounded-2xl px-4 py-3 opacity-80 hover:bg-white/10">← الذهاب للموقع الرئيسي</a></aside>
       <main className="min-w-0 flex-1 p-4 sm:p-8"><header className="mb-8 flex flex-wrap items-center justify-between gap-4"><div><p className="mb-1 text-sm text-[#f47763]">مرحبًا بك</p><h1 className="text-3xl font-black">إدارة موقع سَفَر</h1></div><div className="flex gap-2 lg:hidden"><a href="/" className="rounded-xl border bg-white px-3 py-2 text-sm font-bold">الموقع ←</a><select value={tab} onChange={(e) => setTab(e.target.value as Tab)} className="rounded-xl border bg-white px-3 py-2">{nav.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}</select></div></header><CountersSection />
         {tab === "overview" && <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"><Stat label="الأعمال المنشورة" value={work.filter((item: any) => item.isPublished).length} color="bg-[#b9e4dc]" /><Stat label="كل الأعمال" value={work.length} color="bg-[#ffe49d]" /><Stat label="التقييمات" value={testimonials.length} color="bg-[#ff927f]" /><Stat label="طلبات جديدة" value={newLeads} color="bg-[#d8d0f4]" /><div className="col-span-full mt-3 rounded-3xl bg-white p-6 shadow-sm"><h2 className="mb-2 text-xl font-black">من هنا تتحكم بكل شيء</h2><p className="max-w-2xl leading-8 text-slate-500">عدّل النصوص، أضف أعمالك مع الصور والفيديوهات والروابط، أضف تقييمات العملاء، وتابع بيانات كل شخص عبّأ نموذج التواصل.</p></div></section>}
+        {tab === "covers" && <ServiceCoversPanel content={content} onSave={(key: string, label: string, url: string) => saveContent.mutate({ contentKey: key, label, contentValue: url })} />}
         {tab === "content" && <ContentPanel content={content} form={contentForm} setForm={setContentForm} onSave={(e: React.FormEvent<HTMLFormElement>) => { e.preventDefault(); saveContent.mutate(contentForm); }} onEdit={(item: any) => setContentForm({ contentKey: item.contentKey, label: item.label, contentValue: item.contentValue })} />}
         {tab === "work" && <WorkPanel work={work} form={workForm} setForm={setWorkForm} onSubmit={submitWork} onEdit={(item: any) => setWorkForm(item)} onDelete={(id: number) => deleteWork.mutate({ id })} onUpload={handleUpload} onUploadThumbnail={handleThumbnailUpload} onUploadGallery={(event: React.ChangeEvent<HTMLInputElement>) => { const files = Array.from(event.target.files ?? []).slice(0, 4 - (workForm.gallery?.length ?? 0)); files.reduce((chain, file) => chain.then(() => uploadGallery.upload(file)), Promise.resolve()); event.target.value = ""; }} uploading={uploadMedia.uploading} uploadingThumbnail={uploadThumbnail.uploading} uploadingGallery={uploadGallery.uploading} />}
         {tab === "testimonials" && <TestimonialPanel items={testimonials} form={testimonialForm} setForm={setTestimonialForm} onSubmit={submitTestimonial} onEdit={(item: any) => setTestimonialForm(item)} onDelete={(id: number) => deleteTestimonial.mutate({ id })} />}
@@ -252,5 +253,51 @@ function StorageMeter() {
         <div><dt className="text-[#557087]">آخر تحديث</dt><dd className="font-bold">{new Date(data.checkedAt).toLocaleTimeString("ar-SA")}</dd></div>
       </dl>
     </section>
+  );
+}
+
+// The five services and their preview covers. A cover is stored in the site content as service.<id>.cover.
+const SERVICE_COVERS = [
+  { id: "motion", title: "إنتاج الفيديو بالذكاء الاصطناعي" },
+  { id: "systems", title: "الأتمتة والأنظمة الذكية" },
+  { id: "branding", title: "التصميم والهويات البصرية" },
+  { id: "ui", title: "تصميم واجهات وتجربة المستخدم" },
+  { id: "consulting", title: "استشارات إبداعية" },
+];
+
+function ServiceCoversPanel({ content, onSave }: { content: any[]; onSave: (key: string, label: string, url: string) => void }) {
+  const values = Object.fromEntries((content ?? []).map((item: any) => [item.contentKey, item.contentValue]));
+  return (
+    <section className="rounded-3xl bg-white p-6 shadow-sm">
+      <h2 className="mb-2 text-2xl font-black">صور الخدمات</h2>
+      <p className="mb-6 text-sm leading-7 text-slate-500">الصورة اللي تحطها هنا تطلع في كرت الخدمة على الصفحة الرئيسية. إذا ما فيه صورة، يطلع التصميم الافتراضي.</p>
+      <div className="grid gap-4">
+        {SERVICE_COVERS.map((service) => (
+          <ServiceCoverRow key={service.id} service={service} value={values[`service.${service.id}.cover`] ?? ""} onSave={onSave} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ServiceCoverRow({ service, value, onSave }: { service: { id: string; title: string }; value: string; onSave: (key: string, label: string, url: string) => void }) {
+  const key = `service.${service.id}.cover`;
+  const label = `صورة خدمة: ${service.title}`;
+  const upload = useUpload((url) => { onSave(key, label, url); toast.success("تم حفظ الصورة"); });
+  return (
+    <div className="flex flex-wrap items-center gap-4 rounded-2xl border border-[#0d2b52]/10 p-4">
+      <div className="h-20 w-28 overflow-hidden rounded-xl bg-[#fff5df]">
+        {value ? <img src={value} alt="" className="h-full w-full object-cover" /> : <div className="grid h-full place-items-center text-xs text-slate-400">بدون صورة</div>}
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="font-bold">{service.title}</p>
+        <p className="text-xs text-slate-500">{value ? "الصورة محفوظة" : "ما فيه صورة"}</p>
+      </div>
+      <label className="cursor-pointer rounded-xl bg-[#0d2b52] px-4 py-2 text-sm font-bold text-white">
+        {upload.uploading ? "جاري الرفع..." : "رفع صورة"}
+        <input type="file" accept="image/*" className="hidden" onChange={(event) => { const file = event.target.files?.[0]; if (file) upload.upload(file); event.target.value = ""; }} />
+      </label>
+      {value && <button type="button" className="rounded-xl border border-[#0d2b52]/20 px-4 py-2 text-sm font-bold" onClick={() => onSave(key, label, "")}>حذف الصورة</button>}
+    </div>
   );
 }
