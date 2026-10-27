@@ -11,7 +11,6 @@ import Admin from "@/pages/Admin";
 import Pay from "@/pages/Pay";
 import Works from "@/pages/Works";
 import Work from "@/pages/Work";
-import HomeV2 from "@/pages/HomeV2";
 
 // Counts a page view on every page change. The server skips the owner's admin browser.
 function ViewTracker() {

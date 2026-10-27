@@ -35,7 +35,7 @@
     "superjson": "^1.13.3",
     "tailwind-merge": "^3.3.1",
     "wouter": "^3.3.5",
-    "zod": "^4.1.12"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.15",
@@ -73,7 +73,8 @@
       "lodash-es": ">=4.18.0",
       "nanoid": ">=5.1.16",
       "qs": ">=6.16.0",
-      "body-parser": ">=1.20.6"
+      "body-parser": ">=1.20.6 <2",
+      "path-to-regexp": ">=0.1.13 <0.2"
     },
     "onlyBuiltDependencies": [
       "@tailwindcss/oxide",

@@ -59,6 +59,8 @@ export const appRouter = router({
     // Stand-in for the payment gateway until Moyasar is connected; refused once the site is in live mode.
     simulatePayment: publicProcedure.input(z.object({ token: z.string().min(12).max(80) })).mutation(({ input, ctx }) => {
       if (!allowRequest(`pay:${ctx.req.ip}`, 10, 10 * 60 * 1000)) throw tooMany();
+      // Off on the live server unless ALLOW_TEST_PAYMENTS=true, so a test-mode site can never mark a request paid without money.
+      if (ENV.isProduction && process.env.ALLOW_TEST_PAYMENTS !== "true") throw new TRPCError({ code: "FORBIDDEN", message: "الدفع التجريبي متوقف على الموقع." });
       if ((getSettings()?.mode ?? "test") !== "test") throw new TRPCError({ code: "FORBIDDEN", message: "الدفع التجريبي متوقف في الوضع الحقيقي." });
       const request = getPaymentRequestByToken(input.token);
       if (!request || request.status !== "pending") throw new TRPCError({ code: "BAD_REQUEST", message: "هذا الرابط غير صالح أو مدفوع مسبقًا." });
