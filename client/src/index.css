@@ -646,3 +646,6 @@ button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),selec
 
 /* Service card cover set from the admin "صور الخدمات" panel. */
 .phone-preview-cover { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+/* Cover fills its frame exactly: cropped to fit, never squashed, and no padding from the default frame styles. */
+.phone-preview.phone-preview--systems:has(> .phone-preview-cover) { display:block; padding:0; border:0; }
+.phone-preview .phone-preview-cover { position:absolute; left:0; top:0; width:100% !important; height:100% !important; max-width:none; object-fit:cover !important; margin:0; padding:0; border:0; display:block; }
