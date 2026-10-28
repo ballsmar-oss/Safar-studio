@@ -64,8 +64,15 @@ export default function Home() {
   const publicData = trpc.publicContent.all.useQuery();
   // The page is taller once its content loads, so a #section link has to scroll after that.
   const isLoaded = publicData.isSuccess;
+  // A reload should start at the top, not at the #section it was on, so the hash is dropped for reloads.
   useEffect(() => {
     if (!isLoaded || window.location.hash.length < 2) return;
+    const nav = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;
+    if (nav?.type === "reload") {
+      history.replaceState(null, "", window.location.pathname + window.location.search);
+      window.scrollTo({ top: 0 });
+      return;
+    }
     document.getElementById(decodeURIComponent(window.location.hash.slice(1)))?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [isLoaded]);
   const createLead = trpc.publicContent.createLead.useMutation({
