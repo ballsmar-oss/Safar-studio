@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
 import { Route, Switch, useLocation } from "wouter";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { TopLoader } from "./components/TopLoader";
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -15,8 +15,18 @@ import Work from "@/pages/Work";
 // Counts a page view on every page change. The server skips the owner's admin browser.
 function ViewTracker() {
   const [location] = useLocation();
+  const first = useRef(true);
   useEffect(() => {
-    fetch("/api/visit", { method: "POST", keepalive: true, headers: { "Content-Type": "application/json" }, body: "{}" }).catch(() => {});
+    // The first view of a page load carries the source: a utm_source tag, or the referring site's host.
+    let body: Record<string, unknown> = {};
+    if (first.current) {
+      first.current = false;
+      const utmSource = new URLSearchParams(window.location.search).get("utm_source") ?? undefined;
+      let referrer: string | undefined;
+      try { referrer = document.referrer ? new URL(document.referrer).host : undefined; } catch { referrer = undefined; }
+      body = { first: true, utmSource, referrer };
+    }
+    fetch("/api/visit", { method: "POST", keepalive: true, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }).catch(() => {});
   }, [location]);
   return null;
 }

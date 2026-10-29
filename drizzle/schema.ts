@@ -133,3 +133,10 @@ export const dailyVisitors = sqliteTable("dailyVisitors", {
   day: text("day").notNull(),
   hash: text("hash").notNull(),
 }, (table) => [primaryKey({ columns: [table.day, table.hash] })]);
+
+// Visits by where they came from (tiktok, instagram, snapchat, google, direct, ...), per day. Only the source name is stored.
+export const dailySources = sqliteTable("dailySources", {
+  day: text("day").notNull(),
+  source: text("source").notNull(),
+  visits: integer("visits").notNull().default(0),
+}, (table) => [primaryKey({ columns: [table.day, table.source] })]);

@@ -209,6 +209,10 @@ function VisitsMeter() {
         <div className="rounded-2xl bg-[#9bd6d3] p-4"><p className="text-sm text-[#557087]">مشاهدات اليوم</p><p className="text-3xl font-black">{data.today.views}</p></div>
         <div className="rounded-2xl bg-[#ffd0c4] p-4 sm:col-span-2"><p className="text-sm text-[#557087]">مجموع الزوار هذا الشهر</p><p className="text-3xl font-black">{data.monthVisitors}</p></div>
       </div>
+      <div className="mb-4 grid gap-4 sm:grid-cols-2">
+        <SourceList title="مصادر زوار اليوم" rows={data.sourcesToday} />
+        <SourceList title="مصادر زوار الشهر" rows={data.sourcesMonth} />
+      </div>
       <div className="grid gap-2">
         {data.days.map((row) => (
           <div key={row.day} className="grid grid-cols-[6.5rem_1fr_3rem] items-center gap-3 text-sm">
@@ -220,6 +224,27 @@ function VisitsMeter() {
         {data.days.length === 0 && <p className="text-sm text-[#557087]">ما فيه زيارات مسجلة بعد.</p>}
       </div>
     </section>
+  );
+}
+
+const SOURCE_LABELS: Record<string, string> = { tiktok: "تيك توك", instagram: "انستقرام", snapchat: "سناب شات", google: "قوقل", facebook: "فيسبوك", youtube: "يوتيوب", x: "إكس", direct: "مباشر", internal: "داخلي", other: "أخرى" };
+
+function SourceList({ title, rows }: { title: string; rows: { source: string; visits: number }[] }) {
+  const max = Math.max(1, ...rows.map((row) => row.visits));
+  return (
+    <div className="rounded-2xl bg-[#fff5df] p-4">
+      <p className="mb-3 text-sm font-bold text-[#557087]">{title}</p>
+      <div className="grid gap-2">
+        {rows.map((row) => (
+          <div key={row.source} className="grid grid-cols-[6rem_1fr_2.5rem] items-center gap-2 text-sm">
+            <span>{SOURCE_LABELS[row.source] ?? row.source}</span>
+            <div className="h-2.5 overflow-hidden rounded-full bg-white"><div className="h-full rounded-full bg-[#9bd6d3]" style={{ width: `${(row.visits / max) * 100}%` }} /></div>
+            <span className="text-left font-bold">{row.visits}</span>
+          </div>
+        ))}
+        {rows.length === 0 && <p className="text-sm text-[#557087]">ما فيه بيانات بعد.</p>}
+      </div>
+    </div>
   );
 }
 
