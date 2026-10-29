@@ -37,10 +37,10 @@ const integrationSettingsInput = z.object({
   brandName: z.string().min(1).max(160), officialDomain: z.string().max(255).optional().nullable(), businessEmail: z.string().email().optional().or(z.literal("")).nullable(), freelanceLicenseNumber: z.string().max(80).optional().nullable(), businessCenterNumber: z.string().max(80).optional().nullable(), whatsappNumber: z.string().max(40).optional().nullable(),
   instagramUrl: optionalUrl, linkedinUrl: optionalUrl, tiktokUrl: optionalUrl, senderName: z.string().max(160).optional().nullable(),
   dnsRecords: z.string().max(30000).optional().nullable(), applePayAssociation: z.string().max(30000).optional().nullable(),
-  resendApiKey: z.string().max(500).optional(), moyasarPublishableKey: z.string().max(500).optional(), moyasarSecretKey: z.string().max(500).optional(), moyasarWebhookSecret: z.string().max(500).optional(), mode: z.enum(["test", "live"]),
+  resendApiKey: z.string().max(500).optional(), moyasarPublishableKey: z.string().max(500).optional(), moyasarSecretKey: z.string().max(500).optional(), moyasarWebhookSecret: z.string().max(500).optional(), moyasarTestPublishableKey: z.string().max(500).optional(), moyasarTestSecretKey: z.string().max(500).optional(), moyasarTestWebhookSecret: z.string().max(500).optional(), mode: z.enum(["test", "live"]),
   smtpHost: z.string().max(255).optional().nullable(), smtpPort: z.number().int().min(1).max(65535).optional().nullable(), smtpUser: z.string().max(255).optional().nullable(), smtpPassword: z.string().max(500).optional(),
 });
-const secretFields = ["resendApiKey", "moyasarPublishableKey", "moyasarSecretKey", "moyasarWebhookSecret", "smtpPassword"] as const;
+const secretFields = ["resendApiKey", "moyasarPublishableKey", "moyasarSecretKey", "moyasarWebhookSecret", "moyasarTestPublishableKey", "moyasarTestSecretKey", "moyasarTestWebhookSecret", "smtpPassword"] as const;
 
 const fillTemplate = (template: string, values: Record<string, string>) =>
   Object.entries(values).reduce((text, [key, value]) => text.replaceAll(`{${key}}`, value), template);
@@ -54,12 +54,14 @@ export const appRouter = router({
     work: publicProcedure.input(idInput).query(({ input }) => getPublishedPortfolioItem(input.id)),
     getPaymentRequest: publicProcedure.input(z.object({ token: z.string().min(12).max(80) })).query(({ input }) => {
       const request = getPaymentRequestByToken(input.token);
-      return request ? { ...request, testMode: (getSettings()?.mode ?? "test") === "test" } : null;
+      const settings = getSettings();
+      return request ? { ...request, testMode: (settings?.mode ?? "test") === "test", testKeysReady: Boolean(settings?.moyasarTestSecretKey) } : null;
     }),
     // Stand-in for the payment gateway until Moyasar is connected; refused once the site is in live mode.
     simulatePayment: publicProcedure.input(z.object({ token: z.string().min(12).max(80) })).mutation(({ input, ctx }) => {
       if (!allowRequest(`pay:${ctx.req.ip}`, 10, 10 * 60 * 1000)) throw tooMany();
       // Off on the live server unless ALLOW_TEST_PAYMENTS=true, so a test-mode site can never mark a request paid without money.
+      if (getSettings()?.moyasarTestSecretKey) throw new TRPCError({ code: "FORBIDDEN", message: "الدفع التجريبي يتم عبر Moyasar Test." });
       if (ENV.isProduction && process.env.ALLOW_TEST_PAYMENTS !== "true") throw new TRPCError({ code: "FORBIDDEN", message: "الدفع التجريبي متوقف على الموقع." });
       if ((getSettings()?.mode ?? "test") !== "test") throw new TRPCError({ code: "FORBIDDEN", message: "الدفع التجريبي متوقف في الوضع الحقيقي." });
       const request = getPaymentRequestByToken(input.token);
@@ -72,8 +74,8 @@ export const appRouter = router({
     startPayment: publicProcedure.input(z.object({ token: z.string().min(12).max(80) })).mutation(async ({ input, ctx }) => {
       if (!allowRequest(`pay:${ctx.req.ip}`, 10, 10 * 60 * 1000)) throw tooMany();
       const settings = getSettings();
-      if ((settings?.mode ?? "test") !== "live") throw new TRPCError({ code: "FORBIDDEN", message: "الدفع الحقيقي متوقف في الوضع التجريبي." });
-      const secretKey = decryptSecret(settings?.moyasarSecretKey);
+      const isLive = (settings?.mode ?? "test") === "live";
+      const secretKey = decryptSecret(isLive ? settings?.moyasarSecretKey : settings?.moyasarTestSecretKey);
       if (!secretKey) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "لم يتم ربط مفاتيح Moyasar بعد." });
       const request = getPaymentRequestByToken(input.token);
       if (!request || request.status !== "pending") throw new TRPCError({ code: "BAD_REQUEST", message: "هذا الرابط غير صالح أو مدفوع مسبقًا." });
@@ -104,7 +106,7 @@ export const appRouter = router({
     integrationSettings: adminProcedure.query(() => {
       const row = getSettings();
       if (!row) return null;
-      return { ...row, resendApiKey: secretMeta(row.resendApiKey), moyasarPublishableKey: secretMeta(row.moyasarPublishableKey), moyasarSecretKey: secretMeta(row.moyasarSecretKey), moyasarWebhookSecret: secretMeta(row.moyasarWebhookSecret), smtpPassword: secretMeta(row.smtpPassword) };
+      return { ...row, resendApiKey: secretMeta(row.resendApiKey), moyasarPublishableKey: secretMeta(row.moyasarPublishableKey), moyasarSecretKey: secretMeta(row.moyasarSecretKey), moyasarWebhookSecret: secretMeta(row.moyasarWebhookSecret), moyasarTestPublishableKey: secretMeta(row.moyasarTestPublishableKey), moyasarTestSecretKey: secretMeta(row.moyasarTestSecretKey), moyasarTestWebhookSecret: secretMeta(row.moyasarTestWebhookSecret), smtpPassword: secretMeta(row.smtpPassword) };
     }),
     saveIntegrationSettings: adminProcedure.input(integrationSettingsInput).mutation(({ input }) => {
       const values: Partial<typeof integrationSettings.$inferInsert> = {

@@ -16,8 +16,10 @@ export function registerMoyasarWebhook(app: Express) {
   app.post("/api/moyasar/webhook", async (req, res) => {
     if (!allowRequest(`moyasar:${req.ip}`, 60, 60 * 1000)) return res.status(429).end();
     const settings = getSettings();
-    const webhookSecret = decryptSecret(settings?.moyasarWebhookSecret);
-    const secretKey = decryptSecret(settings?.moyasarSecretKey);
+    // The live or test keys are used depending on the site's mode.
+    const isLive = (settings?.mode ?? "test") === "live";
+    const webhookSecret = decryptSecret(isLive ? settings?.moyasarWebhookSecret : settings?.moyasarTestWebhookSecret);
+    const secretKey = decryptSecret(isLive ? settings?.moyasarSecretKey : settings?.moyasarTestSecretKey);
     const body = (req.body ?? {}) as { secret_token?: unknown; invoice_id?: unknown };
     if (!webhookSecret || !secretKey || typeof body.secret_token !== "string" || !same(body.secret_token, webhookSecret)) return res.status(401).end();
     if (typeof body.invoice_id !== "string") return res.status(200).end();
