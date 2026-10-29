@@ -21,3 +21,12 @@ export async function getInvoice(secretKey: string, invoiceId: string) {
   if (!response.ok) throw new Error(`Moyasar ${response.status}`);
   return (await response.json()) as MoyasarInvoice;
 }
+
+// Checks a key with Moyasar: a list request succeeds only when the key is valid for its mode.
+export async function checkMoyasarKey(secretKey: string) {
+  const response = await fetch(`${API}/payments?page=1&limit=1`, {
+    signal: AbortSignal.timeout(15_000),
+    headers: { Authorization: authorization(secretKey) },
+  });
+  return response.ok;
+}

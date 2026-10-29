@@ -6,8 +6,8 @@ import { adminDevices, integrationSettings, leads, paymentRequests, portfolioIte
 import { adminProcedure, publicProcedure, router } from "./_core/trpc";
 import { isEmailVerified } from "./auth";
 import { db, getPaymentRequestByToken, getPublishedPortfolioItem, getPublicContactSettings, getSettings, listContent, listLeads, listPaymentRequests, listPortfolio, listPublishedPortfolio, listPublishedTestimonials, listTestimonials } from "./db";
-import { notifyOwner, sendEmail } from "./mail";
-import { createInvoice } from "./moyasar";
+import { checkResendKey, notifyOwner, sendEmail } from "./mail";
+import { checkMoyasarKey, createInvoice } from "./moyasar";
 import { decryptSecret, encryptSecret, secretMeta } from "./secrets";
 import { allowRequest } from "./rate-limit";
 import { ENV } from "./env";
@@ -107,6 +107,18 @@ export const appRouter = router({
       const row = getSettings();
       if (!row) return null;
       return { ...row, resendApiKey: secretMeta(row.resendApiKey), moyasarPublishableKey: secretMeta(row.moyasarPublishableKey), moyasarSecretKey: secretMeta(row.moyasarSecretKey), moyasarWebhookSecret: secretMeta(row.moyasarWebhookSecret), moyasarTestPublishableKey: secretMeta(row.moyasarTestPublishableKey), moyasarTestSecretKey: secretMeta(row.moyasarTestSecretKey), moyasarTestWebhookSecret: secretMeta(row.moyasarTestWebhookSecret), smtpPassword: secretMeta(row.smtpPassword) };
+    }),
+    // Real checks: each saved key is sent to its service, so "مضبط" means it actually works.
+    checkIntegrations: adminProcedure.query(async () => {
+      const row = getSettings();
+      const result: Record<string, "ok" | "invalid" | "missing"> = {};
+      const liveSecret = decryptSecret(row?.moyasarSecretKey);
+      const testSecret = decryptSecret(row?.moyasarTestSecretKey);
+      const resendKey = decryptSecret(row?.resendApiKey);
+      result.resend = !resendKey ? "missing" : (await checkResendKey(resendKey).catch(() => false)) ? "ok" : "invalid";
+      result.moyasarLive = !liveSecret ? "missing" : (await checkMoyasarKey(liveSecret).catch(() => false)) ? "ok" : "invalid";
+      result.moyasarTest = !testSecret ? "missing" : (await checkMoyasarKey(testSecret).catch(() => false)) ? "ok" : "invalid";
+      return result;
     }),
     saveIntegrationSettings: adminProcedure.input(integrationSettingsInput).mutation(({ input }) => {
       const values: Partial<typeof integrationSettings.$inferInsert> = {

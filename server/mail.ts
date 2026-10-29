@@ -67,3 +67,12 @@ export async function notifyOwner(subject: string, text: string) {
   }
   return sendEmail({ to, subject, text });
 }
+
+// Checks the Resend key: the domains list only answers for a valid key.
+export async function checkResendKey(apiKey: string) {
+  const response = await fetch("https://api.resend.com/domains", {
+    signal: AbortSignal.timeout(15_000),
+    headers: { Authorization: `Bearer ${apiKey}` },
+  });
+  return response.ok;
+}
