@@ -7,7 +7,7 @@ import { adminProcedure, publicProcedure, router } from "./_core/trpc";
 import { isEmailVerified } from "./auth";
 import { db, getPaymentRequestByToken, getPublishedPortfolioItem, getPublicContactSettings, getSettings, listContent, listLeads, listPaymentRequests, listPortfolio, listPublishedPortfolio, listPublishedTestimonials, listTestimonials } from "./db";
 import { checkResendKey, notifyOwner, sendEmail } from "./mail";
-import { checkMoyasarKey, createInvoice } from "./moyasar";
+import { checkMoyasarKey, createInvoice, getInvoice } from "./moyasar";
 import { decryptSecret, encryptSecret, secretMeta } from "./secrets";
 import { allowRequest } from "./rate-limit";
 import { ENV } from "./env";
@@ -52,9 +52,20 @@ export const appRouter = router({
   publicContent: router({
     all: publicProcedure.query(() => ({ content: listContent(), portfolio: listPublishedPortfolio(), testimonials: listPublishedTestimonials(), settings: getPublicContactSettings() })),
     work: publicProcedure.input(idInput).query(({ input }) => getPublishedPortfolioItem(input.id)),
-    getPaymentRequest: publicProcedure.input(z.object({ token: z.string().min(12).max(80) })).query(({ input }) => {
-      const request = getPaymentRequestByToken(input.token);
+    getPaymentRequest: publicProcedure.input(z.object({ token: z.string().min(12).max(80) })).query(async ({ input }) => {
+      let request = getPaymentRequestByToken(input.token);
       const settings = getSettings();
+      // Safety net for when the Moyasar webhook is late or missing: ask Moyasar for the invoice's real status.
+      if (request && request.status === "pending" && request.gatewayInvoiceId) {
+        const isLive = (settings?.mode ?? "test") === "live";
+        const secretKey = decryptSecret(isLive ? settings?.moyasarSecretKey : settings?.moyasarTestSecretKey);
+        const invoice = secretKey ? await getInvoice(secretKey, request.gatewayInvoiceId).catch(() => null) : null;
+        if (invoice?.status === "paid") {
+          db.update(paymentRequests).set({ status: "paid" }).where(eq(paymentRequests.id, request.id)).run();
+          void notifyOwner(`تم دفع طلب — ${request.name}`, `${request.name} — ${request.email}\nالخدمة: ${request.service}\nالمبلغ: ${(request.amount / 100).toFixed(2)} ر.س`);
+          request = getPaymentRequestByToken(input.token);
+        }
+      }
       return request ? { ...request, testMode: (settings?.mode ?? "test") === "test", testKeysReady: Boolean(settings?.moyasarTestSecretKey) } : null;
     }),
     // Stand-in for the payment gateway until Moyasar is connected; refused once the site is in live mode.
