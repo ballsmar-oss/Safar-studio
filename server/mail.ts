@@ -69,10 +69,13 @@ export async function notifyOwner(subject: string, text: string) {
 }
 
 // Checks the Resend key: the domains list only answers for a valid key.
+// A "sending access" key is allowed to send but not to list domains, so Resend answers "restricted". That still means the key is valid.
 export async function checkResendKey(apiKey: string) {
   const response = await fetch("https://api.resend.com/domains", {
     signal: AbortSignal.timeout(15_000),
     headers: { Authorization: `Bearer ${apiKey}` },
   });
-  return response.ok;
+  if (response.ok) return true;
+  const body = await response.text().catch(() => "");
+  return /restricted/i.test(body);
 }
