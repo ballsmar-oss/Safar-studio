@@ -3,6 +3,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
 import { Route, Switch, useLocation } from "wouter";
 import { useEffect, useRef } from "react";
+import { capturePageView } from "@/lib/analytics";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { TopLoader } from "./components/TopLoader";
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -17,6 +18,7 @@ function ViewTracker() {
   const [location] = useLocation();
   const first = useRef(true);
   useEffect(() => {
+    capturePageView(location);
     // The first view of a page load carries the source: a utm_source tag, or the referring site's host.
     let body: Record<string, unknown> = {};
     if (first.current) {
