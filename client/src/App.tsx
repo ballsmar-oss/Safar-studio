@@ -1,17 +1,18 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import NotFound from "@/pages/NotFound";
 import { Route, Switch, useLocation } from "wouter";
-import { useEffect, useRef } from "react";
+import { Suspense, lazy, useEffect, useRef } from "react";
 import { capturePageView } from "@/lib/analytics";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { TopLoader } from "./components/TopLoader";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
-import Admin from "@/pages/Admin";
-import Pay from "@/pages/Pay";
-import Works from "@/pages/Works";
-import Work from "@/pages/Work";
+// Only the home page loads up front. The other pages are split into their own files and load when opened.
+const Admin = lazy(() => import("@/pages/Admin"));
+const Pay = lazy(() => import("@/pages/Pay"));
+const Works = lazy(() => import("@/pages/Works"));
+const Work = lazy(() => import("@/pages/Work"));
+const NotFound = lazy(() => import("@/pages/NotFound"));
 
 // Counts a page view on every page change. The server skips the owner's admin browser.
 function ViewTracker() {
@@ -36,6 +37,7 @@ function ViewTracker() {
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
+    <Suspense fallback={null}>
     <Switch>
       <Route path={"/"} component={Home} />
             <Route path={"/works"} component={Works} />
@@ -47,6 +49,7 @@ function Router() {
       {/* Final fallback route */}
       <Route component={NotFound} />
     </Switch>
+    </Suspense>
   );
 }
 
