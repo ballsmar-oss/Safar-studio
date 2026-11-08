@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 
 // The calico cat's walk cycle, cut from the reference recording: 75 frames (walk-frames/f00.webp to f74.webp).
 export const WALK_FRAME_COUNT = 75;
-export const walkFrameSrc = (index: number) => `/brand/walk-frames/f${String(index).padStart(2, "0")}.webp`;
+export const walkFrameSrc = (index: number) =>
+  `/brand/walk-frames/f${String(index).padStart(2, "0")}.webp`;
 
 // Every frame is downloaded and decoded once, and the images are kept here, so switching frames never waits on the network.
 let preloaded: Promise<HTMLImageElement[]> | null = null;
@@ -12,11 +13,32 @@ function preloadFrames() {
       Array.from({ length: WALK_FRAME_COUNT }, (_, index) => {
         const img = new Image();
         img.src = walkFrameSrc(index);
-        return img.decode().then(() => img, () => img);
-      }),
+        return img.decode().then(
+          () => img,
+          () => img
+        );
+      })
     );
   }
   return preloaded;
+}
+
+// Frames are fetched only after the page has loaded and the browser is idle, so they never compete with the first paint.
+function whenIdle(task: () => void) {
+  const run = () => {
+    const idle = (
+      window as Window & {
+        requestIdleCallback?: (
+          cb: () => void,
+          opts?: { timeout: number }
+        ) => number;
+      }
+    ).requestIdleCallback;
+    if (idle) idle(task, { timeout: 3000 });
+    else window.setTimeout(task, 1500);
+  };
+  if (document.readyState === "complete") run();
+  else window.addEventListener("load", run, { once: true });
 }
 
 // Returns the frame to show. The animation starts only after every frame is ready, so it never stalls on the first loop.
@@ -26,9 +48,17 @@ export function useWalkFrame(fps: number) {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     let id = 0;
     let cancelled = false;
-    preloadFrames().then(() => {
+    let started = false;
+    whenIdle(() => {
       if (cancelled) return;
-      id = window.setInterval(() => setFrame((current) => (current + 1) % WALK_FRAME_COUNT), 1000 / fps);
+      preloadFrames().then(() => {
+        if (cancelled || started) return;
+        started = true;
+        id = window.setInterval(
+          () => setFrame(current => (current + 1) % WALK_FRAME_COUNT),
+          1000 / fps
+        );
+      });
     });
     return () => {
       cancelled = true;
