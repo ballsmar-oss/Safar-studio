@@ -57,6 +57,9 @@ export function serveStatic(app: Express) {
   }
 
   app.use("/assets", express.static(path.join(distPath, "assets"), { maxAge: "1y", immutable: true }));
+  // Brand and media files keep their names, so they cache for a day instead of being rechecked on every visit.
+  app.use("/brand", express.static(path.join(distPath, "brand"), { maxAge: "1d" }));
+  app.use("/media", express.static(path.join(distPath, "media"), { maxAge: "1d" }));
   app.use(express.static(distPath, { index: false }));
 
   // fall through to index.html if the file doesn't exist
