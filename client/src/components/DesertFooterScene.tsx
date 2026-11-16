@@ -166,8 +166,12 @@ export default function DesertFooterScene({ isArabic }: { isArabic: boolean }) {
   const trackRef = useRef<HTMLDivElement>(null);
   const rootRef = useRef<HTMLElement>(null);
   const clockRef = useRef<HTMLSpanElement>(null);
-  // keep the moon on the opposite side from the text block
-  const moonX = isArabic ? 540 : 900;
+  // the lock-screen copy is centered, so the moon sits off to the side
+  const moonX = 1150;
+  const dateLabel = new Intl.DateTimeFormat(
+    isArabic ? "ar-SA-u-ca-islamic-umalqura-nu-latn" : "en-US",
+    { weekday: "long", day: "numeric", month: "long" }
+  ).format(new Date());
 
   useEffect(() => {
     const track = trackRef.current;
@@ -195,12 +199,13 @@ export default function DesertFooterScene({ isArabic }: { isArabic: boolean }) {
       if (!off && p > 0.86) off = true;
       else if (off && p < 0.78) off = false;
       root.classList.toggle("is-off", off);
+      root.classList.toggle("is-dark", night > 0.45);
 
       // Riyadh clock from 4:30 pm to 7:30 pm
       const mins = Math.round(16 * 60 + 30 + p * 180);
       const hh = Math.floor(mins / 60) - 12;
       const mm = String(mins % 60).padStart(2, "0");
-      const label = `${hh}:${mm} ${isArabic ? "م" : "PM"}`;
+      const label = `${hh}:${mm}`;
       if (label !== lastClock && clockRef.current) {
         lastClock = label;
         clockRef.current.textContent = label;
@@ -248,22 +253,42 @@ export default function DesertFooterScene({ isArabic }: { isArabic: boolean }) {
         <div className="dsc-sky dsc-sky--night" />
 
         <div className="dsc-copy">
-          <span className="dsc-clock">
-            {isArabic ? "الرياض" : "Riyadh"} ·{" "}
-            <span ref={clockRef}>4:30 {isArabic ? "م" : "PM"}</span>
-          </span>
-          <h2>
-            {isArabic ? "قبل ما تطفي الشاشة…" : "Before the screen goes dark…"}
-          </h2>
-          <p>
-            {isArabic
-              ? "خلّ فكرتك تبدأ رحلتها معنا، من أول خطوة لين الإطلاق."
-              : "Let your idea start its journey with us, from the first step to launch."}
-          </p>
-          <a href="#contact" className="dsc-cta">
-            {isArabic ? "ابدأ رحلتك" : "Start your journey"}
-          </a>
+          <div className="dsc-lock">
+            <span className="dsc-date">{dateLabel}</span>
+            <span className="dsc-time" ref={clockRef} dir="ltr">
+              4:30
+            </span>
+          </div>
+
+          <div
+            className="dsc-notif"
+            role="group"
+            aria-label={isArabic ? "إشعار من سَفَر" : "Notification from SAFAR"}
+          >
+            <div className="dsc-notif-head">
+              <span className="dsc-notif-icon" aria-hidden="true">
+                س
+              </span>
+              <strong>{isArabic ? "سَفَر" : "SAFAR"}</strong>
+              <time>{isArabic ? "الآن" : "now"}</time>
+            </div>
+            <h2>
+              {isArabic
+                ? "قبل ما تطفي الشاشة…"
+                : "Before the screen goes dark…"}
+            </h2>
+            <p>
+              {isArabic
+                ? "خلّ فكرتك تبدأ رحلتها معنا، من أول خطوة لين الإطلاق."
+                : "Let your idea start its journey with us, from the first step to launch."}
+            </p>
+            <a href="#contact" className="dsc-cta">
+              {isArabic ? "ابدأ رحلتك" : "Start your journey"}
+            </a>
+          </div>
         </div>
+
+        <span className="dsc-home-bar" aria-hidden="true" />
 
         <svg
           className="dsc-art"
