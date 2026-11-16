@@ -388,8 +388,8 @@ export default function DesertFooterScene({ isArabic }: { isArabic: boolean }) {
           </g>
           <g className="dsc-moon dsc-moon--narrow">
             <circle
-              cx="900"
-              cy="300"
+              cx="860"
+              cy="290"
               r="22"
               fill="#fff6d8"
               mask="url(#dsc-crescent-narrow)"
