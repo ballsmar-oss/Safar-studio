@@ -1,6 +1,6 @@
-/* Desert closing scene: scroll sets --p (0 day → 1 evening), --night and --glow */
+/* Desert closing scene as an iPhone lock screen.
+   Scroll sets --p (0 afternoon → 1 night), --night (image crossfade) and --glow (sunset warmth). */
 .dsc-track {
-  --art-h: clamp(500px, 52vw, 680px);
   position: relative;
   height: 180vh;
   height: 180svh;
@@ -10,189 +10,191 @@
   --p: 0;
   --night: 0;
   --glow: 0;
-  isolation: isolate;
-  overflow: hidden;
   position: sticky;
   top: 0;
   height: 100vh;
   height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
   color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "IBM Plex Sans Arabic", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-.dsc-sky { position: absolute; inset: 0; z-index: -1; }
-.dsc-sky--day { background: linear-gradient(180deg, #3d86c6 0%, #79b9e0 48%, #f4dcae 78%); }
-.dsc-sky--glow {
-  background: linear-gradient(180deg, #5d5ca0 0%, #c9708a 42%, #f59a5a 66%, #ffd08a 80%);
+/* sky shown above the image on tall screens */
+.dsc-sky { position: absolute; inset: 0; z-index: 0; }
+.dsc-sky--day { background: linear-gradient(180deg, #163668 0%, #275298 60%); }
+.dsc-sky--night { background: linear-gradient(180deg, #00050f 0%, #010d22 60%); opacity: var(--night); }
+.dsc-stars { position: absolute; inset: 0; width: 100%; height: 100%; }
+.dsc-stars circle { fill: #fff; animation: dsc-twinkle 3.6s ease-in-out infinite; }
+
+/* the rendered scene */
+.dsc-photo { position: absolute; inset: auto 0 0; z-index: 1; height: 100%; }
+.dsc-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 100%; }
+.dsc-img--night { opacity: var(--night); }
+.dsc-glow {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(92, 70, 150, .28) 0%, rgba(150, 90, 150, .18) 35%, rgba(255, 135, 70, .38) 62%, rgba(255, 135, 70, 0) 82%);
   opacity: var(--glow);
 }
-.dsc-sky--night {
-  background: linear-gradient(180deg, #0c1433 0%, #1d2a5c 45%, #6a4b78 68%, #e38a5b 82%);
-  opacity: var(--night);
+.dsc-overlay { position: absolute; inset: 0; width: 100%; height: 100%; }
+.dsc-spill { opacity: calc(var(--night) * .9); transition: opacity .35s ease; }
+.dsc-screen-on { transform-box: view-box; transform-origin: 814px 628px; animation: dsc-crt-on .55s ease-out both; }
+.dsc-off-dot { opacity: 0; }
+.dsc-torch {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 55% 45% at 50% 96%, rgba(255, 248, 225, .6), rgba(255, 248, 225, 0) 70%);
+  opacity: 0;
+  transition: opacity .25s ease;
+  pointer-events: none;
 }
 
-.dsc-art { position: absolute; inset: auto 0 0; width: 100%; height: min(var(--art-h), 100%); display: block; overflow: visible; }
-
-/* landscape */
-.dsc-dune-far { fill: #efc48c; }
-.dsc-dune-mid { fill: #dfa86c; }
-.dsc-dune-near { fill: #e6b27a; }
-.dsc-ridge { fill: none; stroke: #f7d6a6; stroke-width: 3; stroke-linecap: round; opacity: .7; }
-.dsc-mud { fill: #c48756; }
-.dsc-mud-line { fill: #a96d40; }
-.dsc-vent { fill: #6b4024; }
-.dsc-window { fill: #5a351d; }
-.dsc-trunk { fill: none; stroke: #6b4a2e; stroke-linecap: round; }
-.dsc-frond { fill: #3f6b3a; }
-.dsc-dates { fill: #c46a2b; }
-
-.dsc-sun { transform: translateY(calc(var(--p) * 330px)); }
-.dsc-sun-warm { opacity: var(--p); }
-
-.dsc-dusk { fill: #1a1f4a; opacity: calc(var(--p) * .52); pointer-events: none; }
-
-.dsc-stars circle { fill: #fff; }
-.dsc-stars { opacity: calc((var(--p) - .45) * 1.9); }
-.dsc-stars circle { animation: dsc-twinkle 3.6s ease-in-out infinite; }
-.dsc-moon { opacity: calc((var(--p) - .55) * 2.4); transform: translateY(calc((1 - var(--p)) * 40px)); }
-
-.dsc-lights { opacity: var(--night); }
-.dsc-window-lit { fill: #ffd27a; }
-
-/* TV */
-.dsc-antenna { stroke: #3a2a1d; stroke-width: 3; stroke-linecap: round; }
-.dsc-legs { stroke: #3a2a1d; stroke-width: 5; stroke-linecap: round; }
-.dsc-power-led { fill: #7cf0a4; transition: fill .3s; }
-.dsc-screen-title { font-family: "Noto Kufi Arabic", sans-serif; font-weight: 800; font-size: 19px; fill: #0d2b52; }
-.dsc-screen-content { transform-box: fill-box; transform-origin: center; animation: dsc-crt-on .55s ease-out both; }
-.dsc-roll { animation: dsc-roll 3.2s linear infinite; }
-.dsc-off-dot { opacity: 0; }
-.dsc-tv-sandglow { opacity: calc(var(--p) * 1.1); transition: opacity .4s; }
-.dsc-dallah path { fill: #c9a24a; stroke: #7d5d1f; stroke-width: 1.2; }
-.dsc-dallah .dsc-finjan { fill: #f3e6cf; stroke: #a3262b; }
-
-.dsc.is-off .dsc-screen-content { animation: dsc-crt-off .5s ease-in both; }
-.dsc.is-off .dsc-off-dot { animation: dsc-dot .9s ease-out .32s both; }
-.dsc.is-off .dsc-power-led { fill: #b5442f; }
-.dsc.is-off .dsc-tv-sandglow { opacity: 0; }
+.dsc.is-off .dsc-screen-on { animation: dsc-crt-off .5s ease-in both; }
+.dsc.is-off .dsc-off-dot { animation: dsc-dot .9s ease-out .3s both; }
+.dsc.is-off .dsc-spill { opacity: 0; }
+.dsc.is-torch .dsc-torch { opacity: 1; }
 
 @keyframes dsc-crt-off {
   0% { transform: scale(1, 1); filter: brightness(1); }
-  55% { transform: scale(1, .02); filter: brightness(2.4); }
+  55% { transform: scale(1, .02); filter: brightness(2.6); }
   100% { transform: scale(0, .02); opacity: 0; }
 }
 @keyframes dsc-crt-on {
   0% { transform: scale(0, .02); opacity: 0; }
-  40% { transform: scale(1, .02); opacity: 1; filter: brightness(2.4); }
+  40% { transform: scale(1, .02); opacity: 1; filter: brightness(2.6); }
   100% { transform: scale(1, 1); filter: brightness(1); }
 }
-@keyframes dsc-dot { 0% { opacity: 1; r: 4; } 100% { opacity: 0; r: 1; } }
-@keyframes dsc-roll { from { transform: translateY(-12px); } to { transform: translateY(100px); } }
-@keyframes dsc-twinkle { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+@keyframes dsc-dot { 0% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes dsc-twinkle { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
 
-/* copy: iOS lock screen — big clock, then a notification card */
-.dsc-copy {
-  position: absolute;
-  z-index: 2;
-  top: clamp(26px, 5vh, 64px);
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(400px, calc(100% - 32px));
+/* lock screen UI */
+.dsc-ui { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; align-items: center; }
+
+.dsc-status {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
-  gap: clamp(14px, 3vh, 30px);
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "IBM Plex Sans Arabic", system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased;
+  width: 100%;
+  padding: 14px clamp(22px, 3vw, 34px) 0;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -.01em;
 }
-.dsc-lock { display: flex; flex-direction: column; align-items: center; text-shadow: 0 1px 18px rgba(10, 30, 60, .25); }
-.dsc-date { font-size: clamp(15px, 1.3vw, 19px); font-weight: 600; opacity: .92; }
+.dsc-status-icons { display: flex; align-items: center; gap: 6px; }
+.dsc-status-icons svg { fill: currentColor; }
+
+.dsc-lock { display: flex; flex-direction: column; align-items: center; margin-top: clamp(10px, 2.5vh, 26px); text-shadow: 0 1px 16px rgba(0, 10, 30, .18); }
+.dsc-lock-icon { margin-bottom: 10px; opacity: .95; }
+.dsc-date { font-size: clamp(17px, 1.4vw, 21px); font-weight: 600; letter-spacing: -.01em; opacity: .95; }
 .dsc-time {
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Rounded", "Helvetica Neue", system-ui, sans-serif;
-  font-size: clamp(78px, 9vw, 116px);
+  margin-top: 2px;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", system-ui, sans-serif;
+  font-size: clamp(86px, 8.6vw, 124px);
   font-weight: 700;
-  line-height: 1;
-  letter-spacing: -.035em;
+  line-height: .95;
+  letter-spacing: -.03em;
   font-variant-numeric: tabular-nums;
 }
 
+/* notification banner */
 .dsc-notif {
-  width: 100%;
-  padding: 13px 15px 15px;
-  border-radius: 24px;
-  background: rgba(250, 250, 252, .74);
-  color: #0b0b0f;
-  box-shadow: 0 8px 30px rgba(10, 25, 50, .12);
-  transition: background-color .5s ease, color .5s ease;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: min(370px, calc(100% - 24px));
+  margin-top: clamp(18px, 3.4vh, 34px);
+  padding: 12px 14px 13px 12px;
+  border-radius: 23px;
+  background: rgba(246, 246, 248, .78);
+  color: #000;
+  text-decoration: none;
+  transition: background-color .45s ease, color .45s ease, transform .15s ease;
 }
+.dsc[dir="rtl"] .dsc-notif { padding: 12px 12px 13px 14px; }
 @supports (backdrop-filter: blur(1px)) {
   @media (hover: hover) and (pointer: fine) {
-    .dsc-notif { background: rgba(250, 250, 252, .58); backdrop-filter: blur(22px) saturate(1.6); }
+    .dsc-notif { background: rgba(246, 246, 248, .6); backdrop-filter: blur(28px) saturate(1.8); }
   }
 }
-.dsc-notif-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 13px; }
+.dsc-notif:active { transform: scale(.97); }
+.dsc-notif:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 .dsc-notif-icon {
   display: grid;
+  flex: none;
   place-items: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 6px;
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
   background: #78d2ce;
   color: #0d2b52;
   font-family: "Noto Kufi Arabic", sans-serif;
-  font-size: 12px;
+  font-size: 19px;
   font-weight: 800;
   line-height: 1;
 }
-.dsc-notif-head strong { font-weight: 600; text-transform: uppercase; letter-spacing: .02em; opacity: .75; }
-.dsc-notif-head time { margin-inline-start: auto; opacity: .55; }
-.dsc-notif h2 { margin: 0 0 2px; font-size: 16px; font-weight: 700; line-height: 1.45; }
-.dsc-notif p { margin: 0 0 12px; font-size: 14.5px; line-height: 1.55; opacity: .82; }
-.dsc-cta {
-  display: block;
-  padding: 10px 16px;
-  border-radius: 14px;
-  background: #0a84ff;
-  color: #fff;
-  font-size: 15px;
-  font-weight: 600;
-  text-align: center;
-  transition: transform .12s ease, filter .15s ease;
-}
-.dsc-cta:hover { filter: brightness(1.08); }
-.dsc-cta:active { transform: scale(.97); }
-.dsc-cta:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.dsc-notif-body { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+.dsc-notif-top { display: flex; align-items: baseline; gap: 8px; }
+.dsc-notif-top strong { font-size: 15px; font-weight: 600; }
+.dsc-notif-top time { margin-inline-start: auto; font-size: 13px; opacity: .5; }
+.dsc-notif-title { font-size: 15px; font-weight: 600; line-height: 1.35; }
+.dsc-notif-text { font-size: 15px; line-height: 1.35; opacity: .85; }
 
-/* Dark Mode once night falls */
-.dsc-notif { border: 1px solid rgba(255, 255, 255, .35); }
-.dsc.is-dark .dsc-notif { background: rgba(28, 28, 34, .72); color: #f5f5f7; border-color: rgba(255, 255, 255, .12); }
+.dsc.is-dark .dsc-notif { background: rgba(37, 37, 42, .78); color: #fff; }
 @supports (backdrop-filter: blur(1px)) {
   @media (hover: hover) and (pointer: fine) {
-    .dsc.is-dark .dsc-notif { background: rgba(28, 28, 34, .5); }
+    .dsc.is-dark .dsc-notif { background: rgba(37, 37, 42, .55); }
   }
 }
 
+/* flashlight + camera + home indicator */
+.dsc-quick {
+  position: absolute;
+  inset: auto clamp(40px, 4vw, 64px) 44px;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+}
+.dsc-quick-btn {
+  display: grid;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(10, 12, 20, .32);
+  color: #fff;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: background-color .2s ease, color .2s ease, transform .15s ease;
+}
+.dsc-quick-btn:active { transform: scale(.9); }
+.dsc-quick-btn[aria-pressed="true"] { background: #fff; color: #000; }
+.dsc-quick-btn:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 .dsc-home-bar {
   position: absolute;
-  z-index: 2;
-  bottom: 9px;
+  bottom: 8px;
   left: 50%;
-  width: 136px;
+  width: 134px;
   height: 5px;
   border-radius: 3px;
-  background: rgba(255, 255, 255, .85);
+  background: #fff;
   transform: translateX(-50%);
 }
 
-.dsc-moon--narrow { display: none; }
-
-@media (max-width: 720px) {
-  .dsc-track { --art-h: 620px; height: 165vh; height: 165svh; }
-  .dsc-moon--wide { display: none; }
-  .dsc-moon--narrow { display: inline; }
+/* phones and portrait tablets: image sits in the lower part, sky continues above */
+@media (max-aspect-ratio: 4/3) {
+  .dsc-track { height: 165vh; height: 165svh; }
+  .dsc-photo {
+    height: 58%;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 16%);
+    mask-image: linear-gradient(180deg, transparent 0, #000 16%);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .dsc-stars circle, .dsc-roll { animation: none; }
-  .dsc-screen-content, .dsc.is-off .dsc-screen-content { animation: none; }
-  .dsc.is-off .dsc-screen-content { opacity: 0; }
+  .dsc-stars circle { animation: none; }
+  .dsc-screen-on, .dsc.is-off .dsc-screen-on, .dsc.is-off .dsc-off-dot { animation: none; }
+  .dsc.is-off .dsc-screen-on { opacity: 0; }
 }
