@@ -13,6 +13,7 @@ const Pay = lazy(() => import("@/pages/Pay"));
 const Works = lazy(() => import("@/pages/Works"));
 const Work = lazy(() => import("@/pages/Work"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
+const LampLanding = lazy(() => import("@/pages/LampLanding"));
 
 // Counts a page view on every page change. The server skips the owner's admin browser.
 function ViewTracker() {
@@ -45,6 +46,7 @@ function Router() {
       <Route path={"/admin"} component={Admin} />
       <Route path={"/pay"} component={Pay} />
       <Route path={"/pay/:token"} component={Pay} />
+      <Route path={"/lamp"} component={LampLanding} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
