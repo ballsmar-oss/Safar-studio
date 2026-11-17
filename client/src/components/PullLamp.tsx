@@ -10,7 +10,7 @@ type Props = {
   label: string;
 };
 
-const ANCHOR = { x: 178, y: 256 }; // where the cord leaves the shade
+const ANCHOR = { x: 178, y: 262 }; // where the cord leaves the shade
 const REST_Y = 404; // where the handle hangs at rest
 const PULL_TO_TOGGLE = 52; // how far (in SVG units) the cord has to go down to count as a pull
 const MAX_PULL = 130;
@@ -20,7 +20,7 @@ export default function PullLamp({ on, onToggle, label }: Props) {
   const swingRef = useRef<SVGGElement>(null);
   const cordRef = useRef<SVGPathElement>(null);
   const handleRef = useRef<SVGGElement>(null);
-  const bulbRef = useRef<SVGPathElement>(null);
+  const bulbRef = useRef<SVGCircleElement>(null);
 
   // Motion state lives in a ref: handle offset, its velocity, and the lamp's swing angle.
   const m = useRef({ x: 0, y: 0, vx: 0, vy: 0, a: 0, va: 0, dragging: false, startX: 0, startY: 0, maxY: 0, moved: 0, frame: 0, last: 0 });
@@ -134,23 +134,14 @@ export default function PullLamp({ on, onToggle, label }: Props) {
 
   return (
     <svg ref={svgRef} className="pull-lamp" viewBox="0 0 260 520" aria-hidden={false} role="group" aria-label={label}>
-      <defs>
-        <radialGradient id="pl-bulb" cx="50%" cy="20%" r="80%">
-          <stop offset="0%" stopColor="#fff6c9" />
-          <stop offset="55%" stopColor="#ffd84a" />
-          <stop offset="100%" stopColor="#f2b705" />
-        </radialGradient>
-        <linearGradient id="pl-shade" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="var(--lamp-shade-top)" />
-          <stop offset="100%" stopColor="var(--lamp-shade)" />
-        </linearGradient>
-      </defs>
       <g ref={swingRef}>
-        <line x1="130" y1="-400" x2="130" y2="168" stroke="var(--lamp-wire)" strokeWidth="2.2" />
-        <rect x="119" y="162" width="22" height="20" rx="3" fill="var(--lamp-cap)" />
-        <path d="M44 262 C44 204 90 178 130 178 C170 178 216 204 216 262 Z" fill="url(#pl-shade)" />
-        <ellipse cx="130" cy="262" rx="86" ry="5" fill="var(--lamp-rim)" />
-        <path ref={bulbRef} className="pull-lamp__bulb" d="M104 263 A26 26 0 0 0 156 263 Z" fill={on ? "url(#pl-bulb)" : "var(--lamp-bulb-off)"} />
+        {/* Extends the wire up past the top of the picture. */}
+        <line x1="130" y1="-400" x2="130" y2="40" stroke="var(--lamp-wire)" strokeWidth="3.4" />
+        {/* The lamp picture: both versions stay loaded so switching never flashes. */}
+        <image href="/brand/lamp-off.webp" x="-12.8" y="33" width="285.7" height="285.7" opacity={on ? 0 : 1} />
+        <image href="/brand/lamp-on.webp" x="-12.8" y="33" width="285.7" height="285.7" opacity={on ? 1 : 0} />
+        {/* Invisible marker over the bulb: the light spreads out from here. */}
+        <circle ref={bulbRef} cx="129.5" cy="266" r="26" fill="transparent" />
         <path ref={cordRef} d="" fill="none" stroke="var(--lamp-cord)" strokeWidth="2" strokeLinecap="round" />
         <g ref={handleRef}>
           <rect className="pull-lamp__handle" x="-9" y="-2" width="18" height="36" rx="9" />
