@@ -3,6 +3,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Route, Switch, useLocation } from "wouter";
 import { Suspense, lazy, useEffect, useRef } from "react";
 import { capturePageView } from "@/lib/analytics";
+import { getConsent, loadGtm } from "@/lib/consent";
+import { ConsentBanner } from "@/components/ConsentBanner";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { TopLoader } from "./components/TopLoader";
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -58,11 +60,15 @@ function Router() {
 //   to keep consistent foreground/background color across components
 // - If you want to make theme switchable, pass `switchable` ThemeProvider and use `useTheme` hook
 
+// A visitor who accepted earlier gets the tag again on the next visit.
+if (typeof window !== "undefined" && getConsent() === "granted") loadGtm();
+
 function App() {
   return (
     <ErrorBoundary>
       <TopLoader />
       <ViewTracker />
+      <ConsentBanner />
       <ThemeProvider
         defaultTheme="light"
         // switchable
