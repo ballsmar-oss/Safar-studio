@@ -1,0 +1,28 @@
+{
+  "name": "satr-store",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "سطر — متجر قرطاسية وأدوات مدرسية",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "dev": "NODE_ENV=development node --watch-path=server --watch-path=shared server/index.js",
+    "build": "vite build",
+    "build:preview": "VITE_STATIC_PREVIEW=1 vite build --outDir dist-preview",
+    "start": "NODE_ENV=production node server/index.js"
+  },
+  "dependencies": {
+    "express": "4.21.2",
+    "lucide-react": "0.453.0",
+    "react": "19.2.0",
+    "react-dom": "19.2.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "4.1.14",
+    "@vitejs/plugin-react": "5.0.4",
+    "tailwindcss": "4.1.14",
+    "vite": "7.1.9"
+  }
+}
