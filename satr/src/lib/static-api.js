@@ -67,6 +67,7 @@ export function staticApi(c, r) {
       categories: CATEGORIES,
       products: getProducts().filter((S) => S.active !== false),
       onlinePayment: false,
+      shipping: { fee: PREVIEW_SHIPPING_FEE, freeMin: PREVIEW_FREE_MIN },
     };
   }
   if (o === "GET" && g.startsWith("/api/products/")) {
@@ -285,6 +286,8 @@ export function staticApi(c, r) {
           total: h.total,
           createdAt: h.createdAt,
           items: h.items,
+          carrier: h.carrier,
+          trackingNumber: h.trackingNumber,
         }));
     }
     const y = /^\/api\/admin\/orders\/(\d+)(\/mark-paid)?$/.exec(g);
@@ -295,7 +298,10 @@ export function staticApi(c, r) {
       if (z < 0) {
         m(404, "الطلب غير موجود");
       }
-      if (o === "PATCH") {
+      if (o === "PATCH" && bodyOf(r).status === undefined) {
+        const { carrier: Cr, trackingNumber: Tn } = bodyOf(r);
+        E[z] = { ...E[z], carrier: Cr || undefined, trackingNumber: Tn || undefined };
+      } else if (o === "PATCH") {
         const Q = bodyOf(r).status;
         if (
           !["new", "preparing", "shipped", "delivered", "cancelled"].includes(
@@ -322,6 +328,12 @@ export function staticApi(c, r) {
     }
     if (o === "GET" && g === "/api/admin/school-lists") {
       return getLists().slice().reverse();
+    }
+    if (o === "GET" && g === "/api/admin/carriers") {
+      return ["سمسا", "أرامكس", "سبل (البريد السعودي)"];
+    }
+    if (g.startsWith("/api/admin/integrations") || g.startsWith("/api/admin/settings")) {
+      m(501, "التكاملات والإعدادات تشتغل مع السيرفر فقط. شغّل المشروع بـ npm run dev.");
     }
     m(404, "المسار غير موجود");
   }

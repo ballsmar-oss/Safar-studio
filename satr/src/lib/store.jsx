@@ -8,6 +8,8 @@ import {
   useState,
 } from "react";
 import { api } from "./api";
+import { FREE_SHIPPING_MIN, SHIPPING_FEE } from "./format";
+import { initTracking, track } from "./tracking";
 
 const sameLine = (c, r, o) => c.id === r && (c.color ?? null) === (o ?? null);
 
@@ -65,6 +67,9 @@ export function StoreProvider({ children: c }) {
     E();
   }, [E]);
   useEffect(() => {
+    if (m.status === "ready") initTracking(m.tracking);
+  }, [m]);
+  useEffect(() => {
     try {
       localStorage.setItem(CART_KEY, JSON.stringify(r));
     } catch {}
@@ -97,14 +102,27 @@ export function StoreProvider({ children: c }) {
     return {
       catalog: m,
       onlinePayment: m.status === "ready" && m.onlinePayment,
+      tabby: m.status === "ready" && Boolean(m.tabby),
+      // رسوم التوصيل وحد التوصيل المجاني — تتغيّر من لوحة التحكم ← الإعدادات
+      shipping: {
+        fee: m.shipping?.fee ?? SHIPPING_FEE,
+        freeMin: m.shipping?.freeMin ?? FREE_SHIPPING_MIN,
+      },
       reloadCatalog: E,
       categories: Q,
       products: z,
       lines: O,
       count: O.reduce((w, Y) => w + Y.qty, 0),
       subtotal: O.reduce((w, Y) => w + Y.qty * Y.product.price, 0),
-      add: (w, Y = 1, J) =>
-        o((et) => {
+      add: (w, Y = 1, J) => {
+        const product = z.find((p) => p.id === w);
+        if (product && product.stock > 0) {
+          track("add_to_cart", {
+            value: product.price * Y,
+            items: [{ id: product.id, name: product.name, price: product.price, qty: Y, color: J }],
+          });
+        }
+        return o((et) => {
           const K = et.find((st) => sameLine(st, w, J));
           const W = K ? K.qty + Y : Y;
           const R = C(w, W);
@@ -131,7 +149,8 @@ export function StoreProvider({ children: c }) {
               },
             ];
           }
-        }),
+        });
+      },
       setQty: (w, Y, J) =>
         o((et) =>
           Y <= 0

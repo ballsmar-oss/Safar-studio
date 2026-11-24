@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ProductArt } from "../components/Art";
 import { SleepingCat } from "../components/Cat";
 import { CatalogState } from "../components/CatalogState";
 import { Squiggle } from "../components/Decor";
 import { Field } from "../components/Field";
 import { ApiError, api } from "../lib/api";
-import { FREE_SHIPPING_MIN, SHIPPING_FEE, formatPrice } from "../lib/format";
+import { formatPrice } from "../lib/format";
+import { track } from "../lib/tracking";
 import { useStore } from "../lib/store";
 import { isSaudiMobile } from "../lib/validate";
 
@@ -36,6 +37,8 @@ export function CheckoutPage() {
     clear: o,
     catalog: f,
     onlinePayment: g,
+    tabby,
+    shipping: { fee: SHIPPING_FEE, freeMin: FREE_SHIPPING_MIN },
   } = useStore();
   const [m, b] = useState({
     name: "",
@@ -48,6 +51,17 @@ export function CheckoutPage() {
   const [h, E] = useState("cod");
   const [z, Q] = useState(false);
   const [Z, O] = useState("");
+  // حدث "بدء الدفع" للتحليلات — مرة وحدة لما تنفتح الصفحة والسلة فيها منتجات
+  const ready = f.status === "ready" && c.length > 0;
+  useEffect(() => {
+    if (ready) {
+      track("begin_checkout", {
+        value: r,
+        items: c.map((l) => ({ id: l.id, name: l.product.name, price: l.product.price, qty: l.qty, color: l.color })),
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready]);
   if (f.status !== "ready") {
     return <CatalogState catalog={f} />;
   }
@@ -184,13 +198,21 @@ export function CheckoutPage() {
                 checked={h === "online"}
                 disabled={!g}
                 onSelect={() => E("online")}
-                title="مدى، Apple Pay، STC Pay، تابي"
+                title="مدى، Apple Pay، STC Pay"
                 note={
                   g
                     ? "تنتقل لصفحة الدفع الآمنة وترجع للطلب"
                     : "الدفع الإلكتروني غير مفعّل حالياً"
                 }
               />
+              {tabby && (
+                <PaymentOption
+                  checked={h === "tabby"}
+                  onSelect={() => E("tabby")}
+                  title="تابي — قسّمها على ٤ دفعات"
+                  note="بدون فوائد، تنتقل لصفحة تابي وترجع للطلب"
+                />
+              )}
             </div>
           </fieldset>
           {Z && (

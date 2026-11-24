@@ -65,6 +65,20 @@ export function OrderSummary({ order: c }) {
           c.paymentStatus !== "paid" &&
           " — إذا ما دفعت بعد، رجّع لصفحة الدفع من الطلب الجديد"}
       </p>
+      {c.trackingNumber && (
+        <p className="m-0 text-[15px]">
+          {"الشحنة: "}
+          <b>{c.carrier}</b>
+          {" · "}
+          {c.trackingUrl ? (
+            <a href={c.trackingUrl} target="_blank" rel="noopener noreferrer" className="font-bold text-leaf" dir="ltr">
+              {c.trackingNumber}
+            </a>
+          ) : (
+            <b dir="ltr">{c.trackingNumber}</b>
+          )}
+        </p>
+      )}
       <ul className="list-none p-0 m-0 grid gap-2 border-t-2 border-dashed border-ink/20 pt-4">
         {c.items.map((r) => (
           <li key={r.id} className="flex justify-between gap-3 text-[16px]">

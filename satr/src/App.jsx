@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { Layout } from "./components/Layout";
+import { track } from "./lib/tracking";
 import { useHashRoute } from "./lib/router";
 import { useStore } from "./lib/store";
 import { CheckoutPage } from "./pages/Checkout";
@@ -14,6 +16,7 @@ import { AdminPage } from "./pages/admin/AdminPage";
 export function App() {
   const c = useHashRoute();
   const [r, o = ""] = c.split("?");
+  useEffect(() => track("page_view"), [r]);
   return (
     <Layout route={r}>
       <Routes path={r} query={new URLSearchParams(o)} />

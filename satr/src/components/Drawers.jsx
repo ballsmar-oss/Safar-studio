@@ -5,7 +5,7 @@ import { Cat, SleepingCat } from "./Cat";
 import { Squiggle } from "./Decor";
 import { NAV_LINKS } from "./Header";
 import { QtyStepper } from "./QtyStepper";
-import { FREE_SHIPPING_MIN, formatPrice } from "../lib/format";
+import { formatPrice } from "../lib/format";
 import { useStore } from "../lib/store";
 
 function useDrawer(c, r) {
@@ -89,6 +89,7 @@ export function CartDrawer() {
     subtotal: f,
     setQty: g,
     remove: m,
+    shipping: { freeMin: FREE_SHIPPING_MIN },
   } = useStore();
   const b = () => r(null);
   useDrawer(b, c === "cart");

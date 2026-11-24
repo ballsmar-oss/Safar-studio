@@ -4,7 +4,10 @@ import { Field } from "../../components/Field";
 import { ApiError, api } from "../../lib/api";
 import { AdminOrders } from "./AdminOrders";
 import { AdminProducts } from "./AdminProducts";
+import { AdminIntegrations } from "./AdminIntegrations";
+import { AdminOverview } from "./AdminOverview";
 import { AdminSchoolLists } from "./AdminSchoolLists";
+import { AdminSettings } from "./AdminSettings";
 
 const TOKEN_KEY = "satr-admin-token";
 
@@ -107,6 +110,8 @@ function AdminDashboard({ token: c, onSignOut: r }) {
           ["orders", "الطلبات"],
           ["products", "المنتجات"],
           ["lists", "قوائم المدارس"],
+          ["integrations", "التكاملات"],
+          ["settings", "الإعدادات"],
         ].map(([g, m]) => (
           <button
             key={g}
@@ -119,9 +124,16 @@ function AdminDashboard({ token: c, onSignOut: r }) {
         ))}
       </nav>
       <div className="mt-6">
-        {o === "orders" && <AdminOrders token={c} />}
+        {o === "orders" && (
+          <>
+            <AdminOverview token={c} />
+            <AdminOrders token={c} />
+          </>
+        )}
         {o === "products" && <AdminProducts token={c} />}
         {o === "lists" && <AdminSchoolLists token={c} />}
+        {o === "integrations" && <AdminIntegrations token={c} />}
+        {o === "settings" && <AdminSettings token={c} />}
       </div>
     </section>
   );

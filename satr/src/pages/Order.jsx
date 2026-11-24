@@ -1,7 +1,19 @@
 import { useEffect, useState } from "react";
+import { track } from "../lib/tracking";
 import { Squiggle } from "../components/Decor";
 import { OrderProgress } from "../components/Order";
 import { api } from "../lib/api";
+
+// حدث "شراء" للتحليلات — مرة وحدة لكل طلب (حتى لو العميل حدّث الصفحة)
+function purchased(order) {
+  if (order.paymentMethod === "online" && order.paymentStatus !== "paid") return;
+  const key = `satr-purchase-${order.number}`;
+  try {
+    if (sessionStorage.getItem(key)) return;
+    sessionStorage.setItem(key, "1");
+  } catch {}
+  track("purchase", { value: order.total, orderNumber: order.number });
+}
 
 export function OrderPage({ number: c }) {
   const [r, o] = useState({
@@ -11,12 +23,14 @@ export function OrderPage({ number: c }) {
     let f = true;
     api(`/api/orders/${encodeURIComponent(c)}`)
       .then(
-        (g) =>
-          f &&
+        (g) => {
+          if (!f) return;
+          purchased(g);
           o({
             status: "ready",
             order: g,
-          }),
+          });
+        },
       )
       .catch(
         (g) =>

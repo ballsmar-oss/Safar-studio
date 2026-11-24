@@ -8,9 +8,6 @@ import { useStore } from "../lib/store";
 
 export function ShopPage({ initialCategory: c }) {
   const { products: r, categories: o, catalog: f } = useStore();
-  if (f.status !== "ready") {
-    return <CatalogState catalog={f} />;
-  }
   const [g, m] = useState(c);
   const [b, S] = useState("");
   const [y, h] = useState("new");
@@ -26,7 +23,11 @@ export function ShopPage({ initialCategory: c }) {
       Z.sort((O, C) => C.price - O.price);
     }
     return Z;
-  }, [g, b, y]);
+  }, [r, g, b, y]);
+  // الـ hooks لازم تكون قبل أي return عشان ترتيبها ما يتغيّر
+  if (f.status !== "ready") {
+    return <CatalogState catalog={f} />;
+  }
   const z = () => {
     m(null);
     S("");

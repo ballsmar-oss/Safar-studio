@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowRight, RotateCcw, Truck } from "lucide-react";
 import { ProductArt } from "../components/Art";
 import { CatalogState } from "../components/CatalogState";
@@ -8,6 +8,7 @@ import { WavyFrame } from "../components/WavyFrame";
 import { formatPrice } from "../lib/format";
 import { useStore } from "../lib/store";
 import { NotFoundPage } from "./NotFound";
+import { track } from "../lib/tracking";
 
 export function ProductPage({ id: c }) {
   const {
@@ -16,9 +17,20 @@ export function ProductPage({ id: c }) {
     add: f,
     setPanel: g,
     catalog: m,
+    shipping,
   } = useStore();
   const [b, S] = useState(1);
   const [y, h] = useState();
+  const viewed = m.status === "ready" ? r.find((w) => w.id === c) : undefined;
+  useEffect(() => {
+    if (viewed) {
+      track("view_item", {
+        value: viewed.price,
+        items: [{ id: viewed.id, name: viewed.name, price: viewed.price, qty: 1 }],
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [viewed?.id]);
   if (m.status !== "ready") {
     return <CatalogState catalog={m} />;
   }
@@ -139,7 +151,10 @@ export function ProductPage({ id: c }) {
                 className="text-leaf shrink-0"
                 aria-hidden="true"
               />
-              توصيل لكل مدن المملكة خلال ٢–٤ أيام عمل، ومجاني فوق ١٥٠ ر.س.
+              توصيل لكل مدن المملكة خلال ٢–٤ أيام عمل
+              {shipping.fee > 0
+                ? `، ومجاني فوق ${shipping.freeMin.toLocaleString("ar-SA")} ر.س.`
+                : "، ومجاني لكل الطلبات."}
             </li>
             <li className="flex items-center gap-3">
               <RotateCcw
